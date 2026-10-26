@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AdView – Watch optional rewarded ads and earn points. Register, watch an ad, and redeem your points for digital rewards.">
+  <meta name="theme-color" content="#04090f">
+  <meta property="og:title" content="AdView | Watch ads, earn points">
+  <meta property="og:description" content="Register, watch a rewarded ad, and redeem your points for real rewards.">
+  <meta property="og:type" content="website">
+  <title>AdView | Watch ads, earn points</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/" aria-label="AdView Home">
+      <span class="logo-icon" aria-hidden="true">▶</span>
+      AdView
+    </a>
+    <div class="header-actions">
+      <span id="balance" title="Your current point balance" aria-live="polite">0 points</span>
+      <button id="logout" type="button" hidden aria-label="Sign out of your account">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div>
+        <div class="hero-badge">
+          <span class="dot" aria-hidden="true"></span>
+          Opt-in Rewarded Ads
+        </div>
+        <h1 id="hero-heading">Watch an ad.<br><em>Earn points.</em></h1>
+        <p>Register, open your dashboard, and choose whether to watch a rewarded ad. Points are credited only when the ad provider grants the reward. Then redeem them from the catalog.</p>
+      </div>
+      <ol class="flow" aria-label="How AdView works — 6 steps">
+        <li>Visit the site</li>
+        <li>Register or sign in</li>
+        <li>Open your dashboard</li>
+        <li>Click <strong>Watch optional ad</strong></li>
+        <li>Provider grants reward? → Points credited instantly</li>
+        <li>Redeem points from the catalog</li>
+      </ol>
+    </section>
+
+    <!-- AUTH + DASHBOARD GRID -->
+    <section class="grid">
+      <!-- AUTH PANEL -->
+      <aside class="panel" id="auth" aria-label="Sign in or register">
+        <div class="switch" role="tablist" aria-label="Authentication mode">
+          <button type="button" data-mode="login" class="active" role="tab" aria-selected="true" id="tab-login">Sign in</button>
+          <button type="button" data-mode="register" role="tab" aria-selected="false" id="tab-register">Register</button>
+        </div>
+        <form id="form" novalidate>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <label for="password" style="margin-top: 14px;">Password</label>
+          <input id="password" name="password" type="password" minlength="10" maxlength="128" autocomplete="current-password" placeholder="Minimum 10 characters" required>
+          <button class="primary" id="submit" type="submit" style="margin-top: 16px;">Sign in</button>
+        </form>
+        <p class="hint">Password must be at least 10 characters long.</p>
+        <p id="authmsg" role="alert" aria-live="assertive"></p>
+      </aside>
+
+      <!-- DASHBOARD PANEL -->
+      <section class="panel hidden" id="dash" aria-label="Your dashboard" aria-live="polite">
+        <div class="top">
+          <div>
+            <small>Your Balance</small>
+            <h2><b id="points">0</b> pts</h2>
+            <p class="welcome" id="welcome"></p>
+          </div>
+          <button id="watch" class="primary" type="button" aria-label="Watch an optional rewarded ad to earn points">
+            ▶ Watch optional ad
+          </button>
+        </div>
+        <div id="status" role="status" aria-live="polite">Rewarded ads are optional. Points are credited only if the provider grants a reward.</div>
+
+        <h3>Redeem points</h3>
+        <div id="catalog" class="catalog" role="list" aria-label="Rewards catalog"></div>
+
+        <h3>Recent activity</h3>
+        <div id="activity" role="log" aria-label="Recent activity" aria-live="polite"></div>
+      </section>
+    </section>
+
+    <!-- TRANSPARENCY NOTICE -->
+    <aside class="notice" role="note" aria-label="Reward transparency notice">
+      <span class="notice-icon" aria-hidden="true">⚠️</span>
+      <div>
+        <b>Reward transparency</b>
+        <p>Points are virtual demo credits. The voucher is a manual-review request, not guaranteed cash. Do not click ads for rewards, create fake accounts, or generate artificial traffic. When no Google Ad Manager unit is configured, AdView uses a clearly labeled demo ad so you can test the full flow.</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- AD OVERLAY / MODAL -->
+  <div id="ad-overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="ad-title">
+    <div class="overlay-card">
+      <h2 id="ad-title">Rewarded Ad</h2>
+      <p id="ad-copy">Stay on this screen until the provider finishes. Closing early means no points.</p>
+      <div class="ad-stage" id="ad-stage">
+        <div class="ad-stage-icon" id="ad-stage-icon" aria-hidden="true">📺</div>
+        <div class="ad-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="ad-progress-bar">
+          <span id="ad-bar"></span>
+        </div>
+        <p id="ad-timer">Preparing…</p>
+      </div>
+      <div class="overlay-actions">
+        <button id="ad-complete" class="primary" type="button" hidden>✓ Claim reward</button>
+        <button id="ad-close" type="button">✕ Close without reward</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+  <footer>
+    <span>AdView &middot; RewardLoop engine &copy; 2024</span>
+    <nav aria-label="Footer navigation">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
