@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiEdit3, FiAlertCircle } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
 import { useAuth } from '../../context/AuthContext';
@@ -10,7 +10,7 @@ import './AuthPages.css';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const [role, setRole] = useState('reader');
+  const role = 'writer';
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '', agree: false });
   const [loading, setLoading] = useState(false);
@@ -50,8 +50,8 @@ const RegisterPage = () => {
   return (
     <>
       <Helmet>
-        <title>Join {brand.name} — Register</title>
-        <meta name="description" content={`Create your ${brand.name} account and start reading or writing.`} />
+        <title>Become a Writer — {brand.name}</title>
+        <meta name="description" content={`Create your writer account on ${brand.name} to write and publish articles.`} />
       </Helmet>
 
       <div className="auth-page">
@@ -64,34 +64,8 @@ const RegisterPage = () => {
               <span>✦</span>
               <span className="gradient-text">{brand.name}</span>
             </Link>
-            <h1 className="auth-card__title">Create your account</h1>
-            <p className="auth-card__sub">Join {brand.name} and be part of a global community of writers and readers.</p>
-          </div>
-
-          {/* Role selector */}
-          <div className="auth-role-selector" role="radiogroup" aria-label="Account type">
-            <button
-              type="button"
-              role="radio"
-              aria-checked={role === 'reader'}
-              className={`auth-role-btn ${role === 'reader' ? 'auth-role-btn--active' : ''}`}
-              onClick={() => setRole('reader')}
-            >
-              <FiUser size={20} />
-              <span>Reader</span>
-              <span className="auth-role-btn__desc">Discover and save articles</span>
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={role === 'writer'}
-              className={`auth-role-btn ${role === 'writer' ? 'auth-role-btn--active' : ''}`}
-              onClick={() => setRole('writer')}
-            >
-              <FiEdit3 size={20} />
-              <span>Writer</span>
-              <span className="auth-role-btn__desc">Write and publish articles</span>
-            </button>
+            <h1 className="auth-card__title">Become a Writer</h1>
+            <p className="auth-card__sub">Create your writer account to publish stories and reach readers worldwide.</p>
           </div>
 
           {/* Form */}

@@ -78,8 +78,8 @@ const Navbar = () => {
                 <Link to="/register" className="navbar__write-btn">
                   <Button variant="outline" size="sm" icon={<FiEdit3 />}>Write</Button>
                 </Link>
-                <Link to="/login">
-                  <Button variant="primary" size="sm" icon={<FiUser />}>Sign in</Button>
+                <Link to="/login" title="Writer / Admin login">
+                  <Button variant="ghost" size="sm" icon={<FiUser />}>Writer Login</Button>
                 </Link>
               </>
             )}
@@ -137,10 +137,10 @@ const Navbar = () => {
             ) : (
               <>
                 <Link to="/register">
-                  <Button variant="outline" size="md" icon={<FiEdit3 />} fullWidth>Start writing</Button>
+                  <Button variant="outline" size="md" icon={<FiEdit3 />} fullWidth>Become a Writer</Button>
                 </Link>
                 <Link to="/login">
-                  <Button variant="primary" size="md" icon={<FiUser />} fullWidth>Sign in</Button>
+                  <Button variant="ghost" size="md" icon={<FiUser />} fullWidth>Writer Login</Button>
                 </Link>
               </>
             )}

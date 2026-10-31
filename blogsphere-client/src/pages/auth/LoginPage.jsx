@@ -38,8 +38,8 @@ const LoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>Sign In — {brand.name}</title>
-        <meta name="description" content={`Sign in to your ${brand.name} account.`} />
+        <title>Writer & Admin Sign In — {brand.name}</title>
+        <meta name="description" content={`Sign in to your ${brand.name} creator or admin account.`} />
       </Helmet>
 
       <div className="auth-page">
@@ -52,7 +52,7 @@ const LoginPage = () => {
               <span className="gradient-text">{brand.name}</span>
             </Link>
             <h1 className="auth-card__title">Welcome back</h1>
-            <p className="auth-card__sub">Sign in to continue reading and writing.</p>
+            <p className="auth-card__sub">Sign in to your writer or administrator portal.</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
@@ -113,8 +113,8 @@ const LoginPage = () => {
           </form>
 
           <p className="auth-card__footer-text">
-            Don't have an account?{' '}
-            <Link to="/register" className="auth-link">Create one free</Link>
+            Want to write on {brand.name}?{' '}
+            <Link to="/register" className="auth-link">Apply as Writer</Link>
           </p>
         </div>
       </div>

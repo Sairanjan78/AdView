@@ -162,11 +162,8 @@ const ArticleDetailPage = () => {
 
             {/* Comments placeholder */}
             <div className="article-detail__comments-placeholder glass-card">
-              <h3>Comments ({comments})</h3>
-              <p>Comments are implemented in Phase 5. Sign in to join the conversation.</p>
-              <Link to="/login">
-                <Button variant="primary" size="sm">Sign in to comment</Button>
-              </Link>
+              <h3>Discussion & Reader Thoughts</h3>
+              <p>Articles are open for all readers to view freely. Reader commenting and reactions will be available here.</p>
             </div>
           </main>
         </div>
