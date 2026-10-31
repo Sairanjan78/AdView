@@ -1,0 +1,182 @@
+/* ============================================================
+   Featured Card — Minimal Luxury Editorial Showcase
+   ============================================================ */
+
+.featured-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.featured-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--accent);
+}
+
+.featured-card--lg { min-height: 520px; }
+.featured-card--sm { min-height: 280px; }
+
+/* Background */
+.featured-card__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--primary);
+}
+.featured-card__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+.featured-card:hover .featured-card__bg img { transform: scale(1.04); }
+
+.featured-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(25, 23, 19, 0.96) 0%,
+    rgba(25, 23, 19, 0.72) 45%,
+    rgba(25, 23, 19, 0.2) 75%,
+    transparent 100%
+  );
+}
+
+/* Content */
+.featured-card__content {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.featured-card--lg .featured-card__content { padding: var(--space-8); gap: var(--space-4); }
+
+/* Top row */
+.featured-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.featured-card__category {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  background: rgba(244, 239, 229, 0.92);
+  color: var(--primary);
+  border: 1px solid rgba(229, 222, 209, 0.8);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.featured-card__read-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  color: rgba(244, 239, 229, 0.75);
+}
+
+/* Title — Playfair Display 700 */
+.featured-card__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-heading-bold);
+  color: #FFFFFF;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  transition: color var(--transition-fast);
+}
+.featured-card--lg .featured-card__title { font-size: var(--text-h2); }
+.featured-card:hover .featured-card__title { color: var(--accent); }
+
+/* Excerpt — Inter 400 */
+.featured-card__excerpt {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--fw-body);
+  color: rgba(244, 239, 229, 0.88);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+.featured-card--sm .featured-card__excerpt { display: none; }
+
+/* Footer */
+.featured-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.featured-card__author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.featured-card__author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.featured-card__author-name {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-ui);
+  color: #FFFFFF;
+}
+
+.featured-card__author-time {
+  font-size: var(--text-xs);
+  color: rgba(244, 239, 229, 0.6);
+}
+
+.featured-card__stats {
+  display: flex;
+  gap: var(--space-3);
+}
+.featured-card__stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  color: rgba(244, 239, 229, 0.75);
+}
+
+/* CTA */
+.featured-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--accent);
+  text-decoration: none;
+  transition: gap var(--transition-fast), color var(--transition-fast);
+  width: fit-content;
+}
+.featured-card__cta:hover { gap: var(--space-3); color: #C9B293; }
+.featured-card--sm .featured-card__cta { display: none; }

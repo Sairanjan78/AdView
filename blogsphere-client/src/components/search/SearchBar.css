@@ -1,0 +1,112 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.search-bar--focused {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(182, 155, 117, 0.25);
+  background: var(--surface);
+}
+
+/* Variants */
+.search-bar--navbar {
+  padding: 6px 14px;
+  width: 260px;
+  max-width: 100%;
+}
+
+.search-bar--hero {
+  padding: var(--space-3) var(--space-5);
+  width: 100%;
+  max-width: 620px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+.search-bar--hero.search-bar--focused {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(41, 39, 32, 0.1);
+}
+
+.search-bar--page {
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+/* Icon button */
+.search-bar__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+  padding: 0;
+}
+.search-bar--focused .search-bar__icon-btn { color: var(--accent); }
+
+.search-bar__icon { font-size: 16px; }
+
+/* Input */
+.search-bar__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  min-width: 0;
+  -webkit-appearance: none;
+}
+.search-bar--hero .search-bar__input { font-size: var(--text-base); }
+
+.search-bar__input::placeholder { color: var(--text-muted); }
+.search-bar__input::-webkit-search-cancel-button { display: none; }
+
+/* Clear button */
+.search-bar__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.search-bar__clear:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Keyboard shortcut badge */
+.search-bar__shortcut {
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #F4EFE5;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .search-bar__shortcut { display: none; }
+}

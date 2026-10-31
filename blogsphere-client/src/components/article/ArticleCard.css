@@ -1,0 +1,188 @@
+/* ============================================================
+   Article Card — Editorial Magazine Style
+   ============================================================ */
+
+.article-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.article-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+/* Cover */
+.article-card__cover-link { display: block; }
+.article-card__cover {
+  position: relative;
+  padding-top: 58%; /* Editorial 16:9 proportion */
+  overflow: hidden;
+  background: var(--bg-subtle);
+}
+.article-card__cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+.article-card:hover .article-card__cover img { transform: scale(1.04); }
+
+.article-card__cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(41, 39, 32, 0.4) 0%, transparent 50%);
+}
+
+.article-card__category-badge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  background: rgba(244, 239, 229, 0.94);
+  color: var(--primary);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(41, 39, 32, 0.08);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Body */
+.article-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+/* Author row */
+.article-card__author-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.article-card__author-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  min-width: 0;
+}
+.article-card__author-name {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-ui);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--transition-fast);
+}
+.article-card__author-link:hover .article-card__author-name { color: var(--accent); }
+
+.article-card__time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-body);
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Title — Playfair Display 600 */
+.article-card__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-heading);
+  color: var(--primary);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  transition: color var(--transition-fast);
+}
+.article-card:hover .article-card__title,
+.article-card__title:hover { color: var(--accent); }
+
+/* Excerpt — Inter 400 */
+.article-card__excerpt {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-body);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+
+/* Footer */
+.article-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.article-card__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.article-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.article-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.article-card__read-time {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.article-card__bookmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  background: rgba(41, 39, 32, 0.04);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.article-card__bookmark:hover {
+  color: var(--primary);
+  background: rgba(182, 155, 117, 0.2);
+}

@@ -1,0 +1,110 @@
+/* ============================================================
+   BlogSphere Animations & Keyframes
+   ============================================================ */
+
+/* Fade in up — cards, sections */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Fade in — overlays, modals */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Scale in — badges, chips */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Slide in right — sidebar, drawer */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Hero gradient shift */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pulse glow — CTA buttons */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(182, 155, 117, 0.3); }
+  50%       { box-shadow: 0 0 40px rgba(182, 155, 117, 0.55); }
+}
+
+/* Float — hero decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+/* Shimmer — skeleton loading */
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* Spin — loading indicator */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Ticker — trending numbers */
+@keyframes ticker {
+  0%   { transform: translateY(100%); opacity: 0; }
+  10%  { transform: translateY(0);    opacity: 1; }
+  90%  { transform: translateY(0);    opacity: 1; }
+  100% { transform: translateY(-100%);opacity: 0; }
+}
+
+/* --- Utility Animation Classes --- */
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s var(--transition-bounce) forwards;
+}
+
+/* Stagger children */
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.20s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.30s; }
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 0px,
+    var(--bg-elevated) 40px,
+    var(--bg-card) 80px
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+/* Hover lift */
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}

@@ -1,0 +1,173 @@
+/* ============================================================
+   BlogSphere CSS Variables — Option 2: Minimal Luxury Theme
+   Premium international editorial typography & design system
+   ============================================================ */
+
+:root {
+  /* ==========================================================
+     Option 2 — Minimal Luxury Core Variables
+     ========================================================== */
+  --primary:        #292720; /* Deep Charcoal */
+  --accent:         #B69B75; /* Muted Gold */
+  --background:     #F4EFE5; /* Warm Cream */
+  --surface:        #FFFFFF; /* Pure White Card Surface */
+  --text-primary:   #292720; /* Charcoal */
+  --text-secondary: #706B61; /* Warm Muted Charcoal */
+  --border:         #E5DED1; /* Subtle Warm Stone */
+
+  /* --- Extended Semantic Palette --- */
+  --color-primary: var(--primary);
+  --color-primary-light: #4A463B;
+  --color-primary-dark: #191814;
+  --color-primary-glow: rgba(182, 155, 117, 0.2);
+
+  --color-accent: var(--accent);
+  --color-accent-light: #C9B293;
+  --color-accent-dark: #9A7F59;
+  --color-accent-glow: rgba(182, 155, 117, 0.25);
+
+  --color-secondary: #B69B75;
+  --color-secondary-light: #C9B293;
+  --color-secondary-dark: #9A7F59;
+  --color-secondary-glow: rgba(182, 155, 117, 0.2);
+
+  --color-gold: #B69B75;
+  --color-success: #386641;
+  --color-warning: #BC6C25;
+  --color-danger: #9B2226;
+
+  /* --- Surface / Background --- */
+  --bg-base: var(--background);
+  --bg-surface: var(--surface);
+  --bg-card: var(--surface);
+  --bg-card-hover: #FAF7F2;
+  --bg-elevated: #EDE7DC;
+  --bg-subtle: #ECE5D8;
+  --bg-overlay: rgba(244, 239, 229, 0.94);
+
+  /* --- Text Tokens --- */
+  --text-muted: #8E887D;
+  --text-disabled: #B8B2A6;
+  --text-inverse: #FFFFFF;
+
+  /* --- Border Tokens --- */
+  --border-subtle: #EBE5D9;
+  --border-default: var(--border);
+  --border-strong: #D5CCC0;
+  --border-primary: rgba(182, 155, 117, 0.55);
+
+  /* --- Editorial Gradients --- */
+  --gradient-primary: linear-gradient(135deg, #292720 0%, #B69B75 100%);
+  --gradient-hero: linear-gradient(180deg, #F4EFE5 0%, #EDE6D8 100%);
+  --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #FAF8F4 100%);
+  --gradient-text: linear-gradient(135deg, #292720 0%, #706B61 50%, #B69B75 100%);
+  --gradient-gold: linear-gradient(135deg, #B69B75 0%, #9A7F59 100%);
+  --gradient-glow: radial-gradient(ellipse at center, rgba(182,155,117,0.12) 0%, transparent 70%);
+
+  /* ==========================================================
+     Editorial Typography System
+     - Primary Headings: Playfair Display (600, 700)
+     - Body and UI: Inter (400, 500, 600)
+     - Multilingual script fallbacks: Noto Serif & Noto Sans
+     ========================================================== */
+  --font-serif: 'Playfair Display', 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: var(--font-serif);
+  --font-body: var(--font-sans);
+
+  /* Editorial Font Weights */
+  --font-light:        300;
+  --font-normal:       400; /* Inter 400 for article paragraphs */
+  --font-medium:       500; /* Inter 500 for navigation & labels */
+  --font-semibold:     600; /* Playfair Display 600 / Inter 600 for UI buttons & metadata */
+  --font-bold:         700; /* Playfair Display 700 for major headlines */
+  --font-extrabold:    700;
+  --font-black:        700;
+
+  --fw-body:           400;
+  --fw-nav:            500;
+  --fw-ui:             600;
+  --fw-heading:        600;
+  --fw-heading-bold:   700;
+
+  /* Line Heights (Generous line height ~1.75 for long-form reading) */
+  --leading-tight:     1.2;
+  --leading-snug:      1.35;
+  --leading-normal:    1.5;
+  --leading-relaxed:   1.65;
+  --leading-loose:     1.75; /* Generous 1.75 for long-form reading */
+  --leading-article:   1.75;
+
+  /* Letter Spacing */
+  --tracking-tighter:  -0.03em;
+  --tracking-tight:    -0.02em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.03em;
+  --tracking-wider:    0.06em;
+  --tracking-widest:   0.08em;
+
+  /* Responsive Fluid Font Sizes using CSS clamp() */
+  --text-xs:    0.75rem;                                           /* 12px */
+  --text-sm:    0.875rem;                                          /* 14px */
+  --text-base:  1rem;                                              /* 16px */
+  --text-lg:    1.125rem;                                          /* 18px */
+  --text-xl:    clamp(1.15rem, 1.4vw + 0.8rem, 1.35rem);          /* ~18px - 21px */
+  --text-2xl:   clamp(1.35rem, 1.8vw + 0.9rem, 1.65rem);          /* ~22px - 26px */
+  --text-3xl:   clamp(1.65rem, 2.5vw + 1rem, 2.15rem);            /* ~26px - 34px */
+  --text-4xl:   clamp(2rem, 3.5vw + 1rem, 2.75rem);               /* ~32px - 44px */
+  --text-5xl:   clamp(2.35rem, 4.5vw + 1rem, 3.5rem);             /* ~38px - 56px */
+  --text-6xl:   clamp(2.75rem, 6vw + 1rem, 4.25rem);              /* ~44px - 68px */
+
+  /* Clamp Header Aliases */
+  --text-h1:    clamp(2.25rem, 4.5vw + 1rem, 3.75rem);
+  --text-h2:    clamp(1.625rem, 3vw + 0.5rem, 2.5rem);
+  --text-h3:    clamp(1.25rem, 2vw + 0.5rem, 1.75rem);
+  --text-h4:    clamp(1.125rem, 1.2vw + 0.5rem, 1.375rem);
+
+  /* --- Spacing --- */
+  --space-1:  0.25rem;  /* 4px  */
+  --space-2:  0.5rem;   /* 8px  */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+  --space-32: 8rem;     /* 128px */
+
+  /* --- Border Radius --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --radius-2xl:24px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm:   0 1px 3px rgba(41, 39, 32, 0.04), 0 1px 2px rgba(41, 39, 32, 0.02);
+  --shadow-md:   0 4px 14px rgba(41, 39, 32, 0.06), 0 1px 3px rgba(41, 39, 32, 0.03);
+  --shadow-lg:   0 10px 30px rgba(41, 39, 32, 0.08), 0 2px 6px rgba(41, 39, 32, 0.04);
+  --shadow-xl:   0 20px 48px rgba(41, 39, 32, 0.10);
+  --shadow-glow: 0 0 28px rgba(182, 155, 117, 0.22);
+  --shadow-glow-pink: 0 0 28px rgba(182, 155, 117, 0.22);
+
+  /* --- Transitions --- */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:   250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* --- Layout --- */
+  --container-sm:  640px;
+  --container-md:  768px;
+  --container-lg:  1024px;
+  --container-xl:  1280px;
+  --container-2xl: 1380px;
+
+  --navbar-height: 76px;
+  --sidebar-width: 280px;
+}

@@ -1,0 +1,82 @@
+.categories-page { padding: var(--space-12) 0 var(--space-20); }
+
+.categories-page__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-h1);
+  font-weight: var(--fw-heading-bold);
+  color: var(--primary);
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-2);
+}
+
+.categories-page__sub {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-body);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-10);
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.category-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.category-card__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: #F4EFE5;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.category-card__icon { font-size: var(--text-2xl); }
+
+.category-card__body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.category-card__name {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--primary);
+  transition: color var(--transition-fast);
+}
+.category-card:hover .category-card__name { color: var(--accent); }
+.category-card__count { font-size: var(--text-xs); color: var(--text-secondary); }
+
+.category-card__arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+.category-card:hover .category-card__arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+@media (max-width: 1024px) { .categories-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) { .categories-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .categories-grid { grid-template-columns: 1fr; } }
