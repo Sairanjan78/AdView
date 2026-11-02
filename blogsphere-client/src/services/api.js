@@ -89,3 +89,34 @@ export const authApi = {
       method: 'POST',
     }),
 };
+
+// Article API methods
+export const articleApi = {
+  getArticles: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return apiRequest(`/articles${query ? `?${query}` : ''}`, { method: 'GET' });
+  },
+
+  getArticleBySlug: (slug) =>
+    apiRequest(`/articles/${slug}`, { method: 'GET' }),
+
+  createArticle: (articleData) =>
+    apiRequest('/articles', {
+      method: 'POST',
+      body: JSON.stringify(articleData),
+    }),
+
+  updateArticle: (id, articleData) =>
+    apiRequest(`/articles/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(articleData),
+    }),
+
+  deleteArticle: (id) =>
+    apiRequest(`/articles/${id}`, {
+      method: 'DELETE',
+    }),
+
+  getMyArticles: () =>
+    apiRequest('/articles/me/mine', { method: 'GET' }),
+};

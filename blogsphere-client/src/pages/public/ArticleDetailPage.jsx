@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { format } from 'date-fns';
@@ -9,12 +9,34 @@ import {
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
 import { LATEST_ARTICLES } from '../../data/mockData';
 import './ArticleDetailPage.css';
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
-  const article = LATEST_ARTICLES.find(a => a.slug === slug) || LATEST_ARTICLES[0];
+  const mockFallback = LATEST_ARTICLES.find(a => a.slug === slug) || LATEST_ARTICLES[0];
+  const [article, setArticle] = useState(mockFallback);
+
+  useEffect(() => {
+    let isMounted = true;
+    articleApi.getArticleBySlug(slug)
+      .then(res => {
+        if (isMounted && res?.data?.article) {
+          setArticle(normalizeArticle(res.data.article));
+        }
+      })
+      .catch(() => {
+        // Keeps mock article if not found on backend or if backend is offline
+        const foundMock = LATEST_ARTICLES.find(a => a.slug === slug);
+        if (isMounted && foundMock) {
+          setArticle(foundMock);
+        }
+      });
+
+    return () => { isMounted = false; };
+  }, [slug]);
 
   if (!article) {
     return (
@@ -25,18 +47,17 @@ const ArticleDetailPage = () => {
     );
   }
 
-  const { title, excerpt, cover, category, author, publishedAt, readTime, likes, comments, views, tags } = article;
+  const { title, excerpt, content, cover, category, author, publishedAt, readTime, likes, comments, views, tags } = article;
 
-  // Dummy article body — replaced by real rich text in Phase 3
-  const articleBody = `
+  // Use live content if available, otherwise editorial placeholder
+  const articleBody = content 
+    ? (content.includes('<') ? content : `<p>${content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br/>')}</p>`)
+    : `
     <p>${excerpt}</p>
-    <p>This is a placeholder article body. In Phase 3 of BlogSphere development, the full rich-text content will be rendered here using TipTap — a powerful, extensible editor that produces clean HTML output sanitised before display.</p>
+    <p>This is a placeholder article body. The platform supports full rich-text articles, dynamic read counts, and responsive typography.</p>
     <h2>Why this matters</h2>
-    <p>The blogging platform architecture is designed from the ground up to support writer productivity and reader engagement simultaneously. Every design decision — from the article detail layout to the engagement metrics — reflects real publishing platform best practices.</p>
-    <h2>What comes next</h2>
-    <p>After Phase 1 (frontend foundation) and Phase 2 (authentication), Phase 3 will implement the full article creation and editing experience, complete with image uploads via Cloudinary, tag management, and draft saving.</p>
+    <p>The blogging platform architecture is designed from the ground up to support writer productivity and reader engagement simultaneously.</p>
     <blockquote>Great writing deserves great presentation. BlogSphere is built to make both effortless.</blockquote>
-    <p>The approval workflow in Phase 4 ensures only quality content reaches readers, while Phase 5 adds the social layer: comments, likes, bookmarks, and follows that keep readers engaged.</p>
   `;
 
   return (

@@ -16,6 +16,7 @@ const SearchPage          = lazy(() => import('./pages/public/SearchPage'));
 const ArticleDetailPage   = lazy(() => import('./pages/public/ArticleDetailPage'));
 const WriterProfilePage   = lazy(() => import('./pages/public/WriterProfilePage'));
 const AboutPage           = lazy(() => import('./pages/public/AboutPage'));
+const WritePage           = lazy(() => import('./pages/writer/WritePage'));
 const RegisterPage        = lazy(() => import('./pages/auth/RegisterPage'));
 const LoginPage           = lazy(() => import('./pages/auth/LoginPage'));
 
@@ -73,6 +74,7 @@ function App() {
                   <Route path="/article/:slug"       element={<ArticleDetailPage />} />
                   <Route path="/writer/:username"    element={<WriterProfilePage />} />
                   <Route path="/about"               element={<AboutPage />} />
+                  <Route path="/write"               element={<WritePage />} />
 
                   {/* Auth routes */}
                   <Route path="/register"            element={<RegisterPage />} />

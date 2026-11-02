@@ -1,0 +1,111 @@
+.write-page {
+  padding: 60px 0 100px;
+  min-height: 80vh;
+}
+
+.write-container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.write-header {
+  margin-bottom: 32px;
+}
+
+.write-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.write-sub {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.write-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.write-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.write-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.write-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.write-input,
+.write-select,
+.write-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-input, #faf9f6);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.write-input:focus,
+.write-select:focus,
+.write-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(182, 155, 117, 0.15);
+}
+
+.write-textarea--content {
+  min-height: 320px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.write-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.write-alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.write-alert--error {
+  background: #fde8e8;
+  color: #c81e1e;
+  border: 1px solid #f8b4b4;
+}
+
+.write-alert--success {
+  background: #def7ec;
+  color: #03543f;
+  border: 1px solid #bcf0da;
+}
+

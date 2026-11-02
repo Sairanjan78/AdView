@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -11,12 +11,40 @@ import SearchBar from '../../components/search/SearchBar';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
 import {
   FEATURED_ARTICLES, LATEST_ARTICLES, TRENDING_ARTICLES, CATEGORIES, AUTHORS,
 } from '../../data/mockData';
 import './HomePage.css';
 
 const HomePage = () => {
+  const [liveArticles, setLiveArticles] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    articleApi.getArticles({ limit: 12 })
+      .then(res => {
+        if (isMounted && res?.data?.articles?.length > 0) {
+          const normalized = res.data.articles.map(normalizeArticle);
+          setLiveArticles(normalized);
+        }
+      })
+      .catch(() => {
+        // Graceful fallback to mock data if backend is not running
+      });
+
+    return () => { isMounted = false; };
+  }, []);
+
+  // Merge live database articles with mock fallback so feed is always rich
+  const displayedFeatured = liveArticles.length > 0 
+    ? liveArticles.slice(0, 3) 
+    : FEATURED_ARTICLES;
+
+  const displayedLatest = liveArticles.length > 0
+    ? liveArticles
+    : LATEST_ARTICLES;
   return (
     <>
       <Helmet>
@@ -69,8 +97,8 @@ const HomePage = () => {
 
           {/* Featured article hero card */}
           <div className="hero__featured animate-fadeInUp" style={{ animationDelay: '0.15s' }}>
-            {FEATURED_ARTICLES[0] && (
-              <FeaturedCard article={FEATURED_ARTICLES[0]} size="lg" />
+            {displayedFeatured[0] && (
+              <FeaturedCard article={displayedFeatured[0]} size="lg" />
             )}
           </div>
         </div>
@@ -110,7 +138,7 @@ const HomePage = () => {
             </Link>
           </div>
           <div className="featured-grid stagger-children">
-            {FEATURED_ARTICLES.map((article, i) => (
+            {displayedFeatured.map((article, i) => (
               <FeaturedCard
                 key={article.id}
                 article={article}
@@ -152,7 +180,7 @@ const HomePage = () => {
                 <Link to="/latest" className="section-link">All <FiArrowRight size={13} /></Link>
               </div>
               <div className="latest-list stagger-children">
-                {LATEST_ARTICLES.slice(0, 4).map(article => (
+                {displayedLatest.slice(0, 4).map(article => (
                   <LatestItem key={article.id} article={article} />
                 ))}
               </div>
@@ -170,7 +198,7 @@ const HomePage = () => {
             <Link to="/explore" className="section-link">Explore all <FiArrowRight size={14} /></Link>
           </div>
           <div className="grid-3 stagger-children">
-            {LATEST_ARTICLES.slice(0, 6).map(article => (
+            {displayedLatest.slice(0, 6).map(article => (
               <ArticleCard key={article.id} article={article} />
             ))}
           </div>
