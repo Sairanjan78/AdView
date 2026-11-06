@@ -9,12 +9,17 @@ import useApi from '../../hooks/useApi';
 import useCategories from '../../hooks/useCategories';
 import './ExplorePage.css';
 import CategoryIcon from '../../components/ui/CategoryIcon';
+import EmptyState from '../../components/ui/EmptyState';
+import Button from '../../components/ui/Button';
+import { useAuth } from '../../context/AuthContext';
+import { LuCompass, LuSearchX, LuCircleAlert, LuPenLine } from 'react-icons/lu';
 
 const ExplorePage = () => {
   // Also mounted at /categories/:slug - preselect that category
   const { slug } = useParams();
   const [activeCategory, setActiveCategory] = useState(slug || 'all');
   const { categories: CATEGORIES } = useCategories();
+  const { isWriter } = useAuth();
 
   useEffect(() => { setActiveCategory(slug || 'all'); }, [slug]);
 
@@ -42,15 +47,17 @@ const ExplorePage = () => {
 
       <div className="explore-page">
         <div className="container">
-          {/* Page header */}
-          <div className="explore-header">
-            <div>
-              <h1 className="explore-title gradient-text">Explore</h1>
-              <p className="explore-sub">Discover articles across every topic imaginable</p>
-            </div>
-          </div>
+          <header className="page-header">
+            <p className="page-eyebrow"><LuCompass size={14} aria-hidden="true" /> Explore</p>
+            <h1 className="page-title">{activeCategoryMeta ? activeCategoryMeta.name : 'Every story, every topic'}</h1>
+            <p className="page-lede">
+              {activeCategoryMeta?.description || (activeCategoryMeta
+                ? `The latest ${activeCategoryMeta.name.toLowerCase()} articles on ${brand.name}.`
+                : 'Browse everything we have published, or narrow it down by category.')}
+            </p>
+          </header>
 
-          {/* Category filter tabs */}
+          {/* Category filter */}
           <div className="explore-filters" role="tablist" aria-label="Filter by category">
             <button
               role="tab"
@@ -69,17 +76,15 @@ const ExplorePage = () => {
                 onClick={() => setActiveCategory(cat.slug)}
                 style={{ '--cat-color': cat.color }}
               >
-                <CategoryIcon icon={cat.icon} /> {cat.name}
+                <CategoryIcon icon={cat.icon} size={15} /> {cat.name}
               </button>
             ))}
           </div>
 
-          {/* Results count */}
-          <p className="explore-count">
-            {loading ? 'Loading articles…' : `${total} article${total !== 1 ? 's' : ''} found`}
+          <p className="page-meta" aria-live="polite">
+            {loading ? 'Loading articles…' : `${total} article${total !== 1 ? 's' : ''}`}
           </p>
 
-          {/* Grid */}
           {filtered.length > 0 ? (
             <div className="grid-3 stagger-children">
               {filtered.map(article => (
@@ -87,10 +92,21 @@ const ExplorePage = () => {
               ))}
             </div>
           ) : !loading && (
-            <div className="explore-empty">
-              <span>{error ? '⚠️' : '🔍'}</span>
-              <p>{error ? error.message : 'No articles in this category yet.'}</p>
-            </div>
+            error ? (
+              <EmptyState icon={LuCircleAlert} tone="error" title="We couldn’t load the articles">{error.message}</EmptyState>
+            ) : (
+              <EmptyState
+                icon={LuSearchX}
+                title={activeCategory === 'all' ? 'No articles yet' : 'Nothing here yet'}
+                action={isWriter
+                  ? <Button to="/write" variant="primary" icon={<LuPenLine />}>Write {activeCategory === 'all' ? 'your first post' : 'one now'}</Button>
+                  : activeCategory !== 'all' && <Button variant="outline" onClick={() => setActiveCategory('all')}>Show all articles</Button>}
+              >
+                {activeCategory === 'all'
+                  ? 'Published articles will show up here.'
+                  : 'No articles have been published in this category yet.'}
+              </EmptyState>
+            )
           )}
         </div>
       </div>

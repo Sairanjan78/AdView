@@ -57,12 +57,12 @@ const ContactPage = () => {
         <section className="about-hero">
           <div className="about-hero__glow" aria-hidden="true" />
           <div className="container about-hero__inner">
-            <h1 className="about-hero__title">Contact <span className="gradient-text">Us</span></h1>
+            <h1 className="about-hero__title">Contact us</h1>
             <p className="about-hero__sub">
               Questions, feedback, writing enquiries, copyright or privacy requests — we read every message.
             </p>
             <p className="legal-page__updated">
-              <LuMail style={{ verticalAlign: 'middle', marginRight: 6 }} />
+              <LuMail aria-hidden="true" />
               Prefer email? <a href={`mailto:${brand.email}`}>{brand.email}</a>
             </p>
           </div>
@@ -72,19 +72,19 @@ const ContactPage = () => {
           <div className="write-card">
             {errorMsg && (
               <div className="write-alert write-alert--error" role="alert">
-                <LuCircleAlert style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleAlert aria-hidden="true" />
                 {errorMsg}
               </div>
             )}
             {successMsg && (
               <div className="write-alert write-alert--success" role="status">
-                <LuCircleCheck style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleCheck aria-hidden="true" />
                 {successMsg}
               </div>
             )}
 
             <form className="write-form" onSubmit={handleSubmit} noValidate>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+              <div className="write-row">
                 <div className="write-field">
                   <label className="write-label" htmlFor="contact-name">Your Name *</label>
                   <input id="contact-name" name="name" className="write-input" value={form.name}
@@ -116,7 +116,7 @@ const ContactPage = () => {
                   value={form.website} onChange={handleChange} />
               </div>
 
-              <p className="legal-page__updated" style={{ marginTop: 0 }}>
+              <p className="write-hint">
                 We use your details only to reply. See our <Link to="/privacy-policy">Privacy Policy</Link>.
               </p>
 

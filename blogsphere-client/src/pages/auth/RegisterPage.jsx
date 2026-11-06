@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LuUser, LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuCircleAlert } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
+import BrandMark from '../../components/layout/BrandMark';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
@@ -52,14 +53,12 @@ const RegisterPage = () => {
       <Seo title="Become a Writer" description={`Create your free ${brand.name} account to read, write and publish articles.`} noindex />
 
       <div className="auth-page">
-        <div className="auth-page__bg" aria-hidden="true" />
-        <div className="auth-card glass-card animate-fadeInUp">
+        <div className="auth-card animate-fadeInUp">
 
           {/* Header */}
           <div className="auth-card__header">
-            <Link to="/" className="auth-logo">
-              <span>✦</span>
-              <span className="gradient-text">{brand.name}</span>
+            <Link to="/" className="auth-logo" aria-label={`${brand.name} home`}>
+              <BrandMark />
             </Link>
             <h1 className="auth-card__title">Become a Writer</h1>
             <p className="auth-card__sub">Create your writer account to publish stories and reach readers worldwide.</p>

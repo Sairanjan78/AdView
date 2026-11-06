@@ -10,7 +10,7 @@ const PILLARS = [
   {
     icon: <LuGlobe size={24} />,
     title: 'Global by Design',
-    desc: 'Readers and writers from every country, writing in every niche. BlogSphere is built to scale to millions of voices.',
+    desc: `Readers and writers from every country, writing in every niche. ${brand.name} is built to grow with every new voice.`,
   },
   {
     icon: <LuShield size={24} />,
@@ -34,7 +34,7 @@ const AboutPage = () => (
         <div className="about-hero__glow" aria-hidden="true" />
         <div className="container about-hero__inner">
           <h1 className="about-hero__title">
-            About <span className="gradient-text">{brand.name}</span>
+            About {brand.name}
           </h1>
           <p className="about-hero__sub">{brand.description}</p>
         </div>
@@ -61,8 +61,8 @@ const AboutPage = () => (
           <h2 className="about-section__title">What We Stand For</h2>
           <div className="about-pillars stagger-children">
             {PILLARS.map(p => (
-              <div key={p.title} className="about-pillar glass-card animate-fadeInUp">
-                <div className="about-pillar__icon">{p.icon}</div>
+              <div key={p.title} className="about-pillar card animate-fadeInUp">
+                <div className="about-pillar__icon" aria-hidden="true">{p.icon}</div>
                 <h3 className="about-pillar__title">{p.title}</h3>
                 <p className="about-pillar__desc">{p.desc}</p>
               </div>
@@ -72,8 +72,8 @@ const AboutPage = () => (
 
         {/* Advertising policy brief */}
         <section className="about-section">
-          <div className="about-policy-note glass-card">
-            <h2 className="about-section__title" style={{ marginBottom: 0 }}>Advertising & Earnings</h2>
+          <div className="about-policy-note">
+            <h2 className="about-section__title">Advertising &amp; earnings</h2>
             <p className="about-body-text">
               {brand.name} monetises through Google AdSense and may integrate other eligible advertising providers in the future.
               The platform owner operates the approved publisher account. Advertising revenue is received by the platform and
@@ -82,7 +82,7 @@ const AboutPage = () => (
               <strong>{brand.revenueShare.platformShare}% platform share</strong>. These percentages are
               configurable by the platform administrator.
             </p>
-            <p className="about-body-text" style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
+            <p className="about-body-text about-policy-note__fine">
               Writer earnings are estimates until advertising reports are finalised. Invalid traffic deductions
               may apply. No specific earnings are guaranteed. We never incentivise artificial clicks or traffic.
               See our <Link to="/writer-monetization-policy" className="auth-link">Writer Monetization Policy</Link> and{' '}
@@ -95,8 +95,8 @@ const AboutPage = () => (
         <section className="about-cta">
           <h2 className="about-cta__title">Ready to join?</h2>
           <div className="about-cta__btns">
-            <Link to="/register"><Button variant="primary" size="lg" icon={<LuPenLine />} iconRight={<LuArrowRight />}>Start writing</Button></Link>
-            <Link to="/explore"><Button variant="outline" size="lg">Explore articles</Button></Link>
+            <Button to="/register" variant="primary" size="lg" icon={<LuPenLine />} iconRight={<LuArrowRight />}>Start writing</Button>
+            <Button to="/explore" variant="outline" size="lg">Explore articles</Button>
           </div>
         </section>
       </div>

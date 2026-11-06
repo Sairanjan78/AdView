@@ -1,230 +1,243 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  LuArrowRight, LuTrendingUp, LuClock, LuPenLine, LuStar, LuZap,
+  LuArrowRight, LuTrendingUp, LuClock, LuPenLine, LuSparkles, LuCompass,
 } from 'react-icons/lu';
-import { formatDistanceToNow } from 'date-fns';
 import FeaturedCard from '../../components/article/FeaturedCard';
 import ArticleCard from '../../components/article/ArticleCard';
 import SearchBar from '../../components/search/SearchBar';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
+import CategoryIcon from '../../components/ui/CategoryIcon';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
 import AdSlot from '../../components/ads/AdSlot';
 import { AD_SLOTS } from '../../config/ads';
 import { articleApi, writerApi } from '../../services/api';
 import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle';
+import { formatPublished, toIsoDate } from '../../utils/format';
 import useApi from '../../hooks/useApi';
 import useCategories from '../../hooks/useCategories';
+import { useAuth } from '../../context/AuthContext';
+import CoverImage from '../../components/ui/CoverImage';
 import './HomePage.css';
-import CategoryIcon from '../../components/ui/CategoryIcon';
 
 const toArticles = res => (res?.data?.articles || []).map(normalizeArticle);
 
 const HomePage = () => {
-  const { categories: CATEGORIES } = useCategories();
+  const { isWriter } = useAuth();
+  const { categories } = useCategories();
   const { data: featured } = useApi(() => articleApi.getFeatured({ limit: 3 }).then(toArticles));
   const { data: trending } = useApi(() => articleApi.getTrending({ limit: 5 }).then(toArticles));
-  const { data: latest } = useApi(() => articleApi.getArticles({ limit: 6 }).then(toArticles));
+  const { data: latest, loading: latestLoading, error: latestError } =
+    useApi(() => articleApi.getArticles({ limit: 9 }).then(toArticles));
   const { data: writers } = useApi(() =>
-    writerApi.getWriters({ limit: 5 }).then(res => (res?.data?.writers || []).map(normalizeWriter))
+    writerApi.getWriters({ limit: 4 }).then(res => (res?.data?.writers || []).map(normalizeWriter))
   );
 
-  const displayedFeatured = featured || [];
-  const displayedLatest = latest || [];
-  const TRENDING_ARTICLES = trending || [];
-  const AUTHORS = writers || [];
+  const latestList = latest || [];
+  const featuredList = featured || [];
+  const trendingList = trending || [];
+  const writerList = (writers || []).filter(w => w.articles > 0);
+
+  // Lead story: the first featured article, otherwise the newest one
+  const lead = featuredList[0] || latestList[0];
+  const picks = featuredList.filter(a => a.id !== lead?.id).slice(0, 2);
+  const shownIds = new Set([lead?.id, ...picks.map(a => a.id)]);
+  const moreStories = latestList.filter(a => !shownIds.has(a.id)).slice(0, 6);
+  const noArticles = !latestLoading && latestList.length === 0;
 
   return (
     <>
       <Seo description={brand.description} />
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="hero" aria-label="Hero">
-        <div className="hero__bg-glow" aria-hidden="true" />
-        <div className="hero__orb hero__orb--1" aria-hidden="true" />
-        <div className="hero__orb hero__orb--2" aria-hidden="true" />
-
-        <div className="container hero__inner">
+      <section className="hero" aria-labelledby="hero-title">
+        <div className={`container hero__inner ${lead ? '' : 'hero__inner--solo'}`}>
           <div className="hero__copy animate-fadeInUp">
-            <div className="hero__eyebrow">
-              <LuZap size={13} />
-              Global multi-niche publishing
-            </div>
-            <h1 className="hero__headline">
-              Where great ideas{' '}
-              <span className="gradient-text">find their world</span>
+            <p className="page-eyebrow"><LuSparkles size={14} aria-hidden="true" /> {brand.tagline}</p>
+            <h1 className="hero__headline" id="hero-title">
+              Stories worth your <em className="text-accent">time</em>.
             </h1>
             <p className="hero__sub">
-              Discover thought-provoking stories across technology, science, travel, culture and more.
-              Write, publish, and reach readers everywhere.
+              Thoughtful writing on technology, science, travel, culture and more — written to be read,
+              not skimmed.
             </p>
-
             <div className="hero__search">
               <SearchBar variant="hero" placeholder="Search articles, writers, topics…" />
             </div>
           </div>
 
-          {/* Featured article hero card */}
-          <div className="hero__featured animate-fadeInUp" style={{ animationDelay: '0.15s' }}>
-            {displayedFeatured[0] && (
-              <FeaturedCard article={displayedFeatured[0]} size="lg" />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Category Pills ────────────────────────────────── */}
-      <section className="section section--sm category-strip" aria-label="Browse categories">
-        <div className="container">
-          <div className="category-strip__scroll" role="list">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/categories/${cat.slug}`}
-                className="category-pill"
-                style={{ '--cat-color': cat.color }}
-                role="listitem"
-              >
-                <span className="category-pill__icon"><CategoryIcon icon={cat.icon} /></span>
-                <span className="category-pill__name">{cat.name}</span>
-                <span className="category-pill__count">{cat.count}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured Articles ─────────────────────────────── */}
-      <section className="section" aria-label="Featured articles">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">
-              <LuStar className="section-title-icon" />
-              Featured
-            </h2>
-            <Link to="/explore" className="section-link">
-              View all <LuArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="featured-grid stagger-children">
-            {displayedFeatured.map((article, i) => (
-              <FeaturedCard
-                key={article.id}
-                article={article}
-                size={i === 0 ? 'lg' : 'sm'}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Trending + Latest ─────────────────────────────── */}
-      <section className="section trending-latest" aria-label="Trending and latest articles">
-        <div className="container">
-          <div className="trending-latest__grid">
-
-            {/* Trending */}
-            <div className="trending-latest__col">
-              <div className="section-header">
-                <h2 className="section-title">
-                  <LuTrendingUp className="section-title-icon" style={{ color: 'var(--color-secondary)' }} />
-                  Trending
-                </h2>
-                <Link to="/trending" className="section-link">All <LuArrowRight size={13} /></Link>
-              </div>
-              <ol className="trending-list stagger-children" aria-label="Trending articles">
-                {TRENDING_ARTICLES.map((article, index) => (
-                  <TrendingItem key={article.id} article={article} rank={index + 1} />
-                ))}
-              </ol>
+          {lead && (
+            <div className="hero__featured animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
+              <FeaturedCard article={lead} size="lg" />
             </div>
+          )}
+        </div>
+      </section>
 
-            {/* Latest */}
-            <div className="trending-latest__col">
-              <div className="section-header">
-                <h2 className="section-title">
-                  <LuClock className="section-title-icon" style={{ color: 'var(--color-accent)' }} />
-                  Latest
-                </h2>
-                <Link to="/latest" className="section-link">All <LuArrowRight size={13} /></Link>
+      {/* ── Category chips ───────────────────────────────── */}
+      <section className="category-strip" aria-label="Browse categories">
+        <div className="container">
+          <ul className="category-strip__scroll">
+            {categories.map(cat => (
+              <li key={cat.id}>
+                <Link to={`/categories/${cat.slug}`} className="category-pill" style={{ '--cat-color': cat.color }}>
+                  <CategoryIcon icon={cat.icon} size={16} className="category-pill__icon" />
+                  <span className="category-pill__name">{cat.name}</span>
+                  {cat.count > 0 && <span className="category-pill__count">{cat.count}</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {noArticles ? (
+        <section className="section">
+          <div className="container">
+            <EmptyState
+              icon={latestError ? undefined : LuPenLine}
+              tone={latestError ? 'error' : 'default'}
+              title={latestError ? 'We couldn’t load the stories' : 'No stories yet'}
+              action={!latestError && (isWriter
+                ? <Button to="/write" variant="primary" icon={<LuPenLine />}>Write your first post</Button>
+                : <Button to="/about" variant="outline">About {brand.name}</Button>)}
+            >
+              {latestError
+                ? latestError.message
+                : isWriter
+                  ? 'Your blog is ready. Publish your first article and it will appear here.'
+                  : 'The first articles are on their way. Check back soon.'}
+            </EmptyState>
+          </div>
+        </section>
+      ) : (
+        <>
+          {/* ── Editor's picks ──────────────────────────── */}
+          {picks.length > 0 && (
+            <section className="section section--tight" aria-labelledby="picks-title">
+              <div className="container">
+                <div className="section-header">
+                  <h2 className="section-title" id="picks-title">Editor’s picks</h2>
+                  <Link to="/explore" className="section-link">Explore all <LuArrowRight size={14} aria-hidden="true" /></Link>
+                </div>
+                <div className="picks-grid stagger-children">
+                  {picks.map(article => (
+                    <FeaturedCard key={article.id} article={article} size="sm" headingLevel="h3" />
+                  ))}
+                </div>
               </div>
-              <div className="latest-list stagger-children">
-                {displayedLatest.slice(0, 4).map(article => (
-                  <LatestItem key={article.id} article={article} />
-                ))}
+            </section>
+          )}
+
+          {/* ── Trending + Latest ─────────────────────────── */}
+          <section className="section trending-latest" aria-label="Trending and latest articles">
+            <div className="container trending-latest__grid">
+              <div className="trending-latest__col">
+                <div className="section-header">
+                  <h2 className="section-title">
+                    <LuTrendingUp className="section-title-icon" size={22} aria-hidden="true" />
+                    Most read
+                  </h2>
+                  <Link to="/trending" className="section-link">See all <LuArrowRight size={13} aria-hidden="true" /></Link>
+                </div>
+                <ol className="trending-list" aria-label="Most read articles">
+                  {trendingList.map((article, index) => (
+                    <TrendingItem key={article.id} article={article} rank={index + 1} />
+                  ))}
+                </ol>
+              </div>
+
+              <div className="trending-latest__col">
+                <div className="section-header">
+                  <h2 className="section-title">
+                    <LuClock className="section-title-icon" size={22} aria-hidden="true" />
+                    Latest
+                  </h2>
+                  <Link to="/latest" className="section-link">See all <LuArrowRight size={13} aria-hidden="true" /></Link>
+                </div>
+                <div className="latest-list">
+                  {latestList.slice(0, 4).map(article => (
+                    <LatestItem key={article.id} article={article} />
+                  ))}
+                </div>
               </div>
             </div>
+          </section>
 
+          {/* Single, unobtrusive home ad (renders nothing unless AdSense is configured) */}
+          <div className="container">
+            <AdSlot slot={AD_SLOTS.home} />
           </div>
-        </div>
-      </section>
 
-      {/* Single, unobtrusive home ad (renders nothing unless AdSense is configured) */}
-      <div className="container">
-        <AdSlot slot={AD_SLOTS.home} />
-      </div>
+          {/* ── More stories ──────────────────────────────── */}
+          {moreStories.length > 0 && (
+            <section className="section" aria-labelledby="more-title">
+              <div className="container">
+                <div className="section-header">
+                  <h2 className="section-title" id="more-title">More stories</h2>
+                  <Link to="/explore" className="section-link">Explore all <LuArrowRight size={14} aria-hidden="true" /></Link>
+                </div>
+                <div className="grid-3 stagger-children">
+                  {moreStories.map(article => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
 
-      {/* ── Article Grid ──────────────────────────────────── */}
-      <section className="section" aria-label="Recent articles">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Discover More</h2>
-            <Link to="/explore" className="section-link">Explore all <LuArrowRight size={14} /></Link>
-          </div>
-          <div className="grid-3 stagger-children">
-            {displayedLatest.slice(0, 6).map(article => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Top Writers ───────────────────────────────────── */}
-      <section className="section writer-spotlight" aria-label="Featured writers">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Top Writers</h2>
-            <Link to="/explore" className="section-link">View all <LuArrowRight size={14} /></Link>
-          </div>
-          <div className="writers-grid stagger-children">
-            {AUTHORS.map(author => (
-              <WriterCard key={author.id} author={author} />
-            ))}
-          </div>
-        </div>
-      </section>
+          {/* ── Writers ───────────────────────────────────── */}
+          {writerList.length > 0 && (
+            <section className="section" aria-labelledby="writers-title">
+              <div className="container">
+                <div className="section-header">
+                  <h2 className="section-title" id="writers-title">The writers</h2>
+                </div>
+                <div className="writers-grid stagger-children">
+                  {writerList.map(author => (
+                    <WriterCard key={author.id} author={author} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
+      )}
 
       {/* ── Write CTA ─────────────────────────────────────── */}
-      <section className="section write-cta" aria-label="Become a writer">
+      <section className="section write-cta" aria-labelledby="write-cta-title">
         <div className="container">
           <div className="write-cta__card">
-            <div className="write-cta__glow" aria-hidden="true" />
+            <span className="write-cta__icon" aria-hidden="true"><LuPenLine size={22} /></span>
             <div className="write-cta__content">
-              <div className="write-cta__icon" aria-hidden="true">✦</div>
-              <h2 className="write-cta__title">
-                Share your story with the{' '}
-                <span className="gradient-text">world</span>
+              <h2 className="write-cta__title" id="write-cta-title">
+                {isWriter ? 'Ready for your next story?' : 'Have a story to tell?'}
               </h2>
               <p className="write-cta__sub">
-                Join 8,000+ writers on {brand.name}. Publish your ideas, grow your audience,
-                and earn from eligible advertising revenue under our transparent revenue-sharing programme.
+                {isWriter
+                  ? 'Open the writer studio to draft and publish your next article.'
+                  : `Publish your ideas on ${brand.name}, build an audience, and earn from eligible advertising revenue under our transparent revenue-sharing programme.`}
               </p>
-              <div className="write-cta__actions">
-                <Link to="/register">
-                  <Button variant="primary" size="lg" icon={<LuPenLine />} iconRight={<LuArrowRight />}>
-                    Start writing today
+              {!isWriter && (
+                <p className="write-cta__disclaimer">
+                  Earnings are based on eligible advertising revenue and platform policy. No earnings are guaranteed.
+                </p>
+              )}
+            </div>
+            <div className="write-cta__actions">
+              {isWriter ? (
+                <Button to="/write" variant="accent" size="lg" icon={<LuPenLine />}>Open writer studio</Button>
+              ) : (
+                <>
+                  <Button to="/register" variant="accent" size="lg" iconRight={<LuArrowRight />}>Start writing</Button>
+                  <Button to="/writer-monetization-policy" variant="ghost" size="lg" icon={<LuCompass />} className="write-cta__ghost">
+                    How earnings work
                   </Button>
-                </Link>
-                <Link to="/writer-monetization-policy">
-                  <Button variant="ghost" size="lg">Learn about earnings</Button>
-                </Link>
-              </div>
-              <p className="write-cta__disclaimer">
-                Earnings are based on eligible advertising revenue and platform policy.
-                No earnings are guaranteed.
-              </p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -236,68 +249,51 @@ const HomePage = () => {
 /* ── Sub-components ─────────────────────────────────────── */
 
 const TrendingItem = ({ article, rank }) => (
-  <li className="trending-item animate-fadeInUp">
-    <span className="trending-item__rank" aria-label={`Rank ${rank}`}>{String(rank).padStart(2, '0')}</span>
+  <li className="trending-item">
+    <span className="trending-item__rank" aria-hidden="true">{rank}</span>
     <div className="trending-item__body">
-      <Link to={`/categories/${article.category.slug}`} className="trending-item__cat" style={{ color: article.category.color }}>
-        <CategoryIcon icon={article.category.icon} /> {article.category.name}
+      <Link to={`/categories/${article.category.slug}`} className="kicker" style={{ '--cat-color': article.category.color }}>
+        <CategoryIcon icon={article.category.icon} size={13} /> {article.category.name}
       </Link>
-      <Link to={`/article/${article.slug}`}>
-        <h3 className="trending-item__title line-clamp-2">{article.title}</h3>
-      </Link>
+      <h3 className="trending-item__title">
+        <Link to={`/article/${article.slug}`}>{article.title}</Link>
+      </h3>
       <div className="trending-item__meta">
-        <Avatar src={article.author.avatar} name={article.author.name} size="xs" />
         <span>{article.author.name}</span>
-        <span>·</span>
+        <span aria-hidden="true">·</span>
         <span>{article.readTime} min read</span>
       </div>
     </div>
-    {article.cover && (
-      <Link to={`/article/${article.slug}`} tabIndex={-1}>
-        <img src={article.cover} alt="" className="trending-item__thumb" loading="lazy" />
-      </Link>
-    )}
   </li>
 );
 
 const LatestItem = ({ article }) => (
-  <div className="latest-item animate-fadeInUp">
-    {article.cover && (
-      <Link to={`/article/${article.slug}`} tabIndex={-1}>
-        <img src={article.cover} alt="" className="latest-item__thumb" loading="lazy" />
-      </Link>
-    )}
+  <div className="latest-item">
+    <Link to={`/article/${article.slug}`} className="latest-item__thumb" tabIndex={-1} aria-hidden="true">
+      <CoverImage src={article.cover} loading="lazy" />
+    </Link>
     <div className="latest-item__body">
-      <Link to={`/categories/${article.category.slug}`} className="latest-item__cat" style={{ color: article.category.color }}>
-        <CategoryIcon icon={article.category.icon} /> {article.category.name}
+      <Link to={`/categories/${article.category.slug}`} className="kicker" style={{ '--cat-color': article.category.color }}>
+        <CategoryIcon icon={article.category.icon} size={13} /> {article.category.name}
       </Link>
-      <Link to={`/article/${article.slug}`}>
-        <h3 className="latest-item__title line-clamp-2">{article.title}</h3>
-      </Link>
-      <span className="latest-item__time">
-        <LuClock size={11} /> {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
-      </span>
+      <h3 className="latest-item__title line-clamp-2">
+        <Link to={`/article/${article.slug}`}>{article.title}</Link>
+      </h3>
+      <time className="latest-item__time" dateTime={toIsoDate(article.publishedAt)}>
+        {formatPublished(article.publishedAt)}
+      </time>
     </div>
   </div>
 );
 
 const WriterCard = ({ author }) => (
-  <Link to={`/writer/${author.username}`} className="writer-card glass-card hover-lift animate-fadeInUp">
-    <Avatar src={author.avatar} name={author.name} size="lg" verified={author.verified} ring />
-    <div className="writer-card__info">
-      <span className="writer-card__name">{author.name}</span>
-      <span className="writer-card__bio line-clamp-2">{author.bio}</span>
-    </div>
-    <div className="writer-card__stats">
-      <div className="writer-card__stat">
-        <span className="writer-card__stat-val">{(author.followers / 1000).toFixed(1)}k</span>
-        <span className="writer-card__stat-label">Followers</span>
-      </div>
-      <div className="writer-card__stat">
-        <span className="writer-card__stat-val">{author.articles}</span>
-        <span className="writer-card__stat-label">Articles</span>
-      </div>
-    </div>
+  <Link to={`/writer/${author.username}`} className="writer-card glass-card">
+    <Avatar src={author.avatar} name={author.name} size="lg" verified={author.verified} />
+    <span className="writer-card__name">{author.name}</span>
+    {author.bio && <span className="writer-card__bio line-clamp-2">{author.bio}</span>}
+    <span className="writer-card__count">
+      {author.articles} article{author.articles !== 1 ? 's' : ''}
+    </span>
   </Link>
 );
 

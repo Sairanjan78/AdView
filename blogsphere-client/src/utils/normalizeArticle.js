@@ -36,8 +36,8 @@ export function normalizeArticle(raw) {
       id: raw.author._id || raw.author.id || 'author',
       name: raw.author.name || 'Anonymous Writer',
       username: raw.author.username || 'writer',
-      avatar: raw.author.avatar || `https://i.pravatar.cc/150?u=${raw.author.username || 'writer'}`,
-      bio: raw.author.bio || 'Contributing Writer at BlogSphere',
+      avatar: raw.author.avatar || '', // no avatar -> Avatar shows initials
+      bio: raw.author.bio || '',
       verified: Boolean(raw.author.verified),
       followers: raw.author.followers || 0,
       articles: raw.author.articles || 0
@@ -45,13 +45,13 @@ export function normalizeArticle(raw) {
   } else {
     authorObj = {
       id: 'author',
-      name: 'BlogSphere Editorial',
+      name: 'Editorial team',
       username: 'editorial',
-      avatar: 'https://i.pravatar.cc/150?img=11',
-      bio: 'Editorial Staff',
-      verified: true,
-      followers: 5000,
-      articles: 10
+      avatar: '',
+      bio: '',
+      verified: false,
+      followers: 0,
+      articles: 0
     };
   }
 
@@ -61,7 +61,7 @@ export function normalizeArticle(raw) {
     title: raw.title || 'Untitled',
     excerpt: raw.excerpt || '',
     content: raw.content || '',
-    cover: raw.coverImage || raw.cover || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&auto=format&fit=crop&q=80',
+    cover: raw.coverImage || raw.cover || '', // cards show a neutral placeholder when empty
     category: categoryObj,
     author: authorObj,
     tags: Array.isArray(raw.tags) ? raw.tags : [],
@@ -84,11 +84,13 @@ export function normalizeWriter(raw) {
     id: raw.id || raw._id || raw.username,
     name: raw.name || 'Anonymous Writer',
     username: raw.username || 'writer',
-    avatar: raw.avatar || `https://i.pravatar.cc/150?u=${raw.username || 'writer'}`,
-    bio: raw.bio || 'Contributing Writer at BlogSphere',
+    avatar: raw.avatar || '',
+    bio: raw.bio || '',
     verified: Boolean(raw.verified),
     followers: raw.followers || 0,
     articles: raw.articles || 0,
+    totalViews: raw.totalViews || 0,
+    joinedAt: raw.joinedAt,
     socialLinks: raw.socialLinks || {},
   };
 }

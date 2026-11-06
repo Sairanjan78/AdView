@@ -1,63 +1,56 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
-import { LuHeart, LuMessageCircle, LuClock, LuArrowRight } from 'react-icons/lu';
+import { LuArrowRight, LuClock } from 'react-icons/lu';
 import Avatar from '../ui/Avatar';
-import './FeaturedCard.css';
 import CategoryIcon from '../ui/CategoryIcon';
+import { formatPublished, toIsoDate } from '../../utils/format';
+import CoverImage from '../ui/CoverImage';
+import './FeaturedCard.css';
 
 /**
- * Large featured/hero article card — used in the hero section and featured carousel.
+ * Large featured story: cover image with the headline set over a dark scrim.
+ * size 'lg' for the lead story, 'sm' for secondary picks.
  */
-const FeaturedCard = ({ article, size = 'md' }) => {
-  const { slug, title, excerpt, cover, category, author, publishedAt, readTime, likes, comments } = article;
-  const timeAgo = formatDistanceToNow(new Date(publishedAt), { addSuffix: true });
+const FeaturedCard = ({ article, size = 'md', headingLevel = 'h2' }) => {
+  const { slug, title, excerpt, cover, category, author, publishedAt, readTime } = article;
+  const Heading = headingLevel;
 
   return (
-    <article className={`featured-card featured-card--${size} hover-lift`}>
-      {/* Background image */}
-      <div className="featured-card__bg">
-        <img src={cover} alt={title} loading="lazy" />
+    <article className={`featured-card featured-card--${size}`}>
+      <div className="featured-card__bg" aria-hidden="true">
+        <CoverImage src={cover} loading={size === 'lg' ? 'eager' : 'lazy'} />
         <div className="featured-card__overlay" />
       </div>
 
-      {/* Content */}
       <div className="featured-card__content">
-        {/* Category badge */}
-        <div className="featured-card__top">
-          <Link to={`/categories/${category.slug}`} className="featured-card__category" style={{ '--cat-color': category.color }}>
-            <CategoryIcon icon={category.icon} /> {category.name}
-          </Link>
-          <span className="featured-card__read-time">
-            <LuClock size={12} /> {readTime} min
-          </span>
-        </div>
-
-        {/* Title */}
-        <Link to={`/article/${slug}`}>
-          <h2 className="featured-card__title line-clamp-2">{title}</h2>
+        <Link to={`/categories/${category.slug}`} className="featured-card__category">
+          <CategoryIcon icon={category.icon} size={14} /> {category.name}
         </Link>
 
-        <p className="featured-card__excerpt line-clamp-2">{excerpt}</p>
+        <Heading className="featured-card__title">
+          <Link to={`/article/${slug}`} className="featured-card__link">{title}</Link>
+        </Heading>
 
-        {/* Author + stats */}
+        {size !== 'sm' && excerpt && <p className="featured-card__excerpt line-clamp-2">{excerpt}</p>}
+
         <div className="featured-card__footer">
           <Link to={`/writer/${author.username}`} className="featured-card__author">
-            <Avatar src={author.avatar} name={author.name} size="sm" verified={author.verified} ring />
-            <div className="featured-card__author-info">
+            <Avatar src={author.avatar} name={author.name} size="sm" />
+            <span className="featured-card__author-info">
               <span className="featured-card__author-name">{author.name}</span>
-              <span className="featured-card__author-time">{timeAgo}</span>
-            </div>
+              <span className="featured-card__author-time">
+                <time dateTime={toIsoDate(publishedAt)}>{formatPublished(publishedAt)}</time>
+                {' · '}
+                <LuClock size={11} aria-hidden="true" /> {readTime} min read
+              </span>
+            </span>
           </Link>
-          <div className="featured-card__stats">
-            <span><LuHeart size={13} /> {(likes / 1000).toFixed(1)}k</span>
-            <span><LuMessageCircle size={13} /> {comments}</span>
-          </div>
+          {size === 'lg' && (
+            <span className="featured-card__cta" aria-hidden="true">
+              Read story <LuArrowRight size={15} />
+            </span>
+          )}
         </div>
-
-        <Link to={`/article/${slug}`} className="featured-card__cta">
-          Read article <LuArrowRight size={14} />
-        </Link>
       </div>
     </article>
   );

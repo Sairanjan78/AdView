@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { LuSearch } from 'react-icons/lu';
+import { LuSearch, LuSearchX, LuCircleAlert } from 'react-icons/lu';
 import ArticleCard from '../../components/article/ArticleCard';
 import SearchBar from '../../components/search/SearchBar';
+import EmptyState from '../../components/ui/EmptyState';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
 import { articleApi } from '../../services/api';
@@ -38,48 +39,41 @@ const SearchPage = () => {
     <>
       <Seo title={query ? `"${query}" — Search` : 'Search'} description={`Search articles on ${brand.name}`} path="/search" noindex />
 
-      <div className="search-page">
-        <div className="container">
-          <div className="search-page__header">
-            <LuSearch className="search-page__icon" size={32} />
-            <h1 className="search-page__title">Search</h1>
-          </div>
-
+      <div className="container search-page">
+        <header className="page-header">
+          <p className="page-eyebrow"><LuSearch size={14} aria-hidden="true" /> Search</p>
+          <h1 className="page-title">{query ? <>Results for “{query}”</> : 'Find a story'}</h1>
           <div className="search-page__bar">
             <SearchBar variant="page" placeholder="Search articles, writers, topics…" onSearch={handleSearch} />
           </div>
+        </header>
 
-          {query && !loading && (
-            <p className="search-page__meta">
-              {results.length > 0
-                ? <><strong>{results.length}</strong> result{results.length !== 1 ? 's' : ''} for "<em>{query}</em>"</>
-                : <>No results for "<em>{query}</em>"</>
-              }
-            </p>
-          )}
+        {query && !loading && results.length > 0 && (
+          <p className="page-meta" aria-live="polite">
+            <strong>{results.length}</strong> result{results.length !== 1 ? 's' : ''}
+          </p>
+        )}
+        {query && loading && <p className="page-meta" aria-live="polite">Searching…</p>}
 
-          {!query && (
-            <div className="search-page__empty">
-              <span>🔍</span>
-              <p>Type something to search across all articles</p>
-            </div>
-          )}
+        {!query && (
+          <EmptyState icon={LuSearch} title="What are you looking for?">
+            Search across article titles, summaries, tags, categories and writer names.
+          </EmptyState>
+        )}
 
-          {query && !loading && results.length === 0 && (
-            <div className="search-page__empty">
-              <span>{error ? '⚠️' : '😕'}</span>
-              <p>{error ? error.message : 'No articles match your search. Try different keywords.'}</p>
-            </div>
-          )}
+        {query && !loading && results.length === 0 && (
+          error
+            ? <EmptyState icon={LuCircleAlert} tone="error" title="Search isn’t available right now">{error.message}</EmptyState>
+            : <EmptyState icon={LuSearchX} title="No matches">No articles match “{query}”. Try a different or broader keyword.</EmptyState>
+        )}
 
-          {results.length > 0 && (
-            <div className="grid-3 stagger-children">
-              {results.map(article => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
-          )}
-        </div>
+        {results.length > 0 && (
+          <div className="grid-3 stagger-children">
+            {results.map(article => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

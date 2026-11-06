@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LuSend, LuFileText, LuCircleCheck, LuCircleAlert } from 'react-icons/lu';
+import { LuSend, LuFileText, LuCircleCheck, LuCircleAlert, LuLock, LuPenLine } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
@@ -78,17 +79,20 @@ const WritePage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="container write-page">
-        <div className="write-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <h2 style={{ marginBottom: '16px' }}>Writer Access Required</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-            Readers can freely browse and read all stories. To write or publish an article, please sign in to your writer account.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-            <Button variant="primary" onClick={() => navigate('/login')}>Sign in as Writer</Button>
-            <Button variant="outline" onClick={() => navigate('/register')}>Apply as Writer</Button>
-          </div>
-        </div>
+      <div className="container">
+        <Seo title="Writer Studio" description={`Write and publish your stories on ${brand.name}.`} noindex />
+        <EmptyState
+          icon={LuLock}
+          title="Sign in to write"
+          action={
+            <div className="write-gate__actions">
+              <Button variant="primary" onClick={() => navigate('/login')}>Sign in as writer</Button>
+              <Button variant="outline" onClick={() => navigate('/register')}>Apply as writer</Button>
+            </div>
+          }
+        >
+          Anyone can read every story. To write or publish an article, sign in to your writer account.
+        </EmptyState>
       </div>
     );
   }
@@ -100,39 +104,40 @@ const WritePage = () => {
       <div className="write-page">
         <div className="container write-container">
           <div className="write-header">
-            <h1 className="write-title">Write a Story</h1>
+            <p className="page-eyebrow"><LuPenLine size={14} aria-hidden="true" /> Writer studio</p>
+            <h1 className="write-title">Write a story</h1>
             <p className="write-sub">Share your thoughts with readers across the world.</p>
           </div>
 
           <div className="write-card">
             {errorMsg && (
               <div className="write-alert write-alert--error">
-                <LuCircleAlert style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleAlert aria-hidden="true" />
                 {errorMsg}
               </div>
             )}
             {successMsg && (
               <div className="write-alert write-alert--success">
-                <LuCircleCheck style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleCheck aria-hidden="true" />
                 {successMsg}
               </div>
             )}
 
             <form className="write-form" onSubmit={(e) => e.preventDefault()}>
               <div className="write-field">
-                <label className="write-label" htmlFor="title">Article Title *</label>
+                <label className="write-label" htmlFor="title">Title <span aria-hidden="true">*</span></label>
                 <input
                   id="title"
                   name="title"
                   className="write-input"
-                  placeholder="Give your story a clear, compelling title..."
+                  placeholder="Give your story a clear, compelling title…"
                   value={formData.title}
                   onChange={handleChange}
                   required
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+              <div className="write-row">
                 <div className="write-field">
                   <label className="write-label" htmlFor="category">Category *</label>
                   <select

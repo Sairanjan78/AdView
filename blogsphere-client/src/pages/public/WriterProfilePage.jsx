@@ -1,18 +1,31 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { LuTwitter, LuPenLine } from 'react-icons/lu';
+import { useParams } from 'react-router-dom';
+import { format } from 'date-fns';
+import {
+  LuTwitter, LuLinkedin, LuGlobe, LuPenLine, LuArrowLeft, LuUserX, LuLoaderCircle, LuBadgeCheck,
+} from 'react-icons/lu';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
 import { writerApi } from '../../services/api';
 import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle';
+import { formatCount } from '../../utils/format';
 import useApi from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
 import './WriterProfilePage.css';
+
+const SOCIAL = [
+  { key: 'twitter',  label: 'X (Twitter)', Icon: LuTwitter },
+  { key: 'linkedin', label: 'LinkedIn',    Icon: LuLinkedin },
+  { key: 'website',  label: 'Website',     Icon: LuGlobe },
+];
 
 const WriterProfilePage = () => {
   const { username } = useParams();
+  const { user } = useAuth();
   const { data, loading, error } = useApi(
     () => writerApi.getWriter(username).then(res => ({
       author: normalizeWriter(res?.data?.writer),
@@ -21,25 +34,35 @@ const WriterProfilePage = () => {
     [username]
   );
 
-  if (loading || !data?.author) {
+  if (loading) {
     return (
-      <div className="writer-profile">
-        <div className="container writer-profile__inner">
-          <div className="writer-profile__empty">
-            <span>{loading ? '✦' : '✍️'}</span>
-            <p>
-              {loading
-                ? 'Loading…'
-                : error && error.status !== 404 ? error.message : 'Writer not found.'}
-            </p>
-            {!loading && <Link to="/explore">← Explore articles</Link>}
-          </div>
-        </div>
+      <div className="page-loader" role="status">
+        <LuLoaderCircle size={28} aria-hidden="true" />
+        Loading profile…
       </div>
     );
   }
 
-  const { author, articles: authorArticles } = data;
+  if (!data?.author) {
+    const failed = error && error.status !== 404;
+    return (
+      <div className="container">
+        <Seo title={failed ? 'Could not load profile' : 'Writer not found'} noindex />
+        <EmptyState
+          icon={LuUserX}
+          tone={failed ? 'error' : 'default'}
+          title={failed ? 'We couldn’t load this profile' : 'Writer not found'}
+          action={<Button to="/explore" variant="outline" icon={<LuArrowLeft />}>Explore articles</Button>}
+        >
+          {failed ? error.message : 'There is no writer with that username.'}
+        </EmptyState>
+      </div>
+    );
+  }
+
+  const { author, articles } = data;
+  const isOwnProfile = user?.username === author.username;
+  const links = SOCIAL.filter(s => /^https?:\/\//i.test(author.socialLinks?.[s.key] || ''));
 
   return (
     <>
@@ -47,82 +70,97 @@ const WriterProfilePage = () => {
         title={`${author.name} — Writer`}
         description={author.bio || `Read articles by ${author.name} on ${brand.name}.`}
         path={`/writer/${author.username}`}
-        image={author.avatar}
+        image={author.avatar || undefined}
         type="profile"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'ProfilePage',
-          mainEntity: { '@type': 'Person', name: author.name, alternateName: author.username, description: author.bio, image: author.avatar },
+          mainEntity: {
+            '@type': 'Person',
+            name: author.name,
+            alternateName: author.username,
+            description: author.bio || undefined,
+            image: author.avatar || undefined,
+          },
         }}
       />
 
-      <div className="writer-profile">
-        {/* Hero banner */}
-        <div className="writer-profile__banner">
-          <div className="writer-profile__banner-glow" aria-hidden="true" />
-        </div>
+      <div className="container writer-profile">
+        <header className="writer-profile__header">
+          <Avatar src={author.avatar} name={author.name} size="2xl" />
+          <div className="writer-profile__info">
+            <h1 className="writer-profile__name">
+              {author.name}
+              {author.verified && (
+                <span className="writer-profile__verified" title="Verified writer">
+                  <LuBadgeCheck aria-hidden="true" /><span className="sr-only">Verified writer</span>
+                </span>
+              )}
+            </h1>
+            <p className="writer-profile__username">@{author.username}</p>
+            {author.bio && <p className="writer-profile__bio">{author.bio}</p>}
 
-        <div className="container writer-profile__inner">
-          {/* Profile card */}
-          <div className="writer-profile__card glass-card">
-            <Avatar src={author.avatar} name={author.name} size="2xl" verified={author.verified} ring />
-            <div className="writer-profile__info">
-              <div className="writer-profile__name-row">
-                <h1 className="writer-profile__name">{author.name}</h1>
-                {author.verified && <span className="writer-profile__verified-badge">✓ Verified Writer</span>}
+            <dl className="writer-profile__stats">
+              <div>
+                <dt>Articles</dt>
+                <dd>{author.articles}</dd>
               </div>
-              <p className="writer-profile__username">@{author.username}</p>
-              <p className="writer-profile__bio">{author.bio}</p>
-              <div className="writer-profile__stats">
-                <div className="writer-profile__stat">
-                  <span className="writer-profile__stat-val gradient-text">{(author.followers / 1000).toFixed(1)}k</span>
-                  <span className="writer-profile__stat-label">Followers</span>
+              {author.totalViews > 0 && (
+                <div>
+                  <dt>Reads</dt>
+                  <dd>{formatCount(author.totalViews)}</dd>
                 </div>
-                <div className="writer-profile__stat-divider" />
-                <div className="writer-profile__stat">
-                  <span className="writer-profile__stat-val gradient-text">{author.articles}</span>
-                  <span className="writer-profile__stat-label">Articles</span>
+              )}
+              {author.joinedAt && (
+                <div>
+                  <dt>Writing since</dt>
+                  <dd>{format(new Date(author.joinedAt), 'MMM yyyy')}</dd>
                 </div>
-              </div>
+              )}
+            </dl>
+
+            {(links.length > 0 || isOwnProfile) && (
               <div className="writer-profile__actions">
-                <Button variant="primary" size="md">Follow</Button>
-                <Button variant="ghost" size="md" icon={<LuTwitter />}>Follow on X</Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Articles */}
-          <div className="writer-profile__articles">
-            <h2 className="writer-profile__articles-title">
-              {authorArticles.length > 0
-                ? `${authorArticles.length} Published Article${authorArticles.length !== 1 ? 's' : ''}`
-                : 'No published articles yet'
-              }
-            </h2>
-            {authorArticles.length > 0 ? (
-              <div className="grid-3 stagger-children">
-                {authorArticles.map(article => (
-                  <ArticleCard key={article.id} article={article} />
+                {isOwnProfile && <Button to="/write" variant="primary" size="sm" icon={<LuPenLine />}>Write a story</Button>}
+                {links.map(({ key, label, Icon }) => (
+                  <a
+                    key={key}
+                    href={author.socialLinks[key]}
+                    target="_blank"
+                    rel="noopener noreferrer me"
+                    className="writer-profile__social"
+                    aria-label={`${author.name} on ${label}`}
+                  >
+                    <Icon aria-hidden="true" />
+                  </a>
                 ))}
-              </div>
-            ) : (
-              <div className="writer-profile__empty">
-                <span>✍️</span>
-                <p>This writer hasn't published any articles yet.</p>
               </div>
             )}
           </div>
+        </header>
 
-          {/* Write CTA for visitors */}
-          <div className="writer-profile__cta glass-card">
-            <p>Want to share your own stories?</p>
-            <Link to="/register">
-              <Button variant="primary" size="md" icon={<LuPenLine />}>
-                Start writing on {brand.name}
-              </Button>
-            </Link>
-          </div>
-        </div>
+        <section className="writer-profile__articles" aria-labelledby="writer-articles-title">
+          <h2 className="writer-profile__articles-title" id="writer-articles-title">
+            {articles.length > 0 ? 'Published articles' : 'No published articles yet'}
+          </h2>
+          {articles.length > 0 ? (
+            <div className="grid-3 stagger-children">
+              {articles.map(article => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={LuPenLine}
+              title={isOwnProfile ? 'Your first story starts here' : 'Nothing published yet'}
+              action={isOwnProfile && <Button to="/write" variant="primary" icon={<LuPenLine />}>Write your first post</Button>}
+            >
+              {isOwnProfile
+                ? 'Articles you publish will be listed on this page.'
+                : `${author.name} hasn’t published any articles yet.`}
+            </EmptyState>
+          )}
+        </section>
       </div>
     </>
   );
