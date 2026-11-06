@@ -1,4 +1,4 @@
-# BlogSphere API Server (Phase 2) 🚀
+# BlogSphere API Server 🚀
 
 The backend REST API and authentication service for BlogSphere.
 
@@ -17,20 +17,19 @@ The backend REST API and authentication service for BlogSphere.
 - MongoDB running locally or a free MongoDB Atlas connection URI
 
 ### 2. Configure Environment
-Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-Ensure your `MONGODB_URI` is set (e.g., `mongodb://127.0.0.1:27017/blogsphere` or your MongoDB Atlas URI).
+Copy `.env.example` to `.env` (PowerShell: `Copy-Item .env.example .env`, Command Prompt: `copy .env.example .env`, macOS/Linux: `cp .env.example .env`).
+Set `MONGODB_URI` (e.g. `mongodb://127.0.0.1:27017/blogsphere` or your MongoDB Atlas URI ending in `/blogsphere?...`) and `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+See the root README for step-by-step Atlas setup.
 
-### 3. Start the Server
+### 3. Seed and Start the Server
 ```bash
-# Development (with nodemon reload)
-npm run dev
-
-# Or standard start
-npm start
+npm install
+npm run seed       # admin (from ADMIN_EMAIL/ADMIN_PASSWORD) + categories + sample writers & articles
+npm run dev        # development (with nodemon reload)
+npm start          # or standard start
 ```
+The server connects to MongoDB before listening and exits with setup help if `MONGODB_URI` is missing
+(outside `NODE_ENV=development`, where it falls back to a local MongoDB) or unreachable.
 
 Server will run at: **http://localhost:5000/api/v1**
 
@@ -50,16 +49,30 @@ Server will run at: **http://localhost:5000/api/v1**
 | `PUT`  | `/api/v1/auth/profile` | Protected | `name`, `bio`, `avatar`, `socialLinks`, `nicheSpecialties` |
 | `POST` | `/api/v1/auth/logout` | Public | Clears cookie |
 
+## Content Endpoints (public)
+
+| Method | Endpoint | Query parameters |
+|--------|----------|------------------|
+| `GET` | `/api/v1/articles` | `category`, `tag`, `search` (title, excerpt, tags, category, writer name), `author` (username), `featured=true`, `sort` (`latest` \| `trending` \| `oldest`), `page`, `limit` |
+| `GET` | `/api/v1/articles/trending` | `limit` (default 5), `category` |
+| `GET` | `/api/v1/articles/featured` | `limit` (default 3; topped up with latest articles) |
+| `GET` | `/api/v1/articles/:slug` | Increments views; includes author stats |
+| `GET` | `/api/v1/categories` | All categories with published article counts |
+| `GET` | `/api/v1/categories/:slug` | One category |
+| `GET` | `/api/v1/writers` | `limit`; top writers by followers |
+| `GET` | `/api/v1/writers/:username` | Writer profile + published articles |
+
+Writer/admin endpoints: `POST /api/v1/articles`, `PUT /api/v1/articles/:id`, `DELETE /api/v1/articles/:id`, `GET /api/v1/articles/me/mine`.
+
 ---
 
-## Initial Administrator Seeding
+## Seeding
 
-To create an initial administrator account for platform management:
 ```bash
-node scripts/seedAdmin.js
+npm run seed         # admin + categories + sample writers & articles (idempotent)
+npm run seed:admin   # admin + categories only
 ```
-Default seed credentials:
-- **Email**: `admin@blogsphere.local`
-- **Password**: `AdminPassword123!`
-- **Role**: `admin`
-*(Remember to change the password in production)*
+The admin account comes from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (plus optional `ADMIN_NAME`, `ADMIN_USERNAME`) in `.env`.
+No password is hard-coded; the values in `.env.example` are development defaults, so change them for any shared database.
+Sample writers get `SEED_WRITER_PASSWORD` if set, otherwise a random password.
+Re-running the seed never duplicates content or changes an existing user's password.
