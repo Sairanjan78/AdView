@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/((?!static/|ads.txt|robots.txt|favicon.ico|manifest.json|logo).*)", "destination": "/index.html" }]
+}

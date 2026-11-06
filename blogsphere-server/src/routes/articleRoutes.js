@@ -1,6 +1,8 @@
 const express = require('express');
 const {
   getArticles,
+  getTrendingArticles,
+  getFeaturedArticles,
   getArticleBySlug,
   createArticle,
   updateArticle,
@@ -14,6 +16,8 @@ const router = express.Router();
 
 // Public routes (Direct reader access - no sign-in required)
 router.get('/', getArticles);
+router.get('/trending', getTrendingArticles);
+router.get('/featured', getFeaturedArticles);
 router.get('/:slug', getArticleBySlug);
 
 // Writer / Admin protected routes

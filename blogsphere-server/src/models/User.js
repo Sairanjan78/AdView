@@ -70,6 +70,16 @@ const UserSchema = new mongoose.Schema(
       linkedin: { type: String, default: '' },
       website: { type: String, default: '' }
     },
+    // Public writer profile stats (shown on writer cards / profile page)
+    followers: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    verified: {
+      type: Boolean,
+      default: false
+    },
     nicheSpecialties: [
       {
         type: String,

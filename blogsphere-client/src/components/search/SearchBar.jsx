@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiX } from 'react-icons/fi';
+import { LuSearch, LuX } from 'react-icons/lu';
 import './SearchBar.css';
+
+const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
 
 /**
  * SearchBar — can be used inline (hero) or in the navbar.
@@ -50,7 +52,7 @@ const SearchBar = ({ variant = 'navbar', placeholder = 'Search articles, topics,
       role="search"
     >
       <button type="submit" className="search-bar__icon-btn" aria-label="Search">
-        <FiSearch className="search-bar__icon" />
+        <LuSearch className="search-bar__icon" aria-hidden="true" />
       </button>
       <input
         ref={inputRef}
@@ -67,11 +69,11 @@ const SearchBar = ({ variant = 'navbar', placeholder = 'Search articles, topics,
       />
       {query && (
         <button type="button" className="search-bar__clear" onClick={handleClear} aria-label="Clear search">
-          <FiX size={14} />
+          <LuX size={14} aria-hidden="true" />
         </button>
       )}
       {variant !== 'hero' && (
-        <kbd className="search-bar__shortcut" aria-label="Keyboard shortcut: Control K">⌘K</kbd>
+        <kbd className="search-bar__shortcut" aria-hidden="true">{IS_MAC ? '⌘K' : 'Ctrl K'}</kbd>
       )}
       {variant === 'hero' && (
         <button type="submit" className="search-bar__submit-btn" aria-label="Search">

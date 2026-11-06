@@ -1,0 +1,26 @@
+.legal-page__content,
+.legal-page .about-hero__inner { max-width: 868px; } /* 820px text + container padding */
+
+.legal-page__updated {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.legal-page__updated a { color: var(--accent); font-weight: var(--font-semibold); }
+
+.legal-page .about-section { padding-bottom: var(--space-10); margin-bottom: var(--space-10); border-bottom: 1px solid var(--border-subtle); }
+.legal-page .about-section:last-child { border-bottom: none; }
+.legal-page .about-section__title { font-size: var(--text-2xl); }
+
+.legal-page__body { max-width: var(--measure); }
+.legal-page__body p + p,
+.legal-page__body p + ul,
+.legal-page__body ul + p { margin-top: var(--space-4); }
+.legal-page__body ul { padding-left: var(--space-6); list-style: disc; }
+.legal-page__body li + li { margin-top: var(--space-2); }
+.legal-page__body li::marker { color: var(--accent); }
+.legal-page__body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.legal-page__body a:hover { color: var(--accent-strong); }

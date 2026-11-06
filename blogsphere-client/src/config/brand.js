@@ -7,12 +7,19 @@ const brand = {
   tagline: 'Where Ideas Find Their World',
   description:
     'A global multi-niche publishing platform connecting writers and readers across every topic under the sun.',
-  url: 'https://blogsphere.app',
-  email: 'hello@blogsphere.app',
+  // Public address of the site on your own domain (set REACT_APP_SITE_URL before building).
+  // Used for canonical links and Open Graph URLs; falls back to the current origin.
+  url: (process.env.REACT_APP_SITE_URL ||
+    (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')).replace(/\/+$/, ''),
+  // Public contact address shown on Contact / Privacy / Terms pages
+  email: process.env.REACT_APP_CONTACT_EMAIL || 'hello@blogsphere.app',
+  // Date the legal pages (Privacy, Terms, Cookies) were last reviewed - update when you edit them
+  legalLastUpdated: 'November 6, 2026',
+  // Your own social profiles. Icons only appear in the footer for the ones you set.
   social: {
-    twitter: 'https://twitter.com/blogsphere',
-    instagram: 'https://instagram.com/blogsphere',
-    linkedin: 'https://linkedin.com/company/blogsphere',
+    twitter: process.env.REACT_APP_SOCIAL_TWITTER || '',
+    instagram: process.env.REACT_APP_SOCIAL_INSTAGRAM || '',
+    linkedin: process.env.REACT_APP_SOCIAL_LINKEDIN || '',
   },
   // Revenue sharing — configurable by admin in Phase 7
   revenueShare: {

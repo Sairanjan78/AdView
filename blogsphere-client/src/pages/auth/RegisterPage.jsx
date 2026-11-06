@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import { LuUser, LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuCircleAlert } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
+import BrandMark from '../../components/layout/BrandMark';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
 import './AuthPages.css';
 
@@ -49,20 +50,15 @@ const RegisterPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Become a Writer — {brand.name}</title>
-        <meta name="description" content={`Create your writer account on ${brand.name} to write and publish articles.`} />
-      </Helmet>
+      <Seo title="Become a Writer" description={`Create your free ${brand.name} account to read, write and publish articles.`} noindex />
 
       <div className="auth-page">
-        <div className="auth-page__bg" aria-hidden="true" />
-        <div className="auth-card glass-card animate-fadeInUp">
+        <div className="auth-card animate-fadeInUp">
 
           {/* Header */}
           <div className="auth-card__header">
-            <Link to="/" className="auth-logo">
-              <span>✦</span>
-              <span className="gradient-text">{brand.name}</span>
+            <Link to="/" className="auth-logo" aria-label={`${brand.name} home`}>
+              <BrandMark />
             </Link>
             <h1 className="auth-card__title">Become a Writer</h1>
             <p className="auth-card__sub">Create your writer account to publish stories and reach readers worldwide.</p>
@@ -74,7 +70,7 @@ const RegisterPage = () => {
             <div className="auth-field">
               <label htmlFor="reg-name" className="auth-label">Full name</label>
               <div className="auth-input-wrap">
-                <FiUser className="auth-input-icon" />
+                <LuUser className="auth-input-icon" />
                 <input
                   id="reg-name" name="name" type="text"
                   className="auth-input" placeholder="Your full name"
@@ -88,7 +84,7 @@ const RegisterPage = () => {
             <div className="auth-field">
               <label htmlFor="reg-email" className="auth-label">Email address</label>
               <div className="auth-input-wrap">
-                <FiMail className="auth-input-icon" />
+                <LuMail className="auth-input-icon" />
                 <input
                   id="reg-email" name="email" type="email"
                   className="auth-input" placeholder="you@example.com"
@@ -102,7 +98,7 @@ const RegisterPage = () => {
             <div className="auth-field">
               <label htmlFor="reg-password" className="auth-label">Password</label>
               <div className="auth-input-wrap">
-                <FiLock className="auth-input-icon" />
+                <LuLock className="auth-input-icon" />
                 <input
                   id="reg-password" name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -116,7 +112,7 @@ const RegisterPage = () => {
                   onClick={() => setShowPassword(s => !s)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+                  {showPassword ? <LuEyeOff size={14} /> : <LuEye size={14} />}
                 </button>
               </div>
             </div>
@@ -137,7 +133,7 @@ const RegisterPage = () => {
 
             {errorMsg && (
               <div className="auth-error-banner" role="alert">
-                <FiAlertCircle size={16} />
+                <LuCircleAlert size={16} />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -148,7 +144,7 @@ const RegisterPage = () => {
               size="lg"
               fullWidth
               loading={loading}
-              iconRight={!loading && <FiArrowRight />}
+              iconRight={!loading && <LuArrowRight />}
             >
               {loading ? 'Creating account…' : 'Create account'}
             </Button>

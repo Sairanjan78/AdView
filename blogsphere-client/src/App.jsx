@@ -1,9 +1,13 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import Seo from './components/seo/Seo';
+import AdSenseHead from './components/ads/AdSenseHead';
+import Button from './components/ui/Button';
+import { LuLoaderCircle, LuArrowLeft } from 'react-icons/lu';
 import './styles/index.css';
 
 // Lazy-load pages for code splitting
@@ -19,37 +23,29 @@ const AboutPage           = lazy(() => import('./pages/public/AboutPage'));
 const WritePage           = lazy(() => import('./pages/writer/WritePage'));
 const RegisterPage        = lazy(() => import('./pages/auth/RegisterPage'));
 const LoginPage           = lazy(() => import('./pages/auth/LoginPage'));
+const PrivacyPolicyPage   = lazy(() => import('./pages/legal/PrivacyPolicyPage'));
+const TermsPage           = lazy(() => import('./pages/legal/TermsPage'));
+const CookiePolicyPage    = lazy(() => import('./pages/legal/CookiePolicyPage'));
+const ContactPage         = lazy(() => import('./pages/legal/ContactPage'));
+const AdvertisingDisclosurePage = lazy(() => import('./pages/legal/AdvertisingDisclosurePage'));
+const MonetizationPolicyPage    = lazy(() => import('./pages/legal/MonetizationPolicyPage'));
 
-/**
- * PageLoader — shown while lazy chunks are loading.
- * Replace with a proper skeleton in a future phase.
- */
+/** PageLoader — shown while lazy chunks are loading. */
 const PageLoader = () => (
-  <div style={{
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    minHeight: '60vh', color: 'var(--text-muted)', fontSize: '14px',
-    flexDirection: 'column', gap: '16px',
-  }}>
-    <span style={{ fontSize: '2rem', animation: 'spin 1s linear infinite', display: 'inline-block' }}>✦</span>
+  <div className="page-loader" role="status">
+    <LuLoaderCircle size={28} aria-hidden="true" />
     Loading…
   </div>
 );
 
-/**
- * NotFoundPage — catch-all 404.
- */
+/** NotFoundPage — catch-all 404. */
 const NotFoundPage = () => (
-  <div style={{ textAlign: 'center', padding: '100px 20px', minHeight: '60vh' }}>
-    <div style={{ fontSize: '5rem', marginBottom: '24px' }}>404</div>
-    <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '12px', color: 'var(--text-primary)' }}>
-      Page not found
-    </h1>
-    <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-      The page you're looking for doesn't exist or has been moved.
-    </p>
-    <a href="/" style={{ color: 'var(--color-primary-light)', textDecoration: 'none', fontWeight: 600 }}>
-      ← Back to home
-    </a>
+  <div className="not-found">
+    <Seo title="Page not found" noindex />
+    <div className="not-found__code" aria-hidden="true">404</div>
+    <h1>Page not found</h1>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <Button to="/" variant="primary" icon={<LuArrowLeft />}>Back to home</Button>
   </div>
 );
 
@@ -58,6 +54,7 @@ function App() {
     <HelmetProvider>
       <BrowserRouter>
         <AuthProvider>
+          <AdSenseHead />
           <div className="page-wrapper">
             <Navbar />
             <main className="page-content" id="main-content">
@@ -75,6 +72,15 @@ function App() {
                   <Route path="/writer/:username"    element={<WriterProfilePage />} />
                   <Route path="/about"               element={<AboutPage />} />
                   <Route path="/write"               element={<WritePage />} />
+
+                  {/* Policy & contact pages (required for Google AdSense review) */}
+                  <Route path="/contact"             element={<ContactPage />} />
+                  <Route path="/privacy-policy"      element={<PrivacyPolicyPage />} />
+                  <Route path="/privacy"             element={<Navigate to="/privacy-policy" replace />} />
+                  <Route path="/terms"               element={<TermsPage />} />
+                  <Route path="/cookie-policy"       element={<CookiePolicyPage />} />
+                  <Route path="/advertising-disclosure"     element={<AdvertisingDisclosurePage />} />
+                  <Route path="/writer-monetization-policy" element={<MonetizationPolicyPage />} />
 
                   {/* Auth routes */}
                   <Route path="/register"            element={<RegisterPage />} />

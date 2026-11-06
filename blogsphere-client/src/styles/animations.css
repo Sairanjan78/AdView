@@ -4,7 +4,7 @@
 
 /* Fade in up — cards, sections */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -68,7 +68,7 @@
 /* --- Utility Animation Classes --- */
 
 .animate-fadeInUp {
-  animation: fadeInUp 0.5s ease forwards;
+  animation: fadeInUp 0.5s var(--ease-out) both;
 }
 
 .animate-fadeIn {
@@ -105,6 +105,5 @@
   transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }

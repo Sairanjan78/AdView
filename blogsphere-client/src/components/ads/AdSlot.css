@@ -1,0 +1,20 @@
+/* Neutral wrapper so ads sit quietly inside the editorial layout */
+.ad-slot {
+  margin: var(--space-10, 40px) auto;
+  max-width: 100%;
+  text-align: center;
+  clear: both;
+}
+
+.ad-slot__label {
+  display: block;
+  margin-bottom: var(--space-2, 8px);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ad-slot .adsbygoogle {
+  min-height: 90px;
+}

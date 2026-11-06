@@ -1,182 +1,133 @@
-/* ============================================================
-   Featured Card — Minimal Luxury Editorial Showcase
-   ============================================================ */
-
 .featured-card {
   position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  min-height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  cursor: pointer;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--ink);
+  color: #FFFFFF;
+  isolation: isolate;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
+.featured-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.featured-card:focus-within { box-shadow: var(--focus-ring); }
 
-.featured-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--accent);
-}
-
-.featured-card--lg { min-height: 520px; }
+.featured-card--lg { min-height: 480px; }
+.featured-card--md { min-height: 380px; }
 .featured-card--sm { min-height: 280px; }
 
-/* Background */
-.featured-card__bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: var(--primary);
-}
+.featured-card__bg { position: absolute; inset: 0; z-index: -1; }
 .featured-card__bg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  transition: transform 800ms var(--ease-out);
 }
 .featured-card:hover .featured-card__bg img { transform: scale(1.04); }
-
+/* Strong scrim so white text stays AA-readable over any photo */
 .featured-card__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(25, 23, 19, 0.96) 0%,
-    rgba(25, 23, 19, 0.72) 45%,
-    rgba(25, 23, 19, 0.2) 75%,
-    transparent 100%
-  );
+  background:
+    linear-gradient(180deg, rgba(20, 19, 17, 0.18) 0%, rgba(20, 19, 17, 0.62) 42%, rgba(20, 19, 17, 0.94) 100%);
 }
 
-/* Content */
 .featured-card__content {
-  position: relative;
-  z-index: 1;
-  padding: var(--space-6);
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-3);
+  padding: var(--space-8);
 }
-
-.featured-card--lg .featured-card__content { padding: var(--space-8); gap: var(--space-4); }
-
-/* Top row */
-.featured-card__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
+.featured-card--sm .featured-card__content { padding: var(--space-6); gap: var(--space-2); }
 
 .featured-card__category {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: 4px 10px;
+  gap: 0.4em;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: var(--font-semibold);
-  background: rgba(244, 239, 229, 0.92);
-  color: var(--primary);
-  border: 1px solid rgba(229, 222, 209, 0.8);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(6px);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.featured-card__read-time {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  -webkit-backdrop-filter: blur(6px);
   font-size: var(--text-xs);
-  color: rgba(244, 239, 229, 0.75);
-}
-
-/* Title — Playfair Display 700 */
-.featured-card__title {
-  font-family: var(--font-heading);
-  font-size: var(--text-2xl);
-  font-weight: var(--fw-heading-bold);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
   color: #FFFFFF;
-  line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-tight);
-  transition: color var(--transition-fast);
+  transition: background var(--transition-fast);
 }
-.featured-card--lg .featured-card__title { font-size: var(--text-h2); }
-.featured-card:hover .featured-card__title { color: var(--accent); }
+.featured-card__category:hover { background: rgba(255, 255, 255, 0.28); }
 
-/* Excerpt — Inter 400 */
+.featured-card__title {
+  color: #FFFFFF;
+  font-size: var(--text-4xl);
+  line-height: 1.12;
+  max-width: 22ch;
+}
+.featured-card--md .featured-card__title { font-size: var(--text-3xl); }
+.featured-card--sm .featured-card__title { font-size: var(--text-2xl); line-height: var(--leading-snug); }
+
+/* Stretch the headline link over the whole card */
+.featured-card__link { color: inherit; }
+.featured-card__link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.featured-card__link:focus-visible { outline: none; }
+
 .featured-card__excerpt {
-  font-family: var(--font-body);
+  max-width: 56ch;
+  color: rgba(255, 255, 255, 0.86);
   font-size: var(--text-base);
-  font-weight: var(--fw-body);
-  color: rgba(244, 239, 229, 0.88);
-  line-height: 1.6;
-  max-width: 60ch;
+  line-height: var(--leading-relaxed);
 }
-.featured-card--sm .featured-card__excerpt { display: none; }
 
-/* Footer */
 .featured-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
+  width: 100%;
+  margin-top: var(--space-2);
 }
-
 .featured-card__author {
-  display: flex;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  text-decoration: none;
-}
-
-.featured-card__author-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.featured-card__author-name {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--fw-ui);
-  color: #FFFFFF;
-}
-
-.featured-card__author-time {
-  font-size: var(--text-xs);
-  color: rgba(244, 239, 229, 0.6);
-}
-
-.featured-card__stats {
-  display: flex;
   gap: var(--space-3);
 }
-.featured-card__stats span {
-  display: flex;
+.featured-card__author-info { display: flex; flex-direction: column; }
+.featured-card__author-name { font-size: var(--text-sm); font-weight: var(--font-semibold); color: #FFFFFF; }
+.featured-card__author:hover .featured-card__author-name { text-decoration: underline; text-underline-offset: 3px; }
+.featured-card__author-time {
+  display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: var(--text-xs);
-  color: rgba(244, 239, 229, 0.75);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-/* CTA */
 .featured-card__cta {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full);
+  background: #FFFFFF;
+  color: var(--ink);
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
-  color: var(--accent);
-  text-decoration: none;
-  transition: gap var(--transition-fast), color var(--transition-fast);
-  width: fit-content;
+  white-space: nowrap;
+  transition: gap var(--transition-fast);
 }
-.featured-card__cta:hover { gap: var(--space-3); color: #C9B293; }
-.featured-card--sm .featured-card__cta { display: none; }
+.featured-card:hover .featured-card__cta { gap: var(--space-3); }
+
+@media (max-width: 640px) {
+  .featured-card--lg { min-height: 420px; }
+  .featured-card__content { padding: var(--space-6); }
+  .featured-card__title { font-size: var(--text-3xl); }
+  .featured-card__cta { display: none; }
+}

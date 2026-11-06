@@ -1,7 +1,7 @@
-import { CATEGORIES } from '../data/mockData';
+import { getCategoryMeta } from '../config/categories';
 
 /**
- * Normalizes an article object whether it came from MongoDB API or mock data.
+ * Normalizes an article object from the API into the shape the UI components expect.
  */
 export function normalizeArticle(raw) {
   if (!raw) return null;
@@ -9,12 +9,12 @@ export function normalizeArticle(raw) {
   // Resolve category
   let categoryObj;
   if (typeof raw.category === 'string') {
-    const found = CATEGORIES.find(c => c.slug === raw.category.toLowerCase());
+    const found = getCategoryMeta(raw.category);
     categoryObj = found || {
       id: raw.category,
       slug: raw.category.toLowerCase(),
       name: raw.category.charAt(0).toUpperCase() + raw.category.slice(1),
-      icon: '📄',
+      icon: 'file-text',
       color: '#B69B75'
     };
   } else if (raw.category && typeof raw.category === 'object') {
@@ -24,7 +24,7 @@ export function normalizeArticle(raw) {
       id: 'general',
       slug: 'general',
       name: 'General',
-      icon: '📄',
+      icon: 'file-text',
       color: '#B69B75'
     };
   }
@@ -36,22 +36,22 @@ export function normalizeArticle(raw) {
       id: raw.author._id || raw.author.id || 'author',
       name: raw.author.name || 'Anonymous Writer',
       username: raw.author.username || 'writer',
-      avatar: raw.author.avatar || `https://i.pravatar.cc/150?u=${raw.author.username || 'writer'}`,
-      bio: raw.author.bio || 'Contributing Writer at BlogSphere',
+      avatar: raw.author.avatar || '', // no avatar -> Avatar shows initials
+      bio: raw.author.bio || '',
       verified: Boolean(raw.author.verified),
-      followers: raw.author.followers || 1200,
-      articles: raw.author.articles || 1
+      followers: raw.author.followers || 0,
+      articles: raw.author.articles || 0
     };
   } else {
     authorObj = {
       id: 'author',
-      name: 'BlogSphere Editorial',
+      name: 'Editorial team',
       username: 'editorial',
-      avatar: 'https://i.pravatar.cc/150?img=11',
-      bio: 'Editorial Staff',
-      verified: true,
-      followers: 5000,
-      articles: 10
+      avatar: '',
+      bio: '',
+      verified: false,
+      followers: 0,
+      articles: 0
     };
   }
 
@@ -61,11 +61,12 @@ export function normalizeArticle(raw) {
     title: raw.title || 'Untitled',
     excerpt: raw.excerpt || '',
     content: raw.content || '',
-    cover: raw.coverImage || raw.cover || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&auto=format&fit=crop&q=80',
+    cover: raw.coverImage || raw.cover || '', // cards show a neutral placeholder when empty
     category: categoryObj,
     author: authorObj,
     tags: Array.isArray(raw.tags) ? raw.tags : [],
     publishedAt: raw.publishedAt || raw.createdAt || new Date().toISOString(),
+    updatedAt: raw.updatedAt || raw.publishedAt || raw.createdAt,
     readTime: raw.readTime || 3,
     views: raw.views || 0,
     likes: raw.likes || 0,
@@ -73,3 +74,23 @@ export function normalizeArticle(raw) {
   };
 }
 
+
+/**
+ * Normalizes a writer from GET /writers or /writers/:username.
+ */
+export function normalizeWriter(raw) {
+  if (!raw) return null;
+  return {
+    id: raw.id || raw._id || raw.username,
+    name: raw.name || 'Anonymous Writer',
+    username: raw.username || 'writer',
+    avatar: raw.avatar || '',
+    bio: raw.bio || '',
+    verified: Boolean(raw.verified),
+    followers: raw.followers || 0,
+    articles: raw.articles || 0,
+    totalViews: raw.totalViews || 0,
+    joinedAt: raw.joinedAt,
+    socialLinks: raw.socialLinks || {},
+  };
+}

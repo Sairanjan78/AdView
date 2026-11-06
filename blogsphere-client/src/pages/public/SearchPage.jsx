@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import { FiSearch } from 'react-icons/fi';
+import { LuSearch, LuSearchX, LuCircleAlert } from 'react-icons/lu';
 import ArticleCard from '../../components/article/ArticleCard';
 import SearchBar from '../../components/search/SearchBar';
+import EmptyState from '../../components/ui/EmptyState';
 import brand from '../../config/brand';
-import { LATEST_ARTICLES } from '../../data/mockData';
+import Seo from '../../components/seo/Seo';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
 import './SearchPage.css';
 
 const SearchPage = () => {
@@ -16,18 +19,16 @@ const SearchPage = () => {
   // Sync query from URL on mount
   useEffect(() => { setQuery(searchParams.get('q') || ''); }, [searchParams]);
 
-  const results = query.trim()
-    ? LATEST_ARTICLES.filter(a => {
-        const q = query.toLowerCase();
-        return (
-          a.title.toLowerCase().includes(q) ||
-          a.excerpt.toLowerCase().includes(q) ||
-          a.tags.some(t => t.toLowerCase().includes(q)) ||
-          a.category.name.toLowerCase().includes(q) ||
-          a.author.name.toLowerCase().includes(q)
-        );
-      })
-    : [];
+  // Server-side search across titles, excerpts, tags, categories and writer names
+  const trimmed = query.trim();
+  const { data, loading, error } = useApi(
+    trimmed
+      ? () => articleApi.getArticles({ search: trimmed, limit: 50 })
+          .then(res => (res?.data?.articles || []).map(normalizeArticle))
+      : null,
+    [trimmed]
+  );
+  const results = trimmed ? (data || []) : [];
 
   const handleSearch = (q) => {
     setQuery(q);
@@ -36,53 +37,43 @@ const SearchPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{query ? `"${query}" — Search` : 'Search'} — {brand.name}</title>
-        <meta name="description" content={`Search articles on ${brand.name}`} />
-      </Helmet>
+      <Seo title={query ? `"${query}" — Search` : 'Search'} description={`Search articles on ${brand.name}`} path="/search" noindex />
 
-      <div className="search-page">
-        <div className="container">
-          <div className="search-page__header">
-            <FiSearch className="search-page__icon" size={32} />
-            <h1 className="search-page__title">Search</h1>
-          </div>
-
+      <div className="container search-page">
+        <header className="page-header">
+          <p className="page-eyebrow"><LuSearch size={14} aria-hidden="true" /> Search</p>
+          <h1 className="page-title">{query ? <>Results for “{query}”</> : 'Find a story'}</h1>
           <div className="search-page__bar">
             <SearchBar variant="page" placeholder="Search articles, writers, topics…" onSearch={handleSearch} />
           </div>
+        </header>
 
-          {query && (
-            <p className="search-page__meta">
-              {results.length > 0
-                ? <><strong>{results.length}</strong> result{results.length !== 1 ? 's' : ''} for "<em>{query}</em>"</>
-                : <>No results for "<em>{query}</em>"</>
-              }
-            </p>
-          )}
+        {query && !loading && results.length > 0 && (
+          <p className="page-meta" aria-live="polite">
+            <strong>{results.length}</strong> result{results.length !== 1 ? 's' : ''}
+          </p>
+        )}
+        {query && loading && <p className="page-meta" aria-live="polite">Searching…</p>}
 
-          {!query && (
-            <div className="search-page__empty">
-              <span>🔍</span>
-              <p>Type something to search across all articles</p>
-            </div>
-          )}
+        {!query && (
+          <EmptyState icon={LuSearch} title="What are you looking for?">
+            Search across article titles, summaries, tags, categories and writer names.
+          </EmptyState>
+        )}
 
-          {query && results.length === 0 && (
-            <div className="search-page__empty">
-              <span>😕</span>
-              <p>No articles match your search. Try different keywords.</p>
-            </div>
-          )}
+        {query && !loading && results.length === 0 && (
+          error
+            ? <EmptyState icon={LuCircleAlert} tone="error" title="Search isn’t available right now">{error.message}</EmptyState>
+            : <EmptyState icon={LuSearchX} title="No matches">No articles match “{query}”. Try a different or broader keyword.</EmptyState>
+        )}
 
-          {results.length > 0 && (
-            <div className="grid-3 stagger-children">
-              {results.map(article => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
-          )}
-        </div>
+        {results.length > 0 && (
+          <div className="grid-3 stagger-children">
+            {results.map(article => (
+              <ArticleCard key={article.id} article={article} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

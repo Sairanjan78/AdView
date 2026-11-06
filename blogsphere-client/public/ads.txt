@@ -1,0 +1,9 @@
+# ads.txt - Authorized Digital Sellers (https://iabtechlab.com/ads-txt/)
+# Must be reachable at https://www.yourdomain.com/ads.txt
+#
+# After AdSense approves your site, replace pub-0000000000000000 with YOUR publisher id
+# (AdSense > Account > Account information; use "pub-..." without the "ca-" prefix)
+# and remove the leading "# " from the line below.
+# `npm run build` adds this line automatically when REACT_APP_ADSENSE_CLIENT is set.
+#
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

@@ -4,8 +4,10 @@ const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
 
-  // Log error for developers
-  console.error('[Error Trace]', err);
+  // Log error for developers (kept quiet in the automated test run)
+  if (process.env.NODE_ENV !== 'test') {
+    console.error('[Error Trace]', err);
+  }
 
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
