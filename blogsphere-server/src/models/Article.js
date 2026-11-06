@@ -68,6 +68,11 @@ const ArticleSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    featured: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
     publishedAt: {
       type: Date,
       default: null
@@ -79,6 +84,10 @@ const ArticleSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
+
+// Compound indexes for the public feeds (latest / trending)
+ArticleSchema.index({ status: 1, publishedAt: -1 });
+ArticleSchema.index({ status: 1, views: -1, likes: -1 });
 
 // Helper function to create slug
 function slugify(text) {
@@ -92,8 +101,10 @@ function slugify(text) {
 
 // Pre-save hook: auto-generate unique slug & calculate read time
 ArticleSchema.pre('save', async function (next) {
-  if (this.isModified('title') || !this.slug) {
-    let baseSlug = slugify(this.title);
+  // A new article may bring its own slug (e.g. seeded content); otherwise derive it from the title
+  const keepProvidedSlug = this.isNew && this.slug;
+  if (keepProvidedSlug || this.isModified('title') || !this.slug) {
+    let baseSlug = slugify(keepProvidedSlug ? this.slug : this.title);
     if (!baseSlug) baseSlug = 'article';
     let uniqueSlug = baseSlug;
     let count = 1;

@@ -1,33 +1,38 @@
+/**
+ * npm run dev:memory
+ * Zero-config playground: starts a throwaway in-memory MongoDB, seeds it, and runs the API.
+ * Everything is lost when the process stops. Use `npm run dev` with MONGODB_URI for real data.
+ */
+const crypto = require('crypto');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const app = require('./src/app');
 const env = require('./src/config/env');
-const User = require('./src/models/User');
-const { ROLES } = require('./src/constants/roles');
+const { seedDatabase, seedOptionsFromEnv } = require('./src/seed/seedDatabase');
 
 async function startDevServer() {
   try {
-    console.log('[DevServer] Starting in-memory MongoDB for zero-config local development & browser testing...');
+    console.log('[DevServer] Starting in-memory MongoDB (data is NOT saved)...');
     const mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
     console.log(`[DevServer] Connected to in-memory database: ${uri}`);
 
-    // Seed default admin user
-    const admin = await User.create({
-      name: 'BlogSphere Administrator',
-      email: 'admin@blogsphere.local',
-      username: 'admin',
-      password: 'AdminPassword123!',
-      role: ROLES.ADMIN,
-      isEmailVerified: true
-    });
-    console.log(`[DevServer] Seeded default admin: ${admin.email}`);
+    const options = seedOptionsFromEnv();
+    let generatedPassword = null;
+    if (!options.admin.email) options.admin.email = 'admin@blogsphere.local';
+    if (!options.admin.password) {
+      generatedPassword = crypto.randomBytes(9).toString('base64url');
+      options.admin.password = generatedPassword;
+    }
+    await seedDatabase(options);
+    if (generatedPassword) {
+      console.log(`[DevServer] No ADMIN_PASSWORD in .env - temporary admin password for this session: ${generatedPassword}`);
+    }
 
-    // Start Express listener
     app.listen(env.port, () => {
       console.log(`\n======================================================`);
-      console.log(`🚀 BlogSphere Dev API Server running on port ${env.port}`);
+      console.log(`🚀 BlogSphere Dev API Server (in-memory DB) on port ${env.port}`);
       console.log(`📡 URL: http://localhost:${env.port}/api/v1`);
       console.log(`🩺 Health: http://localhost:${env.port}/api/v1/health`);
       console.log(`======================================================\n`);

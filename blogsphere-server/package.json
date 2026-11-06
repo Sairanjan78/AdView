@@ -1,11 +1,15 @@
 {
   "name": "blogsphere-server",
   "version": "1.0.0",
-  "description": "Backend API for BlogSphere — Multi-Niche Global Blogging Platform",
+  "description": "Backend API for BlogSphere \u2014 Multi-Niche Global Blogging Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "dev:memory": "node devServer.js",
+    "seed": "node scripts/seed.js",
+    "seed:admin": "node scripts/seed.js --admin-only",
+    "test": "node tests/phase2_test.js && node tests/article_test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
