@@ -4,17 +4,14 @@ BlogSphere is a production-grade, multi-niche blogging platform designed with a 
 
 ---
 
-## 🎨 Design Theme: Minimal Luxury
+## 🎨 Design: Modern Editorial
 
-- **Warm Cream Background**: `#F4EFE5`
-- **Charcoal Typography**: `#292720`
-- **Muted Gold Accents**: `#B69B75`
-- **Clean Surface Cards**: `#FFFFFF`
-- **Subtle Borders**: `#E5DED1`
-- **Editorial Typography Pairing**:
-  - **Headings & Logo**: Playfair Display (600, 700) with fluid CSS `clamp()` scaling
-  - **Body & UI**: Inter (400, 500, 600) with generous `1.75` line height for long-form reading
-  - **Script Fallbacks**: Noto Serif & Noto Sans for international character coverage
+Tokens live in `blogsphere-client/src/styles/variables.css`; change them there, not in components.
+
+- **Palette**: warm paper background `#FAF8F5`, ink text `#1A1916`, white cards, one terracotta accent `#A63D1A`. Every text colour meets WCAG AA contrast.
+- **Typography**: Fraunces for headings and the wordmark, Inter for UI and body, Source Serif 4 for article text (19px, 1.8 line height, ~70ch column). Noto Serif / Noto Sans as script fallbacks.
+- **Icons**: one outline set, [Lucide](https://lucide.dev) via `react-icons/lu`. Categories store a Lucide icon key (`cpu`, `flask-conical`, `heart-pulse`, …) that `src/components/ui/CategoryIcon.jsx` maps to a component; unknown keys or old emoji values fall back to a document icon. Running `npm run seed` updates existing categories to the new keys.
+- **Social links**: footer icons only appear for the profiles you set with `REACT_APP_SOCIAL_TWITTER`, `REACT_APP_SOCIAL_INSTAGRAM` and `REACT_APP_SOCIAL_LINKEDIN` (see `blogsphere-client/.env.example`).
 
 ---
 
