@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiSend, FiMail, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { LuSend, LuMail, LuCircleCheck, LuCircleAlert } from 'react-icons/lu';
 import Seo from '../../components/seo/Seo';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
@@ -62,7 +62,7 @@ const ContactPage = () => {
               Questions, feedback, writing enquiries, copyright or privacy requests — we read every message.
             </p>
             <p className="legal-page__updated">
-              <FiMail style={{ verticalAlign: 'middle', marginRight: 6 }} />
+              <LuMail style={{ verticalAlign: 'middle', marginRight: 6 }} />
               Prefer email? <a href={`mailto:${brand.email}`}>{brand.email}</a>
             </p>
           </div>
@@ -72,13 +72,13 @@ const ContactPage = () => {
           <div className="write-card">
             {errorMsg && (
               <div className="write-alert write-alert--error" role="alert">
-                <FiAlertCircle style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleAlert style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 {errorMsg}
               </div>
             )}
             {successMsg && (
               <div className="write-alert write-alert--success" role="status">
-                <FiCheckCircle style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleCheck style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 {successMsg}
               </div>
             )}
@@ -121,7 +121,7 @@ const ContactPage = () => {
               </p>
 
               <div className="write-actions">
-                <Button type="submit" variant="primary" loading={loading} icon={<FiSend />}>
+                <Button type="submit" variant="primary" loading={loading} icon={<LuSend />}>
                   Send Message
                 </Button>
               </div>

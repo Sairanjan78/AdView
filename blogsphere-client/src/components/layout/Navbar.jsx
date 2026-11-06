@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { FiMenu, FiX, FiEdit3, FiUser, FiLogOut } from 'react-icons/fi';
+import { LuMenu, LuX, LuPenLine, LuUser, LuLogOut } from 'react-icons/lu';
 import SearchBar from '../search/SearchBar';
 import Button from '../ui/Button';
 import Avatar from '../ui/Avatar';
@@ -65,21 +65,21 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <Link to="/write" className="navbar__write-btn">
-                  <Button variant="outline" size="sm" icon={<FiEdit3 />}>Write</Button>
+                  <Button variant="outline" size="sm" icon={<LuPenLine />}>Write</Button>
                 </Link>
                 <Link to={`/writer/${user.username}`} className="navbar__user-badge" title={user.name}>
                   <Avatar src={user.avatar} name={user.name} size="sm" />
                   <span className="navbar__user-name">{user.name.split(' ')[0]}</span>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={logout} icon={<FiLogOut />} title="Sign out" aria-label="Sign out" />
+                <Button variant="ghost" size="sm" onClick={logout} icon={<LuLogOut />} title="Sign out" aria-label="Sign out" />
               </>
             ) : (
               <>
                 <Link to="/register" className="navbar__write-btn">
-                  <Button variant="outline" size="sm" icon={<FiEdit3 />}>Write</Button>
+                  <Button variant="outline" size="sm" icon={<LuPenLine />}>Write</Button>
                 </Link>
                 <Link to="/login" title="Writer / Admin login">
-                  <Button variant="ghost" size="sm" icon={<FiUser />}>Writer Login</Button>
+                  <Button variant="ghost" size="sm" icon={<LuUser />}>Writer Login</Button>
                 </Link>
               </>
             )}
@@ -92,7 +92,7 @@ const Navbar = () => {
             aria-expanded={mobileOpen}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
-            {mobileOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+            {mobileOpen ? <LuX size={22} /> : <LuMenu size={22} />}
           </button>
         </div>
       </header>
@@ -130,17 +130,17 @@ const Navbar = () => {
                   </div>
                 </Link>
                 <Link to="/write">
-                  <Button variant="outline" size="md" icon={<FiEdit3 />} fullWidth>Write an Article</Button>
+                  <Button variant="outline" size="md" icon={<LuPenLine />} fullWidth>Write an Article</Button>
                 </Link>
-                <Button variant="ghost" size="md" icon={<FiLogOut />} fullWidth onClick={logout}>Sign out</Button>
+                <Button variant="ghost" size="md" icon={<LuLogOut />} fullWidth onClick={logout}>Sign out</Button>
               </>
             ) : (
               <>
                 <Link to="/register">
-                  <Button variant="outline" size="md" icon={<FiEdit3 />} fullWidth>Become a Writer</Button>
+                  <Button variant="outline" size="md" icon={<LuPenLine />} fullWidth>Become a Writer</Button>
                 </Link>
                 <Link to="/login">
-                  <Button variant="ghost" size="md" icon={<FiUser />} fullWidth>Writer Login</Button>
+                  <Button variant="ghost" size="md" icon={<LuUser />} fullWidth>Writer Login</Button>
                 </Link>
               </>
             )}

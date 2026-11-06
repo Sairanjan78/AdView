@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
+import { LuSearch } from 'react-icons/lu';
 import ArticleCard from '../../components/article/ArticleCard';
 import SearchBar from '../../components/search/SearchBar';
 import brand from '../../config/brand';
@@ -41,7 +41,7 @@ const SearchPage = () => {
       <div className="search-page">
         <div className="container">
           <div className="search-page__header">
-            <FiSearch className="search-page__icon" size={32} />
+            <LuSearch className="search-page__icon" size={32} />
             <h1 className="search-page__title">Search</h1>
           </div>
 

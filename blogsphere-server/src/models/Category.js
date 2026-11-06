@@ -25,9 +25,11 @@ const CategorySchema = new mongoose.Schema(
       trim: true,
       maxlength: [60, 'Category name cannot exceed 60 characters']
     },
+    // Lucide icon key, e.g. 'cpu' or 'flask-conical' (older rows may still hold an emoji)
     icon: {
       type: String,
-      default: '📄'
+      trim: true,
+      default: 'file-text'
     },
     color: {
       type: String,

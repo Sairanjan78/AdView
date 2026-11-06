@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSend, FiFileText, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { LuSend, LuFileText, LuCircleCheck, LuCircleAlert } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
@@ -107,13 +107,13 @@ const WritePage = () => {
           <div className="write-card">
             {errorMsg && (
               <div className="write-alert write-alert--error">
-                <FiAlertCircle style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleAlert style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 {errorMsg}
               </div>
             )}
             {successMsg && (
               <div className="write-alert write-alert--success">
-                <FiCheckCircle style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                <LuCircleCheck style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 {successMsg}
               </div>
             )}
@@ -206,7 +206,7 @@ const WritePage = () => {
                   type="button"
                   variant="outline"
                   loading={loading}
-                  icon={<FiFileText />}
+                  icon={<LuFileText />}
                   onClick={() => handleSubmit('draft')}
                 >
                   Save Draft
@@ -215,7 +215,7 @@ const WritePage = () => {
                   type="button"
                   variant="primary"
                   loading={loading}
-                  icon={<FiSend />}
+                  icon={<LuSend />}
                   onClick={() => handleSubmit('published')}
                 >
                   Publish Now

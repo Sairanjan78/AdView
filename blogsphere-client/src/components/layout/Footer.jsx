@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiTwitter, FiInstagram, FiLinkedin, FiArrowRight, FiMail } from 'react-icons/fi';
+import { LuTwitter, LuInstagram, LuLinkedin, LuArrowRight, LuMail } from 'react-icons/lu';
 import brand from '../../config/brand';
 import './Footer.css';
 
@@ -59,7 +59,7 @@ const Footer = () => {
           ) : (
             <form className="footer__newsletter-form" onSubmit={handleSubscribe}>
               <div className="footer__newsletter-field">
-                <FiMail className="footer__newsletter-icon" />
+                <LuMail className="footer__newsletter-icon" />
                 <input
                   type="email"
                   placeholder="your@email.com"
@@ -71,7 +71,7 @@ const Footer = () => {
                 />
               </div>
               <button type="submit" className="footer__newsletter-btn">
-                Subscribe <FiArrowRight size={14} />
+                Subscribe <LuArrowRight size={14} />
               </button>
             </form>
           )}
@@ -89,13 +89,13 @@ const Footer = () => {
           <p className="footer__brand-desc">{brand.description}</p>
           <div className="footer__social">
             <a href={brand.social.twitter} target="_blank" rel="noopener noreferrer" className="footer__social-btn" aria-label="Twitter">
-              <FiTwitter />
+              <LuTwitter />
             </a>
             <a href={brand.social.instagram} target="_blank" rel="noopener noreferrer" className="footer__social-btn" aria-label="Instagram">
-              <FiInstagram />
+              <LuInstagram />
             </a>
             <a href={brand.social.linkedin} target="_blank" rel="noopener noreferrer" className="footer__social-btn" aria-label="LinkedIn">
-              <FiLinkedin />
+              <LuLinkedin />
             </a>
           </div>
         </div>

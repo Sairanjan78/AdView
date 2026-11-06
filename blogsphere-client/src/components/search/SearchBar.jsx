@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiX } from 'react-icons/fi';
+import { LuSearch, LuX } from 'react-icons/lu';
 import './SearchBar.css';
 
 /**
@@ -50,7 +50,7 @@ const SearchBar = ({ variant = 'navbar', placeholder = 'Search articles, topics,
       role="search"
     >
       <button type="submit" className="search-bar__icon-btn" aria-label="Search">
-        <FiSearch className="search-bar__icon" />
+        <LuSearch className="search-bar__icon" />
       </button>
       <input
         ref={inputRef}
@@ -67,7 +67,7 @@ const SearchBar = ({ variant = 'navbar', placeholder = 'Search articles, topics,
       />
       {query && (
         <button type="button" className="search-bar__clear" onClick={handleClear} aria-label="Clear search">
-          <FiX size={14} />
+          <LuX size={14} />
         </button>
       )}
       {variant !== 'hero' && (

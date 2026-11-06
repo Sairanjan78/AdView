@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { FiHeart, FiMessageCircle, FiEye, FiClock, FiBookmark } from 'react-icons/fi';
+import { LuHeart, LuMessageCircle, LuEye, LuClock, LuBookmark } from 'react-icons/lu';
 import Avatar from '../ui/Avatar';
 import './ArticleCard.css';
+import CategoryIcon from '../ui/CategoryIcon';
 
 /**
  * Standard article card — used in feeds, grids.
@@ -24,7 +25,7 @@ const ArticleCard = ({ article, className = '' }) => {
           <img src={cover} alt={title} loading="lazy" />
           <div className="article-card__cover-overlay" />
           <span className="article-card__category-badge" style={{ '--cat-color': category.color }}>
-            {category.icon} {category.name}
+            <CategoryIcon icon={category.icon} /> {category.name}
           </span>
         </div>
       </Link>
@@ -38,7 +39,7 @@ const ArticleCard = ({ article, className = '' }) => {
             <span className="article-card__author-name">{author.name}</span>
           </Link>
           <span className="article-card__time">
-            <FiClock size={11} /> {timeAgo}
+            <LuClock size={11} /> {timeAgo}
           </span>
         </div>
 
@@ -53,14 +54,14 @@ const ArticleCard = ({ article, className = '' }) => {
         {/* Footer */}
         <div className="article-card__footer">
           <div className="article-card__stats">
-            <span className="article-card__stat"><FiEye size={12} /> {formatStat(views)}</span>
-            <span className="article-card__stat"><FiHeart size={12} /> {formatStat(likes)}</span>
-            <span className="article-card__stat"><FiMessageCircle size={12} /> {comments}</span>
+            <span className="article-card__stat"><LuEye size={12} /> {formatStat(views)}</span>
+            <span className="article-card__stat"><LuHeart size={12} /> {formatStat(likes)}</span>
+            <span className="article-card__stat"><LuMessageCircle size={12} /> {comments}</span>
           </div>
           <div className="article-card__actions">
             <span className="article-card__read-time">{readTime} min read</span>
             <button className="article-card__bookmark" aria-label="Bookmark article" title="Bookmark">
-              <FiBookmark size={14} />
+              <LuBookmark size={14} />
             </button>
           </div>
         </div>

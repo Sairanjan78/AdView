@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import { LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuCircleAlert } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
@@ -56,7 +56,7 @@ const LoginPage = () => {
             <div className="auth-field">
               <label htmlFor="login-email" className="auth-label">Email address</label>
               <div className="auth-input-wrap">
-                <FiMail className="auth-input-icon" />
+                <LuMail className="auth-input-icon" />
                 <input
                   id="login-email" name="email" type="email"
                   className="auth-input" placeholder="you@example.com"
@@ -72,7 +72,7 @@ const LoginPage = () => {
                 <Link to="/forgot-password" className="auth-link auth-link--sm">Forgot password?</Link>
               </div>
               <div className="auth-input-wrap">
-                <FiLock className="auth-input-icon" />
+                <LuLock className="auth-input-icon" />
                 <input
                   id="login-password" name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -85,14 +85,14 @@ const LoginPage = () => {
                   onClick={() => setShowPassword(s => !s)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+                  {showPassword ? <LuEyeOff size={14} /> : <LuEye size={14} />}
                 </button>
               </div>
             </div>
 
             {errorMsg && (
               <div className="auth-error-banner" role="alert">
-                <FiAlertCircle size={16} />
+                <LuCircleAlert size={16} />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -103,7 +103,7 @@ const LoginPage = () => {
               size="lg"
               fullWidth
               loading={loading}
-              iconRight={!loading && <FiArrowRight />}
+              iconRight={!loading && <LuArrowRight />}
             >
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>

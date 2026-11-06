@@ -72,6 +72,15 @@ async function main() {
     assert.strictEqual(await Category.countDocuments(), 12);
     console.log('✓ Admin-only seed skips sample writers and articles');
 
+    // Categories use icon keys, and re-seeding migrates legacy emoji icons
+    const tech = await Category.findOne({ slug: 'technology' }).lean();
+    assert.strictEqual(tech.icon, 'cpu');
+    assert.ok((await Category.find().lean()).every(c => /^[a-z0-9-]+$/.test(c.icon)), 'all icons are keys');
+    await Category.updateOne({ slug: 'technology' }, { $set: { icon: '💻' } });
+    await seedDatabase({ admin, sampleContent: false, log: silent });
+    assert.strictEqual((await Category.findOne({ slug: 'technology' }).lean()).icon, 'cpu');
+    console.log('✓ Seed stores icon keys and migrates emoji category icons');
+
     // Credentials are masked in logs
     assert.strictEqual(
       maskUri('mongodb+srv://bob:p%40ss@cluster0.abc.mongodb.net/blogsphere?retryWrites=true'),

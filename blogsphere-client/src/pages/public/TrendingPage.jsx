@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiTrendingUp, FiHeart, FiEye, FiMessageCircle } from 'react-icons/fi';
+import { LuTrendingUp, LuHeart, LuEye, LuMessageCircle } from 'react-icons/lu';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../../components/ui/Avatar';
 import brand from '../../config/brand';
@@ -9,6 +9,7 @@ import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
 import './TrendingPage.css';
+import CategoryIcon from '../../components/ui/CategoryIcon';
 
 const TrendingPage = () => {
   const { data, loading, error } = useApi(() =>
@@ -23,7 +24,7 @@ const TrendingPage = () => {
     <div className="trending-page">
       <div className="container">
         <div className="trending-page__header">
-          <FiTrendingUp className="trending-page__icon" size={36} />
+          <LuTrendingUp className="trending-page__icon" size={36} />
           <div>
             <h1 className="trending-page__title">Trending Now</h1>
             <p className="trending-page__sub">The most-read articles on the platform right now</p>
@@ -41,7 +42,7 @@ const TrendingPage = () => {
               </div>
               <div className="trending-page__body">
                 <Link to={`/categories/${article.category.slug}`} className="trending-page__cat" style={{ color: article.category.color }}>
-                  {article.category.icon} {article.category.name}
+                  <CategoryIcon icon={article.category.icon} /> {article.category.name}
                 </Link>
                 <Link to={`/article/${article.slug}`}>
                   <h2 className="trending-page__article-title">{article.title}</h2>
@@ -59,9 +60,9 @@ const TrendingPage = () => {
                 </div>
               </div>
               <div className="trending-page__stats">
-                <div className="trending-page__stat"><FiEye size={14}/> {(article.views/1000).toFixed(1)}k</div>
-                <div className="trending-page__stat"><FiHeart size={14}/> {(article.likes/1000).toFixed(1)}k</div>
-                <div className="trending-page__stat"><FiMessageCircle size={14}/> {article.comments}</div>
+                <div className="trending-page__stat"><LuEye size={14}/> {(article.views/1000).toFixed(1)}k</div>
+                <div className="trending-page__stat"><LuHeart size={14}/> {(article.likes/1000).toFixed(1)}k</div>
+                <div className="trending-page__stat"><LuMessageCircle size={14}/> {article.comments}</div>
               </div>
             </li>
           ))}

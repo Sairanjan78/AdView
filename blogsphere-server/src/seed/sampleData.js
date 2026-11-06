@@ -4,19 +4,22 @@
  * so a fresh database shows the same categories, writers and articles.
  */
 
+// `icon` is a Lucide icon key (kebab-case) mapped to a component in the client's
+// categoryIcons map. `npm run seed` upserts these, which also migrates older
+// databases whose categories still store emoji icons.
 const CATEGORIES = [
-  { slug: 'technology',    name: 'Technology',        icon: '💻', color: '#6C63FF' },
-  { slug: 'science',       name: 'Science',           icon: '🔬', color: '#4ECDC4' },
-  { slug: 'business',      name: 'Business',          icon: '📈', color: '#FFD93D' },
-  { slug: 'health',        name: 'Health & Wellness', icon: '🏃', color: '#FF6584' },
-  { slug: 'arts',          name: 'Arts & Culture',    icon: '🎨', color: '#C77DFF' },
-  { slug: 'travel',        name: 'Travel',            icon: '✈️', color: '#43AA8B' },
-  { slug: 'food',          name: 'Food & Cooking',    icon: '🍳', color: '#F4845F' },
-  { slug: 'finance',       name: 'Finance',           icon: '💰', color: '#52B788' },
-  { slug: 'education',     name: 'Education',         icon: '📚', color: '#48CAE4' },
-  { slug: 'environment',   name: 'Environment',       icon: '🌿', color: '#2DC653' },
-  { slug: 'sports',        name: 'Sports',            icon: '⚽', color: '#FB8500' },
-  { slug: 'entertainment', name: 'Entertainment',     icon: '🎬', color: '#E63946' }
+  { slug: 'technology',    name: 'Technology',        icon: 'cpu', color: '#4F46E5' },
+  { slug: 'science',       name: 'Science',           icon: 'flask-conical', color: '#0F766E' },
+  { slug: 'business',      name: 'Business',          icon: 'briefcase', color: '#A16207' },
+  { slug: 'health',        name: 'Health & Wellness', icon: 'heart-pulse', color: '#BE185D' },
+  { slug: 'arts',          name: 'Arts & Culture',    icon: 'palette', color: '#7E22CE' },
+  { slug: 'travel',        name: 'Travel',            icon: 'plane', color: '#0369A1' },
+  { slug: 'food',          name: 'Food & Cooking',    icon: 'chef-hat', color: '#C2410C' },
+  { slug: 'finance',       name: 'Finance',           icon: 'wallet', color: '#15803D' },
+  { slug: 'education',     name: 'Education',         icon: 'graduation-cap', color: '#1D4ED8' },
+  { slug: 'environment',   name: 'Environment',       icon: 'leaf', color: '#4D7C0F' },
+  { slug: 'sports',        name: 'Sports',            icon: 'trophy', color: '#B45309' },
+  { slug: 'entertainment', name: 'Entertainment',     icon: 'clapperboard', color: '#B91C1C' }
 ].map((c, i) => ({ ...c, order: i + 1 }));
 
 const WRITERS = [

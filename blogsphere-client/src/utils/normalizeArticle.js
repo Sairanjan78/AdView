@@ -14,7 +14,7 @@ export function normalizeArticle(raw) {
       id: raw.category,
       slug: raw.category.toLowerCase(),
       name: raw.category.charAt(0).toUpperCase() + raw.category.slice(1),
-      icon: '📄',
+      icon: 'file-text',
       color: '#B69B75'
     };
   } else if (raw.category && typeof raw.category === 'object') {
@@ -24,7 +24,7 @@ export function normalizeArticle(raw) {
       id: 'general',
       slug: 'general',
       name: 'General',
-      icon: '📄',
+      icon: 'file-text',
       color: '#B69B75'
     };
   }

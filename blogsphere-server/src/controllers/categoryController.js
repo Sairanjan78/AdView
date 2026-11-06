@@ -7,7 +7,7 @@ const { sendSuccess, sendError } = require('../utils/response');
 const defaultCategory = (slug, index) => ({
   slug,
   name: slug.charAt(0).toUpperCase() + slug.slice(1),
-  icon: '📄',
+  icon: 'file-text',
   color: '#B69B75',
   description: '',
   order: 100 + index

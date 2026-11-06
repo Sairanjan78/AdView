@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FiTwitter, FiEdit3 } from 'react-icons/fi';
+import { LuTwitter, LuPenLine } from 'react-icons/lu';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import ArticleCard from '../../components/article/ArticleCard';
@@ -86,7 +86,7 @@ const WriterProfilePage = () => {
               </div>
               <div className="writer-profile__actions">
                 <Button variant="primary" size="md">Follow</Button>
-                <Button variant="ghost" size="md" icon={<FiTwitter />}>Follow on X</Button>
+                <Button variant="ghost" size="md" icon={<LuTwitter />}>Follow on X</Button>
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@ const WriterProfilePage = () => {
           <div className="writer-profile__cta glass-card">
             <p>Want to share your own stories?</p>
             <Link to="/register">
-              <Button variant="primary" size="md" icon={<FiEdit3 />}>
+              <Button variant="primary" size="md" icon={<LuPenLine />}>
                 Start writing on {brand.name}
               </Button>
             </Link>

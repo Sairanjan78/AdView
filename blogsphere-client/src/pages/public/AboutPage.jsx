@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiEdit3, FiShield, FiGlobe, FiTrendingUp } from 'react-icons/fi';
+import { LuArrowRight, LuPenLine, LuShield, LuGlobe, LuTrendingUp } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
@@ -8,17 +8,17 @@ import './AboutPage.css';
 
 const PILLARS = [
   {
-    icon: <FiGlobe size={24} />,
+    icon: <LuGlobe size={24} />,
     title: 'Global by Design',
     desc: 'Readers and writers from every country, writing in every niche. BlogSphere is built to scale to millions of voices.',
   },
   {
-    icon: <FiShield size={24} />,
+    icon: <LuShield size={24} />,
     title: 'Quality First',
     desc: 'Every article goes through an editorial approval process. We maintain high standards so readers always find quality content.',
   },
   {
-    icon: <FiTrendingUp size={24} />,
+    icon: <LuTrendingUp size={24} />,
     title: 'Writer-Friendly Monetization',
     desc: `Writers earn a share of eligible advertising revenue through our transparent revenue-sharing programme. Percentages are configured by the platform and are not a payment guarantee from any ad provider.`,
   },
@@ -95,7 +95,7 @@ const AboutPage = () => (
         <section className="about-cta">
           <h2 className="about-cta__title">Ready to join?</h2>
           <div className="about-cta__btns">
-            <Link to="/register"><Button variant="primary" size="lg" icon={<FiEdit3 />} iconRight={<FiArrowRight />}>Start writing</Button></Link>
+            <Link to="/register"><Button variant="primary" size="lg" icon={<LuPenLine />} iconRight={<LuArrowRight />}>Start writing</Button></Link>
             <Link to="/explore"><Button variant="outline" size="lg">Explore articles</Button></Link>
           </div>
         </section>

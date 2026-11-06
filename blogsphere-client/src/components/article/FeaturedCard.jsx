@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { FiHeart, FiMessageCircle, FiClock, FiArrowRight } from 'react-icons/fi';
+import { LuHeart, LuMessageCircle, LuClock, LuArrowRight } from 'react-icons/lu';
 import Avatar from '../ui/Avatar';
 import './FeaturedCard.css';
+import CategoryIcon from '../ui/CategoryIcon';
 
 /**
  * Large featured/hero article card — used in the hero section and featured carousel.
@@ -25,10 +26,10 @@ const FeaturedCard = ({ article, size = 'md' }) => {
         {/* Category badge */}
         <div className="featured-card__top">
           <Link to={`/categories/${category.slug}`} className="featured-card__category" style={{ '--cat-color': category.color }}>
-            {category.icon} {category.name}
+            <CategoryIcon icon={category.icon} /> {category.name}
           </Link>
           <span className="featured-card__read-time">
-            <FiClock size={12} /> {readTime} min
+            <LuClock size={12} /> {readTime} min
           </span>
         </div>
 
@@ -49,13 +50,13 @@ const FeaturedCard = ({ article, size = 'md' }) => {
             </div>
           </Link>
           <div className="featured-card__stats">
-            <span><FiHeart size={13} /> {(likes / 1000).toFixed(1)}k</span>
-            <span><FiMessageCircle size={13} /> {comments}</span>
+            <span><LuHeart size={13} /> {(likes / 1000).toFixed(1)}k</span>
+            <span><LuMessageCircle size={13} /> {comments}</span>
           </div>
         </div>
 
         <Link to={`/article/${slug}`} className="featured-card__cta">
-          Read article <FiArrowRight size={14} />
+          Read article <LuArrowRight size={14} />
         </Link>
       </div>
     </article>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FiArrowRight, FiTrendingUp, FiClock, FiEdit3, FiStar, FiZap,
-} from 'react-icons/fi';
+  LuArrowRight, LuTrendingUp, LuClock, LuPenLine, LuStar, LuZap,
+} from 'react-icons/lu';
 import { formatDistanceToNow } from 'date-fns';
 import FeaturedCard from '../../components/article/FeaturedCard';
 import ArticleCard from '../../components/article/ArticleCard';
@@ -18,6 +18,7 @@ import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle'
 import useApi from '../../hooks/useApi';
 import useCategories from '../../hooks/useCategories';
 import './HomePage.css';
+import CategoryIcon from '../../components/ui/CategoryIcon';
 
 const toArticles = res => (res?.data?.articles || []).map(normalizeArticle);
 
@@ -48,7 +49,7 @@ const HomePage = () => {
         <div className="container hero__inner">
           <div className="hero__copy animate-fadeInUp">
             <div className="hero__eyebrow">
-              <FiZap size={13} />
+              <LuZap size={13} />
               Global multi-niche publishing
             </div>
             <h1 className="hero__headline">
@@ -86,7 +87,7 @@ const HomePage = () => {
                 style={{ '--cat-color': cat.color }}
                 role="listitem"
               >
-                <span className="category-pill__icon">{cat.icon}</span>
+                <span className="category-pill__icon"><CategoryIcon icon={cat.icon} /></span>
                 <span className="category-pill__name">{cat.name}</span>
                 <span className="category-pill__count">{cat.count}</span>
               </Link>
@@ -100,11 +101,11 @@ const HomePage = () => {
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">
-              <FiStar className="section-title-icon" />
+              <LuStar className="section-title-icon" />
               Featured
             </h2>
             <Link to="/explore" className="section-link">
-              View all <FiArrowRight size={14} />
+              View all <LuArrowRight size={14} />
             </Link>
           </div>
           <div className="featured-grid stagger-children">
@@ -128,10 +129,10 @@ const HomePage = () => {
             <div className="trending-latest__col">
               <div className="section-header">
                 <h2 className="section-title">
-                  <FiTrendingUp className="section-title-icon" style={{ color: 'var(--color-secondary)' }} />
+                  <LuTrendingUp className="section-title-icon" style={{ color: 'var(--color-secondary)' }} />
                   Trending
                 </h2>
-                <Link to="/trending" className="section-link">All <FiArrowRight size={13} /></Link>
+                <Link to="/trending" className="section-link">All <LuArrowRight size={13} /></Link>
               </div>
               <ol className="trending-list stagger-children" aria-label="Trending articles">
                 {TRENDING_ARTICLES.map((article, index) => (
@@ -144,10 +145,10 @@ const HomePage = () => {
             <div className="trending-latest__col">
               <div className="section-header">
                 <h2 className="section-title">
-                  <FiClock className="section-title-icon" style={{ color: 'var(--color-accent)' }} />
+                  <LuClock className="section-title-icon" style={{ color: 'var(--color-accent)' }} />
                   Latest
                 </h2>
-                <Link to="/latest" className="section-link">All <FiArrowRight size={13} /></Link>
+                <Link to="/latest" className="section-link">All <LuArrowRight size={13} /></Link>
               </div>
               <div className="latest-list stagger-children">
                 {displayedLatest.slice(0, 4).map(article => (
@@ -170,7 +171,7 @@ const HomePage = () => {
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Discover More</h2>
-            <Link to="/explore" className="section-link">Explore all <FiArrowRight size={14} /></Link>
+            <Link to="/explore" className="section-link">Explore all <LuArrowRight size={14} /></Link>
           </div>
           <div className="grid-3 stagger-children">
             {displayedLatest.slice(0, 6).map(article => (
@@ -185,7 +186,7 @@ const HomePage = () => {
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Top Writers</h2>
-            <Link to="/explore" className="section-link">View all <FiArrowRight size={14} /></Link>
+            <Link to="/explore" className="section-link">View all <LuArrowRight size={14} /></Link>
           </div>
           <div className="writers-grid stagger-children">
             {AUTHORS.map(author => (
@@ -212,7 +213,7 @@ const HomePage = () => {
               </p>
               <div className="write-cta__actions">
                 <Link to="/register">
-                  <Button variant="primary" size="lg" icon={<FiEdit3 />} iconRight={<FiArrowRight />}>
+                  <Button variant="primary" size="lg" icon={<LuPenLine />} iconRight={<LuArrowRight />}>
                     Start writing today
                   </Button>
                 </Link>
@@ -239,7 +240,7 @@ const TrendingItem = ({ article, rank }) => (
     <span className="trending-item__rank" aria-label={`Rank ${rank}`}>{String(rank).padStart(2, '0')}</span>
     <div className="trending-item__body">
       <Link to={`/categories/${article.category.slug}`} className="trending-item__cat" style={{ color: article.category.color }}>
-        {article.category.icon} {article.category.name}
+        <CategoryIcon icon={article.category.icon} /> {article.category.name}
       </Link>
       <Link to={`/article/${article.slug}`}>
         <h3 className="trending-item__title line-clamp-2">{article.title}</h3>
@@ -268,13 +269,13 @@ const LatestItem = ({ article }) => (
     )}
     <div className="latest-item__body">
       <Link to={`/categories/${article.category.slug}`} className="latest-item__cat" style={{ color: article.category.color }}>
-        {article.category.icon} {article.category.name}
+        <CategoryIcon icon={article.category.icon} /> {article.category.name}
       </Link>
       <Link to={`/article/${article.slug}`}>
         <h3 className="latest-item__title line-clamp-2">{article.title}</h3>
       </Link>
       <span className="latest-item__time">
-        <FiClock size={11} /> {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
+        <LuClock size={11} /> {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
       </span>
     </div>
   </div>

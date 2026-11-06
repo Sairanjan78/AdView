@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight } from 'react-icons/fi';
+import { LuArrowRight } from 'react-icons/lu';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
 import useCategories from '../../hooks/useCategories';
 import './CategoriesPage.css';
+import CategoryIcon from '../../components/ui/CategoryIcon';
 
 const CategoriesPage = () => {
   const { categories: CATEGORIES } = useCategories();
@@ -29,13 +30,13 @@ const CategoriesPage = () => {
               style={{ '--cat-color': cat.color }}
             >
               <div className="category-card__icon-wrap">
-                <span className="category-card__icon" aria-hidden="true">{cat.icon}</span>
+                <span className="category-card__icon" aria-hidden="true"><CategoryIcon icon={cat.icon} /></span>
               </div>
               <div className="category-card__body">
                 <h2 className="category-card__name">{cat.name}</h2>
                 <span className="category-card__count">{cat.count.toLocaleString()} articles</span>
               </div>
-              <FiArrowRight className="category-card__arrow" size={18} />
+              <LuArrowRight className="category-card__arrow" size={18} />
             </Link>
           ))}
         </div>

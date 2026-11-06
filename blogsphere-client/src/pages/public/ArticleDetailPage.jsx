@@ -2,9 +2,9 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import {
-  FiHeart, FiMessageCircle, FiShare2, FiBookmark,
-  FiTwitter, FiLinkedin, FiEye,
-} from 'react-icons/fi';
+  LuHeart, LuMessageCircle, LuShare2, LuBookmark,
+  LuTwitter, LuLinkedin, LuEye,
+} from 'react-icons/lu';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
@@ -15,6 +15,7 @@ import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
 import './ArticleDetailPage.css';
+import CategoryIcon from '../../components/ui/CategoryIcon';
 
 /**
  * Split article HTML after its first paragraph so an ad can sit after the intro.
@@ -106,7 +107,7 @@ const ArticleDetailPage = () => {
           <div className="article-detail__hero-overlay" />
           <div className="article-detail__hero-content container">
             <Link to={`/categories/${category.slug}`} className="article-detail__category-badge" style={{ '--cat-color': category.color }}>
-              {category.icon} {category.name}
+              <CategoryIcon icon={category.icon} /> {category.name}
             </Link>
             <h1 className="article-detail__title">{title}</h1>
             <p className="article-detail__excerpt">{excerpt}</p>
@@ -122,9 +123,9 @@ const ArticleDetailPage = () => {
                 </div>
               </Link>
               <div className="article-detail__hero-stats">
-                <span><FiEye size={14}/> {(views/1000).toFixed(1)}k</span>
-                <span><FiHeart size={14}/> {(likes/1000).toFixed(1)}k</span>
-                <span><FiMessageCircle size={14}/> {comments}</span>
+                <span><LuEye size={14}/> {(views/1000).toFixed(1)}k</span>
+                <span><LuHeart size={14}/> {(likes/1000).toFixed(1)}k</span>
+                <span><LuMessageCircle size={14}/> {comments}</span>
               </div>
             </div>
           </div>
@@ -137,16 +138,16 @@ const ArticleDetailPage = () => {
           <aside className="article-detail__sidebar" aria-label="Article actions">
             <div className="article-detail__actions">
               <button className="article-action-btn" aria-label="Like article">
-                <FiHeart /> <span>{(likes/1000).toFixed(1)}k</span>
+                <LuHeart /> <span>{(likes/1000).toFixed(1)}k</span>
               </button>
               <button className="article-action-btn" aria-label="Comments">
-                <FiMessageCircle /> <span>{comments}</span>
+                <LuMessageCircle /> <span>{comments}</span>
               </button>
               <button className="article-action-btn" aria-label="Bookmark">
-                <FiBookmark />
+                <LuBookmark />
               </button>
               <button className="article-action-btn" aria-label="Share">
-                <FiShare2 />
+                <LuShare2 />
               </button>
             </div>
           </aside>
@@ -196,7 +197,7 @@ const ArticleDetailPage = () => {
                   className="article-share-btn article-share-btn--twitter"
                   aria-label="Share on Twitter"
                 >
-                  <FiTwitter /> Twitter
+                  <LuTwitter /> Twitter
                 </a>
                 <a
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
@@ -204,7 +205,7 @@ const ArticleDetailPage = () => {
                   className="article-share-btn article-share-btn--linkedin"
                   aria-label="Share on LinkedIn"
                 >
-                  <FiLinkedin /> LinkedIn
+                  <LuLinkedin /> LinkedIn
                 </a>
               </div>
             </div>

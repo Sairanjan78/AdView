@@ -8,6 +8,7 @@ import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
 import useCategories from '../../hooks/useCategories';
 import './ExplorePage.css';
+import CategoryIcon from '../../components/ui/CategoryIcon';
 
 const ExplorePage = () => {
   // Also mounted at /categories/:slug - preselect that category
@@ -68,7 +69,7 @@ const ExplorePage = () => {
                 onClick={() => setActiveCategory(cat.slug)}
                 style={{ '--cat-color': cat.color }}
               >
-                {cat.icon} {cat.name}
+                <CategoryIcon icon={cat.icon} /> {cat.name}
               </button>
             ))}
           </div>
