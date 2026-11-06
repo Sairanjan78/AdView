@@ -2,9 +2,17 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
-import { LATEST_ARTICLES } from '../../data/mockData';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
 
-const LatestPage = () => (
+const LatestPage = () => {
+  const { data, loading, error } = useApi(() =>
+    articleApi.getArticles({ limit: 24 }).then(res => (res?.data?.articles || []).map(normalizeArticle))
+  );
+  const LATEST_ARTICLES = data || [];
+
+  return (
   <>
     <Helmet>
       <title>Latest — {brand.name}</title>
@@ -23,9 +31,15 @@ const LatestPage = () => (
             <ArticleCard key={article.id} article={article} />
           ))}
         </div>
+        {!loading && LATEST_ARTICLES.length === 0 && (
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>
+            {error ? error.message : 'No articles published yet.'}
+          </p>
+        )}
       </div>
     </div>
   </>
-);
+  );
+};
 
 export default LatestPage;

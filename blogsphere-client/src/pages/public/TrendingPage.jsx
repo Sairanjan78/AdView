@@ -5,10 +5,18 @@ import { FiTrendingUp, FiHeart, FiEye, FiMessageCircle } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../../components/ui/Avatar';
 import brand from '../../config/brand';
-import { TRENDING_ARTICLES } from '../../data/mockData';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
 import './TrendingPage.css';
 
-const TrendingPage = () => (
+const TrendingPage = () => {
+  const { data, loading, error } = useApi(() =>
+    articleApi.getTrending({ limit: 10 }).then(res => (res?.data?.articles || []).map(normalizeArticle))
+  );
+  const TRENDING_ARTICLES = data || [];
+
+  return (
   <>
     <Helmet>
       <title>Trending — {brand.name}</title>
@@ -61,9 +69,15 @@ const TrendingPage = () => (
             </li>
           ))}
         </ol>
+        {!loading && TRENDING_ARTICLES.length === 0 && (
+          <p className="trending-page__sub" style={{ textAlign: 'center' }}>
+            {error ? error.message : 'No trending articles yet.'}
+          </p>
+        )}
       </div>
     </div>
   </>
-);
+  );
+};
 
 export default TrendingPage;

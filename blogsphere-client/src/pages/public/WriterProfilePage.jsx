@@ -6,13 +6,40 @@ import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
-import { AUTHORS, LATEST_ARTICLES } from '../../data/mockData';
+import { writerApi } from '../../services/api';
+import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
 import './WriterProfilePage.css';
 
 const WriterProfilePage = () => {
   const { username } = useParams();
-  const author = AUTHORS.find(a => a.username === username) || AUTHORS[0];
-  const authorArticles = LATEST_ARTICLES.filter(a => a.author.id === author.id);
+  const { data, loading, error } = useApi(
+    () => writerApi.getWriter(username).then(res => ({
+      author: normalizeWriter(res?.data?.writer),
+      articles: (res?.data?.articles || []).map(normalizeArticle),
+    })),
+    [username]
+  );
+
+  if (loading || !data?.author) {
+    return (
+      <div className="writer-profile">
+        <div className="container writer-profile__inner">
+          <div className="writer-profile__empty">
+            <span>{loading ? '✦' : '✍️'}</span>
+            <p>
+              {loading
+                ? 'Loading…'
+                : error && error.status !== 404 ? error.message : 'Writer not found.'}
+            </p>
+            {!loading && <Link to="/explore">← Explore articles</Link>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { author, articles: authorArticles } = data;
 
   return (
     <>

@@ -3,10 +3,13 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import brand from '../../config/brand';
-import { CATEGORIES } from '../../data/mockData';
+import useCategories from '../../hooks/useCategories';
 import './CategoriesPage.css';
 
-const CategoriesPage = () => (
+const CategoriesPage = () => {
+  const { categories: CATEGORIES } = useCategories();
+
+  return (
   <>
     <Helmet>
       <title>Categories — {brand.name}</title>
@@ -42,6 +45,7 @@ const CategoriesPage = () => (
       </div>
     </div>
   </>
-);
+  );
+};
 
 export default CategoriesPage;

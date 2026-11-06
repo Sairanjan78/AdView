@@ -6,12 +6,13 @@ import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
 import { useAuth } from '../../context/AuthContext';
 import { articleApi } from '../../services/api';
-import { CATEGORIES } from '../../data/mockData';
+import useCategories from '../../hooks/useCategories';
 import './WritePage.css';
 
 const WritePage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { categories: CATEGORIES } = useCategories();
 
   const [formData, setFormData] = useState({
     title: '',

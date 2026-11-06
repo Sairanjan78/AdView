@@ -1,16 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
-import { LATEST_ARTICLES, CATEGORIES } from '../../data/mockData';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
+import useCategories from '../../hooks/useCategories';
 import './ExplorePage.css';
 
 const ExplorePage = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
+  // Also mounted at /categories/:slug - preselect that category
+  const { slug } = useParams();
+  const [activeCategory, setActiveCategory] = useState(slug || 'all');
+  const { categories: CATEGORIES } = useCategories();
 
-  const filtered = activeCategory === 'all'
-    ? LATEST_ARTICLES
-    : LATEST_ARTICLES.filter(a => a.category.slug === activeCategory);
+  useEffect(() => { setActiveCategory(slug || 'all'); }, [slug]);
+
+  const { data, loading, error } = useApi(
+    () => articleApi.getArticles({
+      category: activeCategory === 'all' ? undefined : activeCategory,
+      limit: 50,
+    }),
+    [activeCategory]
+  );
+
+  const filtered = (data?.data?.articles || []).map(normalizeArticle);
+  const total = data?.data?.pagination?.total ?? filtered.length;
 
   return (
     <>
@@ -55,7 +71,7 @@ const ExplorePage = () => {
 
           {/* Results count */}
           <p className="explore-count">
-            {filtered.length} article{filtered.length !== 1 ? 's' : ''} found
+            {loading ? 'Loading articles…' : `${total} article${total !== 1 ? 's' : ''} found`}
           </p>
 
           {/* Grid */}
@@ -65,10 +81,10 @@ const ExplorePage = () => {
                 <ArticleCard key={article.id} article={article} />
               ))}
             </div>
-          ) : (
+          ) : !loading && (
             <div className="explore-empty">
-              <span>🔍</span>
-              <p>No articles in this category yet.</p>
+              <span>{error ? '⚠️' : '🔍'}</span>
+              <p>{error ? error.message : 'No articles in this category yet.'}</p>
             </div>
           )}
         </div>

@@ -5,7 +5,9 @@ import { FiSearch } from 'react-icons/fi';
 import ArticleCard from '../../components/article/ArticleCard';
 import SearchBar from '../../components/search/SearchBar';
 import brand from '../../config/brand';
-import { LATEST_ARTICLES } from '../../data/mockData';
+import { articleApi } from '../../services/api';
+import { normalizeArticle } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
 import './SearchPage.css';
 
 const SearchPage = () => {
@@ -16,18 +18,16 @@ const SearchPage = () => {
   // Sync query from URL on mount
   useEffect(() => { setQuery(searchParams.get('q') || ''); }, [searchParams]);
 
-  const results = query.trim()
-    ? LATEST_ARTICLES.filter(a => {
-        const q = query.toLowerCase();
-        return (
-          a.title.toLowerCase().includes(q) ||
-          a.excerpt.toLowerCase().includes(q) ||
-          a.tags.some(t => t.toLowerCase().includes(q)) ||
-          a.category.name.toLowerCase().includes(q) ||
-          a.author.name.toLowerCase().includes(q)
-        );
-      })
-    : [];
+  // Server-side search across titles, excerpts, tags, categories and writer names
+  const trimmed = query.trim();
+  const { data, loading, error } = useApi(
+    trimmed
+      ? () => articleApi.getArticles({ search: trimmed, limit: 50 })
+          .then(res => (res?.data?.articles || []).map(normalizeArticle))
+      : null,
+    [trimmed]
+  );
+  const results = trimmed ? (data || []) : [];
 
   const handleSearch = (q) => {
     setQuery(q);
@@ -52,7 +52,7 @@ const SearchPage = () => {
             <SearchBar variant="page" placeholder="Search articles, writers, topics…" onSearch={handleSearch} />
           </div>
 
-          {query && (
+          {query && !loading && (
             <p className="search-page__meta">
               {results.length > 0
                 ? <><strong>{results.length}</strong> result{results.length !== 1 ? 's' : ''} for "<em>{query}</em>"</>
@@ -68,10 +68,10 @@ const SearchPage = () => {
             </div>
           )}
 
-          {query && results.length === 0 && (
+          {query && !loading && results.length === 0 && (
             <div className="search-page__empty">
-              <span>😕</span>
-              <p>No articles match your search. Try different keywords.</p>
+              <span>{error ? '⚠️' : '😕'}</span>
+              <p>{error ? error.message : 'No articles match your search. Try different keywords.'}</p>
             </div>
           )}
 

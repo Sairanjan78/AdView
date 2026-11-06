@@ -1,7 +1,7 @@
-import { CATEGORIES } from '../data/mockData';
+import { getCategoryMeta } from '../config/categories';
 
 /**
- * Normalizes an article object whether it came from MongoDB API or mock data.
+ * Normalizes an article object from the API into the shape the UI components expect.
  */
 export function normalizeArticle(raw) {
   if (!raw) return null;
@@ -9,7 +9,7 @@ export function normalizeArticle(raw) {
   // Resolve category
   let categoryObj;
   if (typeof raw.category === 'string') {
-    const found = CATEGORIES.find(c => c.slug === raw.category.toLowerCase());
+    const found = getCategoryMeta(raw.category);
     categoryObj = found || {
       id: raw.category,
       slug: raw.category.toLowerCase(),
@@ -39,8 +39,8 @@ export function normalizeArticle(raw) {
       avatar: raw.author.avatar || `https://i.pravatar.cc/150?u=${raw.author.username || 'writer'}`,
       bio: raw.author.bio || 'Contributing Writer at BlogSphere',
       verified: Boolean(raw.author.verified),
-      followers: raw.author.followers || 1200,
-      articles: raw.author.articles || 1
+      followers: raw.author.followers || 0,
+      articles: raw.author.articles || 0
     };
   } else {
     authorObj = {
@@ -73,3 +73,21 @@ export function normalizeArticle(raw) {
   };
 }
 
+
+/**
+ * Normalizes a writer from GET /writers or /writers/:username.
+ */
+export function normalizeWriter(raw) {
+  if (!raw) return null;
+  return {
+    id: raw.id || raw._id || raw.username,
+    name: raw.name || 'Anonymous Writer',
+    username: raw.username || 'writer',
+    avatar: raw.avatar || `https://i.pravatar.cc/150?u=${raw.username || 'writer'}`,
+    bio: raw.bio || 'Contributing Writer at BlogSphere',
+    verified: Boolean(raw.verified),
+    followers: raw.followers || 0,
+    articles: raw.articles || 0,
+    socialLinks: raw.socialLinks || {},
+  };
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { format } from 'date-fns';
@@ -11,37 +11,29 @@ import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
 import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
-import { LATEST_ARTICLES } from '../../data/mockData';
+import useApi from '../../hooks/useApi';
 import './ArticleDetailPage.css';
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
-  const mockFallback = LATEST_ARTICLES.find(a => a.slug === slug) || LATEST_ARTICLES[0];
-  const [article, setArticle] = useState(mockFallback);
+  const { data: article, loading, error } = useApi(
+    () => articleApi.getArticleBySlug(slug).then(res => normalizeArticle(res?.data?.article)),
+    [slug]
+  );
 
-  useEffect(() => {
-    let isMounted = true;
-    articleApi.getArticleBySlug(slug)
-      .then(res => {
-        if (isMounted && res?.data?.article) {
-          setArticle(normalizeArticle(res.data.article));
-        }
-      })
-      .catch(() => {
-        // Keeps mock article if not found on backend or if backend is offline
-        const foundMock = LATEST_ARTICLES.find(a => a.slug === slug);
-        if (isMounted && foundMock) {
-          setArticle(foundMock);
-        }
-      });
-
-    return () => { isMounted = false; };
-  }, [slug]);
+  if (loading) {
+    return (
+      <div className="article-not-found container">
+        <p>Loading…</p>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
       <div className="article-not-found container">
-        <h1>Article not found</h1>
+        <h1>{error && error.status !== 404 ? 'Could not load this article' : 'Article not found'}</h1>
+        {error && error.status !== 404 && <p>{error.message}</p>}
         <Link to="/">← Back home</Link>
       </div>
     );

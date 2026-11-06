@@ -90,15 +90,29 @@ export const authApi = {
     }),
 };
 
+// Builds "?a=1&b=2" from an object, skipping empty values
+const toQuery = (params = {}) => {
+  const clean = Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
+  );
+  const query = new URLSearchParams(clean).toString();
+  return query ? `?${query}` : '';
+};
+
 // Article API methods
 export const articleApi = {
-  getArticles: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiRequest(`/articles${query ? `?${query}` : ''}`, { method: 'GET' });
-  },
+  // params: { category, tag, search, author, featured, sort: latest|trending|oldest, page, limit }
+  getArticles: (params = {}) =>
+    apiRequest(`/articles${toQuery(params)}`, { method: 'GET' }),
+
+  getTrending: (params = {}) =>
+    apiRequest(`/articles/trending${toQuery(params)}`, { method: 'GET' }),
+
+  getFeatured: (params = {}) =>
+    apiRequest(`/articles/featured${toQuery(params)}`, { method: 'GET' }),
 
   getArticleBySlug: (slug) =>
-    apiRequest(`/articles/${slug}`, { method: 'GET' }),
+    apiRequest(`/articles/${encodeURIComponent(slug)}`, { method: 'GET' }),
 
   createArticle: (articleData) =>
     apiRequest('/articles', {
@@ -119,4 +133,22 @@ export const articleApi = {
 
   getMyArticles: () =>
     apiRequest('/articles/me/mine', { method: 'GET' }),
+};
+
+// Category API methods
+export const categoryApi = {
+  getCategories: () => apiRequest('/categories', { method: 'GET' }),
+
+  getCategory: (slug) =>
+    apiRequest(`/categories/${encodeURIComponent(slug)}`, { method: 'GET' }),
+};
+
+// Writer API methods
+export const writerApi = {
+  getWriters: (params = {}) =>
+    apiRequest(`/writers${toQuery(params)}`, { method: 'GET' }),
+
+  // Returns { writer, articles }
+  getWriter: (username) =>
+    apiRequest(`/writers/${encodeURIComponent(username)}`, { method: 'GET' }),
 };

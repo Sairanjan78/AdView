@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -11,40 +11,28 @@ import SearchBar from '../../components/search/SearchBar';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
-import { articleApi } from '../../services/api';
-import { normalizeArticle } from '../../utils/normalizeArticle';
-import {
-  FEATURED_ARTICLES, LATEST_ARTICLES, TRENDING_ARTICLES, CATEGORIES, AUTHORS,
-} from '../../data/mockData';
+import { articleApi, writerApi } from '../../services/api';
+import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle';
+import useApi from '../../hooks/useApi';
+import useCategories from '../../hooks/useCategories';
 import './HomePage.css';
 
+const toArticles = res => (res?.data?.articles || []).map(normalizeArticle);
+
 const HomePage = () => {
-  const [liveArticles, setLiveArticles] = useState([]);
+  const { categories: CATEGORIES } = useCategories();
+  const { data: featured } = useApi(() => articleApi.getFeatured({ limit: 3 }).then(toArticles));
+  const { data: trending } = useApi(() => articleApi.getTrending({ limit: 5 }).then(toArticles));
+  const { data: latest } = useApi(() => articleApi.getArticles({ limit: 6 }).then(toArticles));
+  const { data: writers } = useApi(() =>
+    writerApi.getWriters({ limit: 5 }).then(res => (res?.data?.writers || []).map(normalizeWriter))
+  );
 
-  useEffect(() => {
-    let isMounted = true;
-    articleApi.getArticles({ limit: 12 })
-      .then(res => {
-        if (isMounted && res?.data?.articles?.length > 0) {
-          const normalized = res.data.articles.map(normalizeArticle);
-          setLiveArticles(normalized);
-        }
-      })
-      .catch(() => {
-        // Graceful fallback to mock data if backend is not running
-      });
+  const displayedFeatured = featured || [];
+  const displayedLatest = latest || [];
+  const TRENDING_ARTICLES = trending || [];
+  const AUTHORS = writers || [];
 
-    return () => { isMounted = false; };
-  }, []);
-
-  // Merge live database articles with mock fallback so feed is always rich
-  const displayedFeatured = liveArticles.length > 0 
-    ? liveArticles.slice(0, 3) 
-    : FEATURED_ARTICLES;
-
-  const displayedLatest = liveArticles.length > 0
-    ? liveArticles
-    : LATEST_ARTICLES;
   return (
     <>
       <Helmet>
