@@ -79,7 +79,7 @@ Copy-Item .env.example .env        # Command Prompt: copy .env.example .env
 notepad .env                       # or open it in VS Code
 ```
 In `.env`:
-- Set `MONGODB_URI=` to your Atlas string from step 1 (no quotes, no spaces).
+- `MONGODB_URI` is pre-filled with the project's Atlas cluster (`blogsphere_app@blogsphere-cluster…/blogsphere`): replace `<db_password>` with that database user's password (no quotes, no spaces, URL-encode special characters). Using your own cluster? Paste your string from step 1 instead. For local MongoDB, comment the Atlas line and uncomment the local one.
 - Change `ADMIN_EMAIL` / `ADMIN_PASSWORD` to the admin login you want (the values in `.env.example` are development defaults only).
 - For anything online, also change `JWT_SECRET` to a long random string.
 
