@@ -13,7 +13,7 @@ The backend REST API and authentication service for BlogSphere.
 ## Getting Started
 
 ### 1. Prerequisites
-- Node.js >= 18
+- Node.js >= 20
 - MongoDB running locally or a free MongoDB Atlas connection URI
 
 ### 2. Configure Environment
@@ -41,13 +41,19 @@ Server will run at: **http://localhost:5000/api/v1**
 |--------|----------|--------|-----------------|
 | `GET`  | `/api/v1/health` | Public | None |
 | `POST` | `/api/v1/auth/register` | Public | `name`, `email`, `password`, `role` (`'reader'` \| `'writer'`), `username` (optional) |
-| `POST` | `/api/v1/auth/login` | Public | `email`, `password` |
+| `POST` | `/api/v1/auth/login` | Public | `email`, `password`, `remember` (boolean: `true` = `JWT_EXPIRE_REMEMBER` token, otherwise `JWT_EXPIRE_SESSION`) |
+| `POST` | `/api/v1/auth/google` | Public | `credential` (Google Identity Services ID token), `remember`. 503 unless `GOOGLE_CLIENT_ID` is set |
 | `GET`  | `/api/v1/auth/me` | Protected | Bearer token header or cookie |
 | `POST` | `/api/v1/auth/verify-email` | Public | `token` |
-| `POST` | `/api/v1/auth/forgot-password` | Public | `email` |
-| `POST` | `/api/v1/auth/reset-password` | Public | `token`, `password` |
+| `POST` | `/api/v1/auth/forgot-password` | Public | `email`. Same response whether or not the account exists; 5 per 15 min per IP |
+| `GET`  | `/api/v1/auth/reset-password/:token` | Public | Checks a reset link (400 if used or expired) |
+| `POST` | `/api/v1/auth/reset-password/:token` | Public | `password` (also accepts `POST /reset-password` with `token` in the body). Single use, 30-minute links; signs out other sessions |
 | `PUT`  | `/api/v1/auth/profile` | Protected | `name`, `bio`, `avatar`, `socialLinks`, `nicheSpecialties` |
 | `POST` | `/api/v1/auth/logout` | Public | Clears cookie |
+
+Email (reset links, verification, contact notifications) is sent with nodemailer when `SMTP_HOST`, `SMTP_USER` and `SMTP_PASS`
+are set. Otherwise it is printed in the terminal in development, and skipped with a warning in production.
+See the root README for Gmail / Brevo SMTP and Google OAuth client setup.
 
 ## Content Endpoints (public)
 
