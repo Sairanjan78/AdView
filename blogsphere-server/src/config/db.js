@@ -1,3 +1,4 @@
+const dns = require('dns');
 const mongoose = require('mongoose');
 const env = require('./env');
 
@@ -62,9 +63,22 @@ const connectDB = async () => {
   let uri;
   try {
     uri = resolveMongoUri();
-    const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: parseInt(process.env.MONGODB_TIMEOUT_MS, 10) || 10000
-    });
+    const opts = { serverSelectionTimeoutMS: parseInt(process.env.MONGODB_TIMEOUT_MS, 10) || 10000 };
+    if (process.env.MONGODB_DNS_SERVERS) {
+      dns.setServers(process.env.MONGODB_DNS_SERVERS.split(',').map((s) => s.trim()).filter(Boolean));
+    }
+    let conn;
+    try {
+      conn = await mongoose.connect(uri, opts);
+    } catch (err) {
+      // Some Windows/ISP DNS resolvers refuse the SRV lookup that mongodb+srv:// needs
+      // ("querySrv ECONNREFUSED"). Retry once through public DNS resolvers.
+      const srvDnsFailure = uri.startsWith('mongodb+srv://') && /querySrv|ENOTFOUND|ECONNREFUSED|ETIMEOUT/.test(err.message);
+      if (!srvDnsFailure || process.env.MONGODB_DNS_SERVERS) throw err;
+      console.warn('[Database Notice] SRV DNS lookup failed on this network; retrying via public DNS (8.8.8.8, 1.1.1.1).');
+      dns.setServers(['8.8.8.8', '1.1.1.1']);
+      conn = await mongoose.connect(uri, opts);
+    }
     console.log(`[Database] MongoDB connected: ${conn.connection.host} / db "${conn.connection.name}"`);
     return conn;
   } catch (error) {
