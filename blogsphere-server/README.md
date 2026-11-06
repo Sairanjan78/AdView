@@ -61,6 +61,9 @@ Server will run at: **http://localhost:5000/api/v1**
 | `GET` | `/api/v1/categories/:slug` | One category |
 | `GET` | `/api/v1/writers` | `limit`; top writers by followers |
 | `GET` | `/api/v1/writers/:username` | Writer profile + published articles |
+| `POST` | `/api/v1/contact` | `name`, `email`, `subject`, `message` (5 per hour per IP; admins read via `GET /api/v1/contact`) |
+| `GET` | `/sitemap.xml` | XML sitemap of published content (links use `SITE_URL`); also `/api/v1/sitemap.xml` |
+| `GET` | `/robots.txt` | Robots file for the API host, pointing at the sitemap |
 
 Writer/admin endpoints: `POST /api/v1/articles`, `PUT /api/v1/articles/:id`, `DELETE /api/v1/articles/:id`, `GET /api/v1/articles/me/mine`.
 
