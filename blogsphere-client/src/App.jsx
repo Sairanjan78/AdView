@@ -6,6 +6,8 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Seo from './components/seo/Seo';
 import AdSenseHead from './components/ads/AdSenseHead';
+import Button from './components/ui/Button';
+import { LuLoaderCircle, LuArrowLeft } from 'react-icons/lu';
 import './styles/index.css';
 
 // Lazy-load pages for code splitting
@@ -28,37 +30,22 @@ const ContactPage         = lazy(() => import('./pages/legal/ContactPage'));
 const AdvertisingDisclosurePage = lazy(() => import('./pages/legal/AdvertisingDisclosurePage'));
 const MonetizationPolicyPage    = lazy(() => import('./pages/legal/MonetizationPolicyPage'));
 
-/**
- * PageLoader — shown while lazy chunks are loading.
- * Replace with a proper skeleton in a future phase.
- */
+/** PageLoader — shown while lazy chunks are loading. */
 const PageLoader = () => (
-  <div style={{
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    minHeight: '60vh', color: 'var(--text-muted)', fontSize: '14px',
-    flexDirection: 'column', gap: '16px',
-  }}>
-    <span style={{ fontSize: '2rem', animation: 'spin 1s linear infinite', display: 'inline-block' }}>✦</span>
+  <div className="page-loader" role="status">
+    <LuLoaderCircle size={28} aria-hidden="true" />
     Loading…
   </div>
 );
 
-/**
- * NotFoundPage — catch-all 404.
- */
+/** NotFoundPage — catch-all 404. */
 const NotFoundPage = () => (
-  <div style={{ textAlign: 'center', padding: '100px 20px', minHeight: '60vh' }}>
+  <div className="not-found">
     <Seo title="Page not found" noindex />
-    <div style={{ fontSize: '5rem', marginBottom: '24px' }}>404</div>
-    <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '12px', color: 'var(--text-primary)' }}>
-      Page not found
-    </h1>
-    <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-      The page you're looking for doesn't exist or has been moved.
-    </p>
-    <a href="/" style={{ color: 'var(--color-primary-light)', textDecoration: 'none', fontWeight: 600 }}>
-      ← Back to home
-    </a>
+    <div className="not-found__code" aria-hidden="true">404</div>
+    <h1>Page not found</h1>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <Button to="/" variant="primary" icon={<LuArrowLeft />}>Back to home</Button>
   </div>
 );
 
