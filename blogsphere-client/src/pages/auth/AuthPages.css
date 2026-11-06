@@ -107,6 +107,79 @@
 }
 .auth-writer-note strong { color: var(--text-primary); }
 
+/* Remember me hint */
+.auth-checkbox__hint { color: var(--text-muted); }
+
+/* Text-styled button (e.g. "Try again") */
+.auth-link--button { background: none; border: none; padding: 0; font: inherit; cursor: pointer; }
+
+/* Success notice (e.g. after a password reset) */
+.auth-success-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--success-soft);
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  border: 1px solid rgba(21, 128, 61, 0.25);
+}
+.auth-success-banner svg { flex-shrink: 0; margin-top: 2px; }
+
+/* Icon above a status heading ("Check your inbox") */
+.auth-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-full, 999px);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.auth-card__sub strong { color: var(--text-primary); font-weight: var(--font-semibold); word-break: break-all; }
+.auth-card__note { text-align: center; font-size: var(--text-sm); color: var(--text-secondary); }
+
+/* Continue with Google */
+.auth-google-wrap { display: flex; justify-content: center; min-height: 44px; transition: opacity var(--transition-fast); }
+.auth-google-wrap--busy { opacity: 0.55; pointer-events: none; }
+.auth-google { width: 100%; display: flex; justify-content: center; }
+.auth-google__failed { font-size: var(--text-xs); color: var(--text-muted); text-align: center; }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-6) 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.auth-divider::before,
+.auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Password strength hint */
+.auth-strength { display: flex; flex-direction: column; gap: var(--space-2); }
+.auth-strength__bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.auth-strength__bars span { height: 4px; border-radius: 2px; background: var(--border); transition: background var(--transition-fast); }
+.auth-strength--1 .auth-strength__bars .is-on { background: var(--color-danger); }
+.auth-strength--2 .auth-strength__bars .is-on { background: var(--color-warning); }
+.auth-strength--3 .auth-strength__bars .is-on,
+.auth-strength--4 .auth-strength__bars .is-on { background: var(--color-success); }
+.auth-strength__text { font-size: var(--text-xs); color: var(--text-secondary); line-height: var(--leading-normal); }
+.auth-strength__text strong { color: var(--text-primary); }
+
+.auth-field-hint { font-size: var(--text-xs); color: var(--text-muted); }
+.auth-field-hint--error { color: var(--color-danger); }
+
+/* Link check spinner and expired-link state inside the card */
+.auth-checking { min-height: 160px; }
+.auth-empty { margin: 0; padding: var(--space-6) var(--space-2); border: none; }
+
 @media (max-width: 480px) {
   .auth-page { padding: var(--space-6) var(--space-3); align-items: flex-start; }
   .auth-card { padding: var(--space-6) var(--space-5); box-shadow: var(--shadow-sm); }

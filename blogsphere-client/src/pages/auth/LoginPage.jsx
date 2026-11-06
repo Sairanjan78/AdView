@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuCircleAlert } from 'react-icons/lu';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LuMail, LuLock, LuEye, LuEyeOff, LuArrowRight, LuCircleAlert, LuCircleCheck } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
+import GoogleSignInButton, { isGoogleSignInEnabled } from '../../components/auth/GoogleSignInButton';
 import BrandMark from '../../components/layout/BrandMark';
 import brand from '../../config/brand';
 import Seo from '../../components/seo/Seo';
@@ -10,16 +11,38 @@ import './AuthPages.css';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, loginWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: location.state?.email || '', password: '', remember: false });
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  // e.g. "Your password has been updated" after a reset
+  const notice = location.state?.notice;
+
+  // Google's button calls back later, so read "remember me" from a ref at that moment
+  const rememberRef = useRef(form.remember);
+  useEffect(() => { rememberRef.current = form.remember; }, [form.remember]);
 
   const handleChange = e => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value, type, checked } = e.target;
+    setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
     setErrorMsg('');
   };
+
+  const handleGoogleCredential = useCallback(async credential => {
+    setGoogleLoading(true);
+    setErrorMsg('');
+    try {
+      await loginWithGoogle(credential, rememberRef.current);
+      navigate('/');
+    } catch (err) {
+      setErrorMsg(err.message || 'Google sign-in failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  }, [loginWithGoogle, navigate]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -27,7 +50,7 @@ const LoginPage = () => {
     setErrorMsg('');
 
     try {
-      await login(form.email, form.password);
+      await login(form.email.trim(), form.password, form.remember);
       navigate('/');
     } catch (err) {
       setErrorMsg(err.message || 'Login failed. Please check your credentials.');
@@ -51,6 +74,22 @@ const LoginPage = () => {
             <p className="auth-card__sub">Sign in to your writer or administrator portal.</p>
           </div>
 
+          {notice && (
+            <div className="auth-success-banner" role="status">
+              <LuCircleCheck size={16} />
+              <span>{notice}</span>
+            </div>
+          )}
+
+          {isGoogleSignInEnabled() && (
+            <>
+              <div className={`auth-google-wrap ${googleLoading ? 'auth-google-wrap--busy' : ''}`} aria-busy={googleLoading}>
+                <GoogleSignInButton onCredential={handleGoogleCredential} onError={setErrorMsg} />
+              </div>
+              <div className="auth-divider" role="separator"><span>or sign in with email</span></div>
+            </>
+          )}
+
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
               <label htmlFor="login-email" className="auth-label">Email address</label>
@@ -66,7 +105,10 @@ const LoginPage = () => {
             </div>
 
             <div className="auth-field">
-              <label htmlFor="login-password" className="auth-label">Password</label>
+              <div className="auth-label-row">
+                <label htmlFor="login-password" className="auth-label">Password</label>
+                <Link to="/forgot-password" state={{ email: form.email }} className="auth-link auth-link--sm">Forgot password?</Link>
+              </div>
               <div className="auth-input-wrap">
                 <LuLock className="auth-input-icon" />
                 <input
@@ -85,6 +127,16 @@ const LoginPage = () => {
                 </button>
               </div>
             </div>
+
+            <label className="auth-checkbox">
+              <input
+                type="checkbox" name="remember"
+                checked={form.remember} onChange={handleChange}
+              />
+              <span className="auth-checkbox__label">
+                Remember me <span className="auth-checkbox__hint">— stay signed in on this device for 30 days</span>
+              </span>
+            </label>
 
             {errorMsg && (
               <div className="auth-error-banner" role="alert">
