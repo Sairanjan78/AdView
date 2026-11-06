@@ -9,7 +9,7 @@
     "dev:memory": "node devServer.js",
     "seed": "node scripts/seed.js",
     "seed:admin": "node scripts/seed.js --admin-only",
-    "test": "node tests/phase2_test.js && node tests/article_test.js && node tests/catalog_test.js && node tests/seed_test.js"
+    "test": "node tests/phase2_test.js && node tests/article_test.js && node tests/catalog_test.js && node tests/seed_test.js && node tests/seo_contact_test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -7,6 +7,7 @@ const env = require('./config/env');
 const routes = require('./routes');
 const errorHandler = require('./middleware/error');
 const { sendError } = require('./utils/response');
+const { getSitemap, getRobots } = require('./controllers/seoController');
 
 const app = express();
 
@@ -32,6 +33,15 @@ if (env.nodeEnv === 'development') {
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
+
+// Behind a proxy/load balancer (Render, Railway, Heroku, Nginx) so req.protocol and rate limits use the real client
+if (env.nodeEnv === 'production') {
+  app.set('trust proxy', 1);
+}
+
+// SEO: sitemap generated from published articles + robots.txt for this host
+app.get('/sitemap.xml', getSitemap);
+app.get('/robots.txt', getRobots);
 
 // Mount API routes
 app.use('/api/v1', routes);

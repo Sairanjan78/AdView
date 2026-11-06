@@ -7,10 +7,16 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const nodeEnv = process.env.NODE_ENV || 'development';
 const DEV_LOCAL_MONGODB_URI = 'mongodb://127.0.0.1:27017/blogsphere';
 
+const clientUrl = (process.env.CLIENT_URL || 'http://localhost:3000').replace(/\/+$/, '');
+
 const env = {
   port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv,
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
+  clientUrl,
+  // Public address of the website (used for sitemap links). Defaults to CLIENT_URL.
+  siteUrl: (process.env.SITE_URL || clientUrl).replace(/\/+$/, ''),
+  // Where contact-form notifications go (optional)
+  contactEmail: process.env.CONTACT_EMAIL || '',
   // No silent fallback: config/db.js decides what to do when this is missing
   mongoUri: (process.env.MONGODB_URI || '').trim(),
   devLocalMongoUri: DEV_LOCAL_MONGODB_URI,

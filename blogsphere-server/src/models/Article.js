@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { ARTICLE_STATUS, CATEGORIES_LIST } = require('../constants/articles');
+const slugify = require('../utils/slugify');
 
 const ArticleSchema = new mongoose.Schema(
   {
@@ -89,21 +90,14 @@ const ArticleSchema = new mongoose.Schema(
 ArticleSchema.index({ status: 1, publishedAt: -1 });
 ArticleSchema.index({ status: 1, views: -1, likes: -1 });
 
-// Helper function to create slug
-function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/[\s\W-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 // Pre-save hook: auto-generate unique slug & calculate read time
 ArticleSchema.pre('save', async function (next) {
   // A new article may bring its own slug (e.g. seeded content); otherwise derive it from the title
+  // Once an article has been published its URL stays stable (good for SEO and shared links),
+  // even if the title is edited later.
   const keepProvidedSlug = this.isNew && this.slug;
-  if (keepProvidedSlug || this.isModified('title') || !this.slug) {
+  const alreadyPublished = !this.isNew && Boolean(this.publishedAt);
+  if (keepProvidedSlug || !this.slug || (this.isModified('title') && !alreadyPublished)) {
     let baseSlug = slugify(keepProvidedSlug ? this.slug : this.title);
     if (!baseSlug) baseSlug = 'article';
     let uniqueSlug = baseSlug;
