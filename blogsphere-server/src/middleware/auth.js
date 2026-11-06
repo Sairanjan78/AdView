@@ -29,6 +29,10 @@ const protect = async (req, res, next) => {
       return sendError(res, 401, 'The account belonging to this token no longer exists.');
     }
 
+    if (user.changedPasswordAfter(decoded.iat)) {
+      return sendError(res, 401, 'Your password was changed recently. Please sign in again.');
+    }
+
     if (user.status === USER_STATUS.SUSPENDED) {
       return sendError(res, 403, 'Your account has been suspended. Please contact support.');
     }

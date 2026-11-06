@@ -56,6 +56,15 @@ const UserSchema = new mongoose.Schema(
     emailVerificationExpire: Date,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    // Set whenever the password changes; tokens issued before it stop working
+    passwordChangedAt: Date,
+    // Google account linked through "Continue with Google" (the ID token's `sub`)
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      select: false
+    },
     avatar: {
       type: String,
       default: ''
@@ -109,6 +118,10 @@ UserSchema.pre('save', async function (next) {
   }
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
+  if (!this.isNew) {
+    // 1s back so a token signed right after the change is still valid (JWT iat has 1s precision)
+    this.passwordChangedAt = new Date(Date.now() - 1000);
+  }
   next();
 });
 
@@ -117,8 +130,14 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Sign JWT and return
-UserSchema.methods.getSignedJwtToken = function () {
+// True when the password was changed after the given JWT `iat` (seconds)
+UserSchema.methods.changedPasswordAfter = function (jwtIssuedAt) {
+  if (!this.passwordChangedAt || !jwtIssuedAt) return false;
+  return Math.floor(this.passwordChangedAt.getTime() / 1000) > jwtIssuedAt;
+};
+
+// Sign JWT and return. expiresIn defaults to JWT_EXPIRE ("remember me" passes its own lifetime)
+UserSchema.methods.getSignedJwtToken = function (expiresIn = env.jwtExpire) {
   return jwt.sign(
     {
       id: this._id,
@@ -127,7 +146,7 @@ UserSchema.methods.getSignedJwtToken = function () {
     },
     env.jwtSecret,
     {
-      expiresIn: env.jwtExpire
+      expiresIn
     }
   );
 };

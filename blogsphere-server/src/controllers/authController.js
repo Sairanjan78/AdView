@@ -1,9 +1,18 @@
 const crypto = require('crypto');
 const User = require('../models/User');
-const { ROLES } = require('../constants/roles');
+const validator = require('validator');
+const { ROLES, USER_STATUS } = require('../constants/roles');
 const { sendSuccess, sendError, sendTokenResponse } = require('../utils/response');
 const sendEmail = require('../utils/email');
+const googleAuth = require('../utils/googleAuth');
 const env = require('../config/env');
+
+const RESET_TOKEN_TTL_MS = 30 * 60 * 1000; // keep in sync with User.generatePasswordResetToken
+const RESET_RESEND_COOLDOWN_MS = 60 * 1000; // one reset email per account per minute
+const FORGOT_PASSWORD_RESPONSE = 'If an account exists for that email, a password reset link is on its way. It expires in 30 minutes.';
+
+// "Remember me" arrives as a boolean (or "true"/"on" from plain forms)
+const wantsRemember = (value) => value === true || value === 'true' || value === 'on' || value === 1;
 
 // Helper to generate a unique username from full name
 const generateUsername = async (name) => {
@@ -11,7 +20,8 @@ const generateUsername = async (name) => {
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '_')
     .slice(0, 20);
-  if (!base) base = 'user';
+  if (!base || /^_+$/.test(base)) base = 'user';
+  if (base.length < 3) base = `${base}_user`;
 
   let username = base;
   let counter = 1;
@@ -87,14 +97,14 @@ const register = async (req, res, next) => {
 // @access  Public
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, remember } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
       return sendError(res, 400, 'Please provide both email and password');
     }
 
     // Find user with password selected
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
 
     if (!user) {
       return sendError(res, 401, 'Invalid credentials');
@@ -110,7 +120,9 @@ const login = async (req, res, next) => {
     user.lastLoginAt = Date.now();
     await user.save({ validateBeforeSave: false });
 
-    return sendTokenResponse(user, 200, res, 'Logged in successfully');
+    return sendTokenResponse(user, 200, res, 'Logged in successfully', {
+      remember: wantsRemember(remember)
+    });
   } catch (error) {
     next(error);
   }
@@ -161,56 +173,86 @@ const verifyEmail = async (req, res, next) => {
   }
 };
 
-// @desc    Forgot password - request reset token
+// @desc    Forgot password - email a single-use reset link (valid 30 minutes)
 // @route   POST /api/v1/auth/forgot-password
-// @access  Public
+// @access  Public (rate limited)
+// The response is identical whether or not the email belongs to an account (no account enumeration),
+// and the email is sent in the background so response time does not reveal it either.
 const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    if (!email) {
-      return sendError(res, 400, 'Please provide an email address');
+    if (!email || typeof email !== 'string' || !validator.isEmail(email.trim())) {
+      return sendError(res, 400, 'Please provide a valid email address');
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
-    // Always respond with success to avoid account enumeration
-    if (!user) {
-      return sendSuccess(res, 200, 'If that email exists, a password reset link has been sent.');
-    }
+    const recentlySent =
+      user &&
+      user.resetPasswordExpire &&
+      user.resetPasswordExpire.getTime() - RESET_TOKEN_TTL_MS > Date.now() - RESET_RESEND_COOLDOWN_MS;
 
-    const resetToken = user.generatePasswordResetToken();
-    await user.save({ validateBeforeSave: false });
-
-    const resetUrl = `${env.clientUrl}/reset-password?token=${resetToken}`;
-    const message = `You requested a password reset for BlogSphere.\n\nPlease reset your password using the link below:\n${resetUrl}\n\nIf you did not request this, please ignore this email.`;
-
-    try {
-      await sendEmail({
-        to: user.email,
-        subject: 'BlogSphere Password Reset',
-        text: message
-      });
-      return sendSuccess(res, 200, 'If that email exists, a password reset link has been sent.');
-    } catch (err) {
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
+    if (user && !recentlySent) {
+      // A new request replaces any earlier link, so only the newest one works
+      const resetToken = user.generatePasswordResetToken();
       await user.save({ validateBeforeSave: false });
-      return sendError(res, 500, 'Email could not be sent. Please try again later.');
+
+      const resetUrl = `${env.clientUrl}/reset-password/${resetToken}`;
+      const text =
+        `Hi ${user.name},\n\n` +
+        `We received a request to reset the password for your BlogSphere account.\n\n` +
+        `Choose a new password here (the link works once and expires in 30 minutes):\n${resetUrl}\n\n` +
+        `If you did not ask for this, you can ignore this email - your password will not change.`;
+
+      sendEmail({ to: user.email, subject: 'Reset your BlogSphere password', text }).catch(async (err) => {
+        console.error('[Email] Password reset email failed:', err.message);
+        // The link never arrived, so do not leave a usable token behind
+        await User.updateOne(
+          { _id: user._id },
+          { $unset: { resetPasswordToken: 1, resetPasswordExpire: 1 } }
+        ).catch(() => {});
+      });
     }
+
+    return sendSuccess(res, 200, FORGOT_PASSWORD_RESPONSE);
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Reset password using token
-// @route   POST /api/v1/auth/reset-password
-// @access  Public
+// @desc    Check whether a reset link is still valid (lets the page show "expired" before typing)
+// @route   GET /api/v1/auth/reset-password/:token
+// @access  Public (rate limited)
+const checkResetToken = async (req, res, next) => {
+  try {
+    const hashedToken = crypto.createHash('sha256').update(String(req.params.token)).digest('hex');
+    const exists = await User.exists({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+    if (!exists) {
+      return sendError(res, 400, 'This reset link is invalid or has expired. Please request a new one.');
+    }
+    return sendSuccess(res, 200, 'Reset link is valid');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Reset password using the emailed token (single use)
+// @route   POST /api/v1/auth/reset-password  (body: token, password)
+//          POST /api/v1/auth/reset-password/:token  (body: password)
+// @access  Public (rate limited)
 const resetPassword = async (req, res, next) => {
   try {
-    const { token, password } = req.body;
+    const token = req.params.token || req.body.token;
+    const { password } = req.body;
 
-    if (!token || !password) {
+    if (!token || !password || typeof token !== 'string' || typeof password !== 'string') {
       return sendError(res, 400, 'Please provide both token and new password');
+    }
+    if (password.length < 8) {
+      return sendError(res, 400, 'Password must be at least 8 characters');
     }
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
@@ -221,15 +263,94 @@ const resetPassword = async (req, res, next) => {
     });
 
     if (!user) {
-      return sendError(res, 400, 'Invalid or expired reset token');
+      return sendError(res, 400, 'This reset link is invalid or has expired. Please request a new one.');
     }
 
-    user.password = password;
+    user.password = password; // pre-save hook hashes it and stamps passwordChangedAt
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
+    // Following the emailed link proves the user owns the address
+    user.isEmailVerified = true;
     await user.save();
 
-    return sendTokenResponse(user, 200, res, 'Password updated successfully. You are now logged in.');
+    return sendSuccess(res, 200, 'Your password has been updated. Please sign in with your new password.');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Sign in / sign up with Google (Google Identity Services ID token)
+// @route   POST /api/v1/auth/google  (body: credential, remember)
+// @access  Public (rate limited)
+// Existing accounts are matched by Google ID, then by email (and linked). New accounts are always readers.
+const googleSignIn = async (req, res, next) => {
+  try {
+    if (!googleAuth.isConfigured()) {
+      return sendError(res, 503, 'Google sign-in is not enabled on this server');
+    }
+
+    const { credential, remember } = req.body;
+    if (!credential || typeof credential !== 'string') {
+      return sendError(res, 400, 'Missing Google credential');
+    }
+
+    let payload;
+    try {
+      payload = await googleAuth.verifyIdToken(credential);
+    } catch (err) {
+      return sendError(res, 401, 'Google sign-in failed. Please try again.');
+    }
+
+    if (!payload || !payload.sub || !payload.email) {
+      return sendError(res, 401, 'Google sign-in failed. Please try again.');
+    }
+    if (payload.email_verified !== true && payload.email_verified !== 'true') {
+      return sendError(res, 401, 'Your Google email address is not verified.');
+    }
+
+    const email = payload.email.toLowerCase();
+    let user = await User.findOne({ googleId: payload.sub }).select('+googleId');
+
+    if (!user) {
+      user = await User.findOne({ email }).select('+googleId');
+      if (user) {
+        if (user.googleId && user.googleId !== payload.sub) {
+          return sendError(res, 409, 'This account is already linked to a different Google account.');
+        }
+        user.googleId = payload.sub;
+        user.isEmailVerified = true;
+        if (!user.avatar && payload.picture) user.avatar = payload.picture;
+      }
+    }
+
+    let statusCode = 200;
+    let message = 'Signed in with Google';
+
+    if (!user) {
+      const name = (payload.name || email.split('@')[0]).slice(0, 60);
+      user = new User({
+        name,
+        email,
+        username: await generateUsername(name),
+        // Random password nobody knows: the account signs in with Google (or sets one via "Forgot password")
+        password: crypto.randomBytes(32).toString('hex'),
+        role: ROLES.READER, // never auto-create writers or admins
+        isEmailVerified: true,
+        googleId: payload.sub,
+        avatar: payload.picture || ''
+      });
+      statusCode = 201;
+      message = 'Account created with Google';
+    }
+
+    if (user.status === USER_STATUS.SUSPENDED) {
+      return sendError(res, 403, 'Your account has been suspended. Please contact support.');
+    }
+
+    user.lastLoginAt = Date.now();
+    await user.save({ validateBeforeSave: statusCode === 201 });
+
+    return sendTokenResponse(user, statusCode, res, message, { remember: wantsRemember(remember) });
   } catch (error) {
     next(error);
   }
@@ -278,7 +399,9 @@ module.exports = {
   getMe,
   verifyEmail,
   forgotPassword,
+  checkResetToken,
   resetPassword,
+  googleSignIn,
   updateProfile,
   logout
 };

@@ -1,7 +1,7 @@
 {
   "name": "blogsphere-server",
   "version": "1.0.0",
-  "description": "Backend API for BlogSphere \u2014 Multi-Niche Global Blogging Platform",
+  "description": "Backend API for BlogSphere — Multi-Niche Global Blogging Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,7 +9,7 @@
     "dev:memory": "node devServer.js",
     "seed": "node scripts/seed.js",
     "seed:admin": "node scripts/seed.js --admin-only",
-    "test": "node tests/phase2_test.js && node tests/article_test.js && node tests/catalog_test.js && node tests/seed_test.js && node tests/seo_contact_test.js",
+    "test": "node tests/phase2_test.js && node tests/article_test.js && node tests/catalog_test.js && node tests/seed_test.js && node tests/seo_contact_test.js && node tests/password_reset_test.js && node tests/google_auth_test.js",
     "unseed": "node scripts/unseed.js"
   },
   "dependencies": {
@@ -19,10 +19,12 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
+    "google-auth-library": "^10.9.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1",
     "morgan": "^1.10.0",
+    "nodemailer": "^10.3.1",
     "validator": "^13.12.0"
   },
   "devDependencies": {
@@ -31,6 +33,6 @@
     "supertest": "^7.3.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }
