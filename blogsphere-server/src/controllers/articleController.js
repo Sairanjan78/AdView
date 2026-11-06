@@ -1,7 +1,12 @@
 const Article = require('../models/Article');
+const User = require('../models/User');
 const { ARTICLE_STATUS } = require('../constants/articles');
 const { ROLES } = require('../constants/roles');
 const { sendSuccess, sendError } = require('../utils/response');
+const { escapeRegex, parseLimit } = require('../utils/query');
+
+// Public author fields included with every article
+const AUTHOR_FIELDS = 'name username avatar bio verified followers';
 
 /**
  * @desc    Get published articles (public, filterable, pagination)
@@ -10,22 +15,45 @@ const { sendSuccess, sendError } = require('../utils/response');
  */
 exports.getArticles = async (req, res) => {
   try {
-    const { category, tag, search, sort = 'latest', page = 1, limit = 10 } = req.query;
+    const { category, tag, search, author, featured, sort = 'latest', page = 1, limit = 10 } = req.query;
 
     const query = { status: ARTICLE_STATUS.PUBLISHED };
 
     if (category) {
-      query.category = category.toLowerCase();
+      query.category = String(category).toLowerCase();
     }
 
     if (tag) {
-      query.tags = tag.toLowerCase();
+      query.tags = String(tag).toLowerCase();
     }
 
-    if (search) {
+    if (featured === 'true') {
+      query.featured = true;
+    }
+
+    if (author) {
+      const authorUser = await User.findOne({ username: String(author).toLowerCase() }).select('_id').lean();
+      if (!authorUser) {
+        return sendSuccess(res, 200, 'Articles retrieved successfully', {
+          articles: [],
+          pagination: { page: 1, limit: parseLimit(limit, 10), total: 0, pages: 0 }
+        });
+      }
+      query.author = authorUser._id;
+    }
+
+    if (search && String(search).trim()) {
+      const pattern = new RegExp(escapeRegex(String(search).trim()), 'i');
+      // Also match articles whose writer's name or username matches
+      const matchingAuthors = await User.find({ $or: [{ name: pattern }, { username: pattern }] })
+        .select('_id')
+        .lean();
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { excerpt: { $regex: search, $options: 'i' } }
+        { title: pattern },
+        { excerpt: pattern },
+        { tags: pattern },
+        { category: pattern },
+        ...(matchingAuthors.length ? [{ author: { $in: matchingAuthors.map(u => u._id) } }] : [])
       ];
     }
 
@@ -36,13 +64,13 @@ exports.getArticles = async (req, res) => {
       sortOption = { publishedAt: 1 };
     }
 
-    const pageNum = Math.max(1, parseInt(page, 10));
-    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = parseLimit(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
     const [articles, total] = await Promise.all([
       Article.find(query)
-        .populate('author', 'name username avatar bio')
+        .populate('author', AUTHOR_FIELDS)
         .sort(sortOption)
         .skip(skip)
         .limit(limitNum)
@@ -65,6 +93,61 @@ exports.getArticles = async (req, res) => {
 };
 
 /**
+ * @desc    Get trending articles (most viewed, then most liked)
+ * @route   GET /api/v1/articles/trending?limit=5&category=
+ * @access  Public
+ */
+exports.getTrendingArticles = async (req, res) => {
+  try {
+    const limitNum = parseLimit(req.query.limit, 5);
+    const query = { status: ARTICLE_STATUS.PUBLISHED };
+    if (req.query.category) query.category = String(req.query.category).toLowerCase();
+
+    const articles = await Article.find(query)
+      .populate('author', AUTHOR_FIELDS)
+      .sort({ views: -1, likes: -1, publishedAt: -1 })
+      .limit(limitNum)
+      .lean();
+
+    return sendSuccess(res, 200, 'Trending articles retrieved', { articles });
+  } catch (err) {
+    return sendError(res, 500, err.message);
+  }
+};
+
+/**
+ * @desc    Get featured articles; topped up with the latest articles if too few are featured
+ * @route   GET /api/v1/articles/featured?limit=3
+ * @access  Public
+ */
+exports.getFeaturedArticles = async (req, res) => {
+  try {
+    const limitNum = parseLimit(req.query.limit, 3, 12);
+    const base = { status: ARTICLE_STATUS.PUBLISHED };
+
+    const featured = await Article.find({ ...base, featured: true })
+      .populate('author', AUTHOR_FIELDS)
+      .sort({ publishedAt: -1 })
+      .limit(limitNum)
+      .lean();
+
+    let articles = featured;
+    if (featured.length < limitNum) {
+      const fill = await Article.find({ ...base, _id: { $nin: featured.map(a => a._id) } })
+        .populate('author', AUTHOR_FIELDS)
+        .sort({ publishedAt: -1 })
+        .limit(limitNum - featured.length)
+        .lean();
+      articles = featured.concat(fill);
+    }
+
+    return sendSuccess(res, 200, 'Featured articles retrieved', { articles });
+  } catch (err) {
+    return sendError(res, 500, err.message);
+  }
+};
+
+/**
  * @desc    Get single article by slug (increments view count)
  * @route   GET /api/v1/articles/:slug
  * @access  Public (No auth needed for readers)
@@ -73,14 +156,23 @@ exports.getArticleBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
 
-    const article = await Article.findOneAndUpdate(
+    const doc = await Article.findOneAndUpdate(
       { slug, status: ARTICLE_STATUS.PUBLISHED },
       { $inc: { views: 1 } },
       { new: true }
-    ).populate('author', 'name username avatar bio');
+    ).populate('author', AUTHOR_FIELDS);
 
-    if (!article) {
+    if (!doc) {
       return sendError(res, 404, 'Article not found or not yet published');
+    }
+
+    const article = doc.toObject();
+    if (article.author && article.author._id) {
+      // Writer's published article count for the author card
+      article.author.articles = await Article.countDocuments({
+        author: article.author._id,
+        status: ARTICLE_STATUS.PUBLISHED
+      });
     }
 
     return sendSuccess(res, 200, 'Article details retrieved', { article });
@@ -115,7 +207,7 @@ exports.createArticle = async (req, res) => {
       author: req.user._id
     });
 
-    const populatedArticle = await article.populate('author', 'name username avatar bio');
+    const populatedArticle = await article.populate('author', AUTHOR_FIELDS);
 
     return sendSuccess(res, 201, 'Article created successfully', { article: populatedArticle });
   } catch (err) {
@@ -151,7 +243,7 @@ exports.updateArticle = async (req, res) => {
     if (status) article.status = status;
 
     await article.save();
-    const updated = await article.populate('author', 'name username avatar bio');
+    const updated = await article.populate('author', AUTHOR_FIELDS);
 
     return sendSuccess(res, 200, 'Article updated successfully', { article: updated });
   } catch (err) {
