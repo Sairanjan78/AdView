@@ -1,3 +1,6 @@
+// Quiet request logging during tests
+process.env.NODE_ENV = 'test';
+
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const request = require('supertest');
