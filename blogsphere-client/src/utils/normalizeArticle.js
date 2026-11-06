@@ -66,6 +66,7 @@ export function normalizeArticle(raw) {
     author: authorObj,
     tags: Array.isArray(raw.tags) ? raw.tags : [],
     publishedAt: raw.publishedAt || raw.createdAt || new Date().toISOString(),
+    updatedAt: raw.updatedAt || raw.publishedAt || raw.createdAt,
     readTime: raw.readTime || 3,
     views: raw.views || 0,
     likes: raw.likes || 0,

@@ -14,16 +14,16 @@ const FOOTER_LINKS = {
   ],
   Writers: [
     { label: 'Start Writing',          to: '/register' },
-    { label: 'Writer Dashboard',       to: '/dashboard' },
+    { label: 'Writer Studio',          to: '/write' },
     { label: 'Monetization Policy',    to: '/writer-monetization-policy' },
     { label: 'Advertising Disclosure', to: '/advertising-disclosure' },
   ],
   Company: [
     { label: 'About',     to: '/about' },
     { label: 'Contact',   to: '/contact' },
-    { label: 'Privacy',   to: '/privacy-policy' },
-    { label: 'Terms',     to: '/terms' },
-    { label: 'Cookies',   to: '/cookie-policy' },
+    { label: 'Privacy Policy', to: '/privacy-policy' },
+    { label: 'Terms of Service', to: '/terms' },
+    { label: 'Cookie Policy',  to: '/cookie-policy' },
   ],
 };
 

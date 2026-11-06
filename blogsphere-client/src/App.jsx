@@ -1,9 +1,11 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import Seo from './components/seo/Seo';
+import AdSenseHead from './components/ads/AdSenseHead';
 import './styles/index.css';
 
 // Lazy-load pages for code splitting
@@ -19,6 +21,12 @@ const AboutPage           = lazy(() => import('./pages/public/AboutPage'));
 const WritePage           = lazy(() => import('./pages/writer/WritePage'));
 const RegisterPage        = lazy(() => import('./pages/auth/RegisterPage'));
 const LoginPage           = lazy(() => import('./pages/auth/LoginPage'));
+const PrivacyPolicyPage   = lazy(() => import('./pages/legal/PrivacyPolicyPage'));
+const TermsPage           = lazy(() => import('./pages/legal/TermsPage'));
+const CookiePolicyPage    = lazy(() => import('./pages/legal/CookiePolicyPage'));
+const ContactPage         = lazy(() => import('./pages/legal/ContactPage'));
+const AdvertisingDisclosurePage = lazy(() => import('./pages/legal/AdvertisingDisclosurePage'));
+const MonetizationPolicyPage    = lazy(() => import('./pages/legal/MonetizationPolicyPage'));
 
 /**
  * PageLoader — shown while lazy chunks are loading.
@@ -40,6 +48,7 @@ const PageLoader = () => (
  */
 const NotFoundPage = () => (
   <div style={{ textAlign: 'center', padding: '100px 20px', minHeight: '60vh' }}>
+    <Seo title="Page not found" noindex />
     <div style={{ fontSize: '5rem', marginBottom: '24px' }}>404</div>
     <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '12px', color: 'var(--text-primary)' }}>
       Page not found
@@ -58,6 +67,7 @@ function App() {
     <HelmetProvider>
       <BrowserRouter>
         <AuthProvider>
+          <AdSenseHead />
           <div className="page-wrapper">
             <Navbar />
             <main className="page-content" id="main-content">
@@ -75,6 +85,15 @@ function App() {
                   <Route path="/writer/:username"    element={<WriterProfilePage />} />
                   <Route path="/about"               element={<AboutPage />} />
                   <Route path="/write"               element={<WritePage />} />
+
+                  {/* Policy & contact pages (required for Google AdSense review) */}
+                  <Route path="/contact"             element={<ContactPage />} />
+                  <Route path="/privacy-policy"      element={<PrivacyPolicyPage />} />
+                  <Route path="/privacy"             element={<Navigate to="/privacy-policy" replace />} />
+                  <Route path="/terms"               element={<TermsPage />} />
+                  <Route path="/cookie-policy"       element={<CookiePolicyPage />} />
+                  <Route path="/advertising-disclosure"     element={<AdvertisingDisclosurePage />} />
+                  <Route path="/writer-monetization-policy" element={<MonetizationPolicyPage />} />
 
                   {/* Auth routes */}
                   <Route path="/register"            element={<RegisterPage />} />

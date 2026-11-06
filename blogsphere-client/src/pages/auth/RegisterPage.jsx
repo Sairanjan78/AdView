@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
 import './AuthPages.css';
 
@@ -49,10 +49,7 @@ const RegisterPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Become a Writer — {brand.name}</title>
-        <meta name="description" content={`Create your writer account on ${brand.name} to write and publish articles.`} />
-      </Helmet>
+      <Seo title="Become a Writer" description={`Create your free ${brand.name} account to read, write and publish articles.`} noindex />
 
       <div className="auth-page">
         <div className="auth-page__bg" aria-hidden="true" />

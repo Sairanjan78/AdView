@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
 import './AuthPages.css';
 
@@ -37,10 +37,7 @@ const LoginPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Writer & Admin Sign In — {brand.name}</title>
-        <meta name="description" content={`Sign in to your ${brand.name} creator or admin account.`} />
-      </Helmet>
+      <Seo title="Writer & Admin Sign In" description={`Sign in to your ${brand.name} creator or admin account.`} noindex />
 
       <div className="auth-page">
         <div className="auth-page__bg" aria-hidden="true" />

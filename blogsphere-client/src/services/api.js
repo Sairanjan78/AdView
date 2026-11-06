@@ -152,3 +152,13 @@ export const writerApi = {
   getWriter: (username) =>
     apiRequest(`/writers/${encodeURIComponent(username)}`, { method: 'GET' }),
 };
+
+// Contact form
+export const contactApi = {
+  // payload: { name, email, subject, message }
+  send: (payload) =>
+    apiRequest('/contact', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+};

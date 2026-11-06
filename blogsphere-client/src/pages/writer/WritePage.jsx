@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { FiSend, FiFileText, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
 import { articleApi } from '../../services/api';
 import useCategories from '../../hooks/useCategories';
@@ -95,9 +95,7 @@ const WritePage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Writer Studio — {brand.name}</title>
-      </Helmet>
+      <Seo title="Writer Studio" description={`Write and publish your stories on ${brand.name}.`} noindex />
 
       <div className="write-page">
         <div className="container write-container">

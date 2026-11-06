@@ -1,11 +1,11 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { FiTwitter, FiEdit3 } from 'react-icons/fi';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { writerApi } from '../../services/api';
 import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
@@ -43,10 +43,18 @@ const WriterProfilePage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{author.name} — Writer on {brand.name}</title>
-        <meta name="description" content={author.bio} />
-      </Helmet>
+      <Seo
+        title={`${author.name} — Writer`}
+        description={author.bio || `Read articles by ${author.name} on ${brand.name}.`}
+        path={`/writer/${author.username}`}
+        image={author.avatar}
+        type="profile"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ProfilePage',
+          mainEntity: { '@type': 'Person', name: author.name, alternateName: author.username, description: author.bio, image: author.avatar },
+        }}
+      />
 
       <div className="writer-profile">
         {/* Hero banner */}

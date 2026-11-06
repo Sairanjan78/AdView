@@ -1,10 +1,10 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { FiTrendingUp, FiHeart, FiEye, FiMessageCircle } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../../components/ui/Avatar';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
@@ -18,10 +18,7 @@ const TrendingPage = () => {
 
   return (
   <>
-    <Helmet>
-      <title>Trending — {brand.name}</title>
-      <meta name="description" content={`The most-read articles on ${brand.name} right now.`} />
-    </Helmet>
+    <Seo title="Trending" description={`The most-read articles on ${brand.name} right now.`} />
 
     <div className="trending-page">
       <div className="container">

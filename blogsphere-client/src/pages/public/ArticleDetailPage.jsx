@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { format } from 'date-fns';
 import {
   FiHeart, FiMessageCircle, FiShare2, FiBookmark,
@@ -9,10 +8,25 @@ import {
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
+import AdSlot from '../../components/ads/AdSlot';
+import { AD_SLOTS, isAdsEnabled } from '../../config/ads';
 import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
 import './ArticleDetailPage.css';
+
+/**
+ * Split article HTML after its first paragraph so an ad can sit after the intro.
+ * Returns [html, ''] when there is no natural break.
+ */
+const splitAfterIntro = (html) => {
+  const end = html.indexOf('</p>');
+  if (end === -1) return [html, ''];
+  const cut = end + 4;
+  const rest = html.slice(cut);
+  return rest.trim() ? [html.slice(0, cut), rest] : [html, ''];
+};
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
@@ -52,16 +66,38 @@ const ArticleDetailPage = () => {
     <blockquote>Great writing deserves great presentation. BlogSphere is built to make both effortless.</blockquote>
   `;
 
+  const [introHtml, restHtml] = splitAfterIntro(articleBody);
+
   return (
     <>
-      <Helmet>
-        <title>{title} — {brand.name}</title>
-        <meta name="description" content={excerpt} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={excerpt} />
-        <meta property="og:image" content={cover} />
-        <meta property="og:type" content="article" />
-      </Helmet>
+      <Seo
+        title={title}
+        description={excerpt}
+        path={`/article/${article.slug}`}
+        image={cover}
+        type="article"
+        article={{
+          publishedTime: new Date(publishedAt).toISOString(),
+          modifiedTime: article.updatedAt ? new Date(article.updatedAt).toISOString() : undefined,
+          author: author.name,
+          section: category.name,
+          tags,
+        }}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: title,
+          description: excerpt,
+          image: [cover],
+          datePublished: new Date(publishedAt).toISOString(),
+          dateModified: new Date(article.updatedAt || publishedAt).toISOString(),
+          author: { '@type': 'Person', name: author.name, url: `${brand.url}/writer/${author.username}` },
+          publisher: { '@type': 'Organization', name: brand.name, logo: { '@type': 'ImageObject', url: `${brand.url}/logo512.png` } },
+          mainEntityOfPage: `${brand.url}/article/${article.slug}`,
+          articleSection: category.name,
+          keywords: tags.join(', '),
+        }}
+      />
 
       <div className="article-detail">
         {/* Hero cover */}
@@ -117,10 +153,26 @@ const ArticleDetailPage = () => {
 
           {/* Main content */}
           <main className="article-detail__content" id="article-content">
-            <div
-              className="article-body"
-              dangerouslySetInnerHTML={{ __html: articleBody }}
-            />
+            {isAdsEnabled() && AD_SLOTS.articleTop ? (
+              <>
+                <div
+                  className="article-body"
+                  dangerouslySetInnerHTML={{ __html: introHtml }}
+                />
+                <AdSlot key={`top-${article.slug}`} slot={AD_SLOTS.articleTop} />
+                {restHtml && (
+                  <div
+                    className="article-body"
+                    dangerouslySetInnerHTML={{ __html: restHtml }}
+                  />
+                )}
+              </>
+            ) : (
+              <div
+                className="article-body"
+                dangerouslySetInnerHTML={{ __html: articleBody }}
+              />
+            )}
 
             {/* Tags */}
             <div className="article-detail__tags">
@@ -130,6 +182,9 @@ const ArticleDetailPage = () => {
                 </Link>
               ))}
             </div>
+
+            {/* End-of-article ad (renders nothing unless AdSense is configured) */}
+            <AdSlot key={`end-${article.slug}`} slot={AD_SLOTS.articleEnd} />
 
             {/* Share bar */}
             <div className="article-detail__share">

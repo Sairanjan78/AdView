@@ -1,7 +1,7 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
@@ -14,10 +14,7 @@ const LatestPage = () => {
 
   return (
   <>
-    <Helmet>
-      <title>Latest — {brand.name}</title>
-      <meta name="description" content={`The newest articles published on ${brand.name}.`} />
-    </Helmet>
+    <Seo title="Latest" description={`The newest articles published on ${brand.name}.`} />
     <div style={{ padding: 'var(--space-12) 0 var(--space-20)' }}>
       <div className="container">
         <h1 className="gradient-text" style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-5xl)', fontWeight: 'var(--font-extrabold)', letterSpacing: '-0.03em', marginBottom: 'var(--space-2)' }}>

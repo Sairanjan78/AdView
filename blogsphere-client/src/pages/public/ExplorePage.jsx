@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../../components/article/ArticleCard';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
@@ -27,13 +27,17 @@ const ExplorePage = () => {
 
   const filtered = (data?.data?.articles || []).map(normalizeArticle);
   const total = data?.data?.pagination?.total ?? filtered.length;
+  const activeCategoryMeta = slug ? CATEGORIES.find(c => c.slug === slug) : null;
 
   return (
     <>
-      <Helmet>
-        <title>Explore — {brand.name}</title>
-        <meta name="description" content={`Explore all articles across every niche on ${brand.name}.`} />
-      </Helmet>
+      <Seo
+        title={activeCategoryMeta ? `${activeCategoryMeta.name} Articles` : 'Explore'}
+        description={activeCategoryMeta
+          ? `Read the latest ${activeCategoryMeta.name.toLowerCase()} articles on ${brand.name}.`
+          : `Explore all articles across every niche on ${brand.name}.`}
+        path={slug ? `/categories/${slug}` : '/explore'}
+      />
 
       <div className="explore-page">
         <div className="container">

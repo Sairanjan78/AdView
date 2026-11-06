@@ -1,8 +1,8 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import useCategories from '../../hooks/useCategories';
 import './CategoriesPage.css';
 
@@ -11,10 +11,7 @@ const CategoriesPage = () => {
 
   return (
   <>
-    <Helmet>
-      <title>Categories — {brand.name}</title>
-      <meta name="description" content={`Browse all content categories on ${brand.name}.`} />
-    </Helmet>
+    <Seo title="Categories" description={`Browse all content categories on ${brand.name}.`} />
 
     <div className="categories-page">
       <div className="container">

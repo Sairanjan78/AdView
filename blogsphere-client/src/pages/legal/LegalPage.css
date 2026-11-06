@@ -1,0 +1,24 @@
+.legal-page__content { max-width: 820px; }
+
+.legal-page__updated {
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.legal-page__body p + p,
+.legal-page__body p + ul,
+.legal-page__body ul + p { margin-top: var(--space-4); }
+
+.legal-page__body ul {
+  padding-left: var(--space-6);
+  list-style: disc;
+}
+
+.legal-page__body li + li { margin-top: var(--space-2); }
+
+.legal-page__body a {
+  color: var(--accent, #B69B75);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

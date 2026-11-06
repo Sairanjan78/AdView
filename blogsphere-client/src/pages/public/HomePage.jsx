@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import {
   FiArrowRight, FiTrendingUp, FiClock, FiEdit3, FiStar, FiZap,
 } from 'react-icons/fi';
@@ -11,6 +10,9 @@ import SearchBar from '../../components/search/SearchBar';
 import Avatar from '../../components/ui/Avatar';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
+import AdSlot from '../../components/ads/AdSlot';
+import { AD_SLOTS } from '../../config/ads';
 import { articleApi, writerApi } from '../../services/api';
 import { normalizeArticle, normalizeWriter } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
@@ -35,10 +37,7 @@ const HomePage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{brand.name} — {brand.tagline}</title>
-        <meta name="description" content={brand.description} />
-      </Helmet>
+      <Seo description={brand.description} />
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="hero" aria-label="Hero">
@@ -177,6 +176,11 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Single, unobtrusive home ad (renders nothing unless AdSense is configured) */}
+      <div className="container">
+        <AdSlot slot={AD_SLOTS.home} />
+      </div>
 
       {/* ── Article Grid ──────────────────────────────────── */}
       <section className="section" aria-label="Recent articles">

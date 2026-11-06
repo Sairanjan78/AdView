@@ -1,9 +1,9 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiEdit3, FiShield, FiGlobe, FiTrendingUp } from 'react-icons/fi';
 import Button from '../../components/ui/Button';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import './AboutPage.css';
 
 const PILLARS = [
@@ -26,10 +26,7 @@ const PILLARS = [
 
 const AboutPage = () => (
   <>
-    <Helmet>
-      <title>About — {brand.name}</title>
-      <meta name="description" content={`Learn about ${brand.name} — ${brand.description}`} />
-    </Helmet>
+    <Seo title="About" description={`Learn about ${brand.name} — ${brand.description}`} />
 
     <div className="about-page">
       {/* Hero */}

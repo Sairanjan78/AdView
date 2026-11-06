@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { FiSearch } from 'react-icons/fi';
 import ArticleCard from '../../components/article/ArticleCard';
 import SearchBar from '../../components/search/SearchBar';
 import brand from '../../config/brand';
+import Seo from '../../components/seo/Seo';
 import { articleApi } from '../../services/api';
 import { normalizeArticle } from '../../utils/normalizeArticle';
 import useApi from '../../hooks/useApi';
@@ -36,10 +36,7 @@ const SearchPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{query ? `"${query}" — Search` : 'Search'} — {brand.name}</title>
-        <meta name="description" content={`Search articles on ${brand.name}`} />
-      </Helmet>
+      <Seo title={query ? `"${query}" — Search` : 'Search'} description={`Search articles on ${brand.name}`} path="/search" noindex />
 
       <div className="search-page">
         <div className="container">
