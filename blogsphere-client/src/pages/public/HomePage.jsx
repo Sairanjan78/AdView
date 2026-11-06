@@ -63,23 +63,6 @@ const HomePage = () => {
             <div className="hero__search">
               <SearchBar variant="hero" placeholder="Search articles, writers, topics…" />
             </div>
-
-            <div className="hero__stats">
-              <div className="hero__stat">
-                <span className="hero__stat-number gradient-text">120K+</span>
-                <span className="hero__stat-label">Readers</span>
-              </div>
-              <div className="hero__stat-divider" aria-hidden="true" />
-              <div className="hero__stat">
-                <span className="hero__stat-number gradient-text">8.4K+</span>
-                <span className="hero__stat-label">Writers</span>
-              </div>
-              <div className="hero__stat-divider" aria-hidden="true" />
-              <div className="hero__stat">
-                <span className="hero__stat-number gradient-text">45K+</span>
-                <span className="hero__stat-label">Articles</span>
-              </div>
-            </div>
           </div>
 
           {/* Featured article hero card */}
