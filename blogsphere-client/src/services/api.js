@@ -1,3 +1,5 @@
+import { getToken } from './tokenStorage';
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
 /**
@@ -5,7 +7,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api
  */
 export async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  const token = localStorage.getItem('token');
+  const token = getToken();
 
   const headers = {
     'Content-Type': 'application/json',
@@ -49,10 +51,18 @@ export const authApi = {
       body: JSON.stringify(payload),
     }),
 
+  // credentials: { email, password, remember }
   login: (credentials) =>
     apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
+    }),
+
+  // credential: the Google ID token from Google Identity Services
+  googleSignIn: (credential, remember) =>
+    apiRequest('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential, remember }),
     }),
 
   getMe: () =>
@@ -72,10 +82,14 @@ export const authApi = {
       body: JSON.stringify({ email }),
     }),
 
+  // Is this reset link still valid? (rejects with a message when it is used or expired)
+  checkResetToken: (token) =>
+    apiRequest(`/auth/reset-password/${encodeURIComponent(token)}`, { method: 'GET' }),
+
   resetPassword: (token, password) =>
-    apiRequest('/auth/reset-password', {
+    apiRequest(`/auth/reset-password/${encodeURIComponent(token)}`, {
       method: 'POST',
-      body: JSON.stringify({ token, password }),
+      body: JSON.stringify({ password }),
     }),
 
   updateProfile: (profileData) =>
