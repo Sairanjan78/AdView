@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { LuMenu, LuX, LuPenLine, LuUser, LuLogOut } from 'react-icons/lu';
+import { LuMenu, LuX, LuPenLine, LuLogIn, LuLogOut } from 'react-icons/lu';
 import SearchBar from '../search/SearchBar';
 import Button from '../ui/Button';
 import Avatar from '../ui/Avatar';
+import BrandMark from './BrandMark';
 import brand from '../../config/brand';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
@@ -37,8 +38,7 @@ const Navbar = () => {
         <div className="container navbar__inner">
           {/* Logo */}
           <Link to="/" className="navbar__logo" aria-label={`${brand.name} home`}>
-            <span className="navbar__logo-icon" aria-hidden="true">✦</span>
-            <span className="navbar__logo-text gradient-text">{brand.name}</span>
+            <BrandMark />
           </Link>
 
           {/* Desktop nav links */}
@@ -64,9 +64,7 @@ const Navbar = () => {
           <div className="navbar__actions">
             {isAuthenticated ? (
               <>
-                <Link to="/write" className="navbar__write-btn">
-                  <Button variant="outline" size="sm" icon={<LuPenLine />}>Write</Button>
-                </Link>
+                <Button to="/write" variant="primary" size="sm" icon={<LuPenLine />} className="navbar__write-btn">Write</Button>
                 <Link to={`/writer/${user.username}`} className="navbar__user-badge" title={user.name}>
                   <Avatar src={user.avatar} name={user.name} size="sm" />
                   <span className="navbar__user-name">{user.name.split(' ')[0]}</span>
@@ -75,12 +73,8 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/register" className="navbar__write-btn">
-                  <Button variant="outline" size="sm" icon={<LuPenLine />}>Write</Button>
-                </Link>
-                <Link to="/login" title="Writer / Admin login">
-                  <Button variant="ghost" size="sm" icon={<LuUser />}>Writer Login</Button>
-                </Link>
+                <Button to="/login" variant="ghost" size="sm" icon={<LuLogIn />} title="Writer / Admin login">Sign in</Button>
+                <Button to="/register" variant="primary" size="sm" icon={<LuPenLine />} className="navbar__write-btn">Write</Button>
               </>
             )}
           </div>
@@ -90,15 +84,21 @@ const Navbar = () => {
             className="navbar__hamburger"
             onClick={() => setMobileOpen(o => !o)}
             aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
-            {mobileOpen ? <LuX size={22} /> : <LuMenu size={22} />}
+            {mobileOpen ? <LuX size={22} aria-hidden="true" /> : <LuMenu size={22} aria-hidden="true" />}
           </button>
         </div>
       </header>
 
       {/* Mobile drawer */}
-      <div className={`navbar-drawer ${mobileOpen ? 'navbar-drawer--open' : ''}`} aria-hidden={!mobileOpen}>
+      <div
+        id="mobile-menu"
+        className={`navbar-drawer ${mobileOpen ? 'navbar-drawer--open' : ''}`}
+        aria-hidden={!mobileOpen}
+        inert={mobileOpen ? undefined : true}
+      >
         <div className="navbar-drawer__inner">
           <SearchBar variant="page" />
 
@@ -125,23 +125,17 @@ const Navbar = () => {
                 <Link to={`/writer/${user.username}`} className="navbar-drawer__user-info">
                   <Avatar src={user.avatar} name={user.name} size="md" />
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{user.name}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>@{user.username}</div>
+                    <div className="navbar-drawer__user-name">{user.name}</div>
+                    <div className="navbar-drawer__user-handle">@{user.username}</div>
                   </div>
                 </Link>
-                <Link to="/write">
-                  <Button variant="outline" size="md" icon={<LuPenLine />} fullWidth>Write an Article</Button>
-                </Link>
-                <Button variant="ghost" size="md" icon={<LuLogOut />} fullWidth onClick={logout}>Sign out</Button>
+                <Button to="/write" variant="primary" size="md" icon={<LuPenLine />} fullWidth>Write an article</Button>
+                <Button variant="outline" size="md" icon={<LuLogOut />} fullWidth onClick={logout}>Sign out</Button>
               </>
             ) : (
               <>
-                <Link to="/register">
-                  <Button variant="outline" size="md" icon={<LuPenLine />} fullWidth>Become a Writer</Button>
-                </Link>
-                <Link to="/login">
-                  <Button variant="ghost" size="md" icon={<LuUser />} fullWidth>Writer Login</Button>
-                </Link>
+                <Button to="/register" variant="primary" size="md" icon={<LuPenLine />} fullWidth>Become a writer</Button>
+                <Button to="/login" variant="outline" size="md" icon={<LuLogIn />} fullWidth>Writer sign in</Button>
               </>
             )}
           </div>

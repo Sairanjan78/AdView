@@ -15,10 +15,11 @@ const brand = {
   email: process.env.REACT_APP_CONTACT_EMAIL || 'hello@blogsphere.app',
   // Date the legal pages (Privacy, Terms, Cookies) were last reviewed - update when you edit them
   legalLastUpdated: 'November 6, 2026',
+  // Your own social profiles. Icons only appear in the footer for the ones you set.
   social: {
-    twitter: 'https://twitter.com/blogsphere',
-    instagram: 'https://instagram.com/blogsphere',
-    linkedin: 'https://linkedin.com/company/blogsphere',
+    twitter: process.env.REACT_APP_SOCIAL_TWITTER || '',
+    instagram: process.env.REACT_APP_SOCIAL_INSTAGRAM || '',
+    linkedin: process.env.REACT_APP_SOCIAL_LINKEDIN || '',
   },
   // Revenue sharing — configurable by admin in Phase 7
   revenueShare: {
