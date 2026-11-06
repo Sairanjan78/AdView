@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const authRoutes = require('./authRoutes');
 const articleRoutes = require('./articleRoutes');
 
@@ -8,6 +9,7 @@ const router = express.Router();
 router.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
