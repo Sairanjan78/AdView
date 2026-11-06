@@ -16,6 +16,10 @@ const start = async () => {
     process.exit(1);
   }
 
+  if (env.nodeEnv === 'production' && !env.smtpConfigured) {
+    console.warn('[Email] SMTP is not configured (SMTP_HOST, SMTP_USER, SMTP_PASS). Password reset emails will NOT be sent.');
+  }
+
   // The API is useless without its database, so connect first and exit clearly if it fails
   try {
     await connectDB();

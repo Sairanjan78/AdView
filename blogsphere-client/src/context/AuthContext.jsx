@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../services/api';
+import { getToken, setToken, clearToken } from '../services/tokenStorage';
 
 const AuthContext = createContext(null);
 
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   // Check current session on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const storedToken = localStorage.getItem('token');
+      const storedToken = getToken();
       if (!storedToken) {
         setLoading(false);
         return;
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (err) {
         // Token invalid or expired
-        localStorage.removeItem('token');
+        clearToken();
         setUser(null);
       } finally {
         setLoading(false);
@@ -34,17 +35,29 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  // Stores the token where "remember me" says (localStorage vs sessionStorage) and sets the user
+  const completeSignIn = (res, remember) => {
+    if (res.token) setToken(res.token, remember);
+    if (res.data?.user) setUser(res.data.user);
+    return res;
+  };
+
+  const login = async (email, password, remember = false) => {
     setAuthError(null);
     try {
-      const res = await authApi.login({ email, password });
-      if (res.token) {
-        localStorage.setItem('token', res.token);
-      }
-      if (res.data?.user) {
-        setUser(res.data.user);
-      }
-      return res;
+      const res = await authApi.login({ email, password, remember });
+      return completeSignIn(res, remember);
+    } catch (err) {
+      setAuthError(err.message);
+      throw err;
+    }
+  };
+
+  const loginWithGoogle = async (credential, remember = false) => {
+    setAuthError(null);
+    try {
+      const res = await authApi.googleSignIn(credential, remember);
+      return completeSignIn(res, remember);
     } catch (err) {
       setAuthError(err.message);
       throw err;
@@ -55,13 +68,8 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
     try {
       const res = await authApi.register(userData);
-      if (res.token) {
-        localStorage.setItem('token', res.token);
-      }
-      if (res.data?.user) {
-        setUser(res.data.user);
-      }
-      return res;
+      // New accounts stay signed in on this device (server issues its JWT_EXPIRE token)
+      return completeSignIn(res, true);
     } catch (err) {
       setAuthError(err.message);
       throw err;
@@ -74,8 +82,10 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       // Ignore network errors on logout
     } finally {
-      localStorage.removeItem('token');
+      clearToken();
       setUser(null);
+      // Stop Google from silently picking the same account on the next visit
+      window.google?.accounts?.id?.disableAutoSelect?.();
     }
   };
 
@@ -95,6 +105,7 @@ export const AuthProvider = ({ children }) => {
     isWriter: user?.role === 'writer' || user?.role === 'admin',
     isAdmin: user?.role === 'admin',
     login,
+    loginWithGoogle,
     register,
     logout,
     updateProfile,

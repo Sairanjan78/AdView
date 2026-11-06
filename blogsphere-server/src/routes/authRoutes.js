@@ -6,7 +6,9 @@ const {
   getMe,
   verifyEmail,
   forgotPassword,
+  checkResetToken,
   resetPassword,
+  googleSignIn,
   updateProfile,
   logout
 } = require('../controllers/authController');
@@ -26,12 +28,27 @@ const authLimiter = rateLimit({
   }
 });
 
+// Password reset emails: stricter limit so the endpoint cannot be used to spam inboxes
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many password reset requests from this IP. Please try again after 15 minutes.'
+  }
+});
+
 router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
 router.get('/me', protect, getMe);
 router.post('/verify-email', verifyEmail);
-router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/google', authLimiter, googleSignIn);
+router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
+router.get('/reset-password/:token', authLimiter, checkResetToken);
 router.post('/reset-password', authLimiter, resetPassword);
+router.post('/reset-password/:token', authLimiter, resetPassword);
 router.put('/profile', protect, updateProfile);
 router.post('/logout', logout);
 

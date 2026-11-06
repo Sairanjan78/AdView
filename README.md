@@ -51,7 +51,7 @@ These steps work on Windows (PowerShell or Command Prompt), macOS and Linux.
 Commands are shown for **PowerShell**; Command Prompt alternatives are noted where they differ.
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v18 or newer (includes npm). Check with `node -v`.
+- [Node.js](https://nodejs.org/) v20 or newer (includes npm). Check with `node -v`.
 - A MongoDB database: a free **MongoDB Atlas** cluster (recommended, step 1) **or** MongoDB installed locally (see [Local MongoDB alternative](#local-mongodb-alternative)).
 
 ### 1. Get a MongoDB Atlas connection string (free)
@@ -115,6 +115,67 @@ No database at all? `npm run dev:memory` starts the API on a throwaway in-memory
 
 ---
 
+## 🔐 Sign-in options: Remember me, Forgot password, Google
+
+All three work out of the box locally; email and Google need a little setup before going online.
+
+### Remember me
+The sign-in page has a **Remember me** box.
+- Ticked: the token is kept in `localStorage` and lasts `JWT_EXPIRE_REMEMBER` (default `30d`).
+- Not ticked: the token is kept in `sessionStorage` (gone when the browser closes) and lasts `JWT_EXPIRE_SESSION` (default `1d`).
+- Sign out clears both. Changing your password signs out every other device.
+
+### Forgot password (needs email)
+"Forgot password?" on the sign-in page opens `/forgot-password`. The API emails a link to
+`<CLIENT_URL>/reset-password/<token>` that works **once** and expires after **30 minutes**. The page always shows the same
+"check your inbox" message, so nobody can use it to find out which emails have accounts. Requests are limited to 5 per
+15 minutes per IP and one email per account per minute.
+
+Without SMTP settings the API **prints the email (with the reset link) in the server terminal** during development, and in
+production it logs a warning and sends nothing. To send real email, set these in `blogsphere-server/.env` (or your host's
+environment variables) and set `CLIENT_URL` to your website address so the link points to it:
+
+| Provider | `SMTP_HOST` | `SMTP_PORT` | `SMTP_USER` | `SMTP_PASS` |
+|----------|-------------|-------------|-------------|-------------|
+| Gmail | `smtp.gmail.com` | `587` | your Gmail address | an **app password** (below), not your normal password |
+| Brevo (free, 300 emails/day) | `smtp-relay.brevo.com` | `587` | the SMTP login shown in Brevo | an SMTP key |
+
+Also set `FROM_EMAIL` (and optionally `FROM_NAME`). With Gmail use the same address as `SMTP_USER`; with Brevo use a sender you verified.
+
+- **Gmail app password**: turn on 2-Step Verification at <https://myaccount.google.com/security>, then create one at
+  <https://myaccount.google.com/apppasswords> (name it "BlogSphere") and paste the 16 letters into `SMTP_PASS` without spaces.
+  Fine for testing and small sites; Gmail limits how much you can send.
+- **Brevo**: sign up free at <https://www.brevo.com>, add and verify your sender under **Senders, domains & dedicated IPs**,
+  then open **SMTP & API** → **SMTP** to see your login and **Generate a new SMTP key**. For best delivery, authenticate your
+  own domain there (adds SPF/DKIM records).
+
+Test it: run the API, open <http://localhost:3000/forgot-password>, enter your account email and check the inbox (and spam folder).
+
+### Continue with Google (optional)
+The **Continue with Google** button only appears when the client has `REACT_APP_GOOGLE_CLIENT_ID`; the API route only works
+when the server has `GOOGLE_CLIENT_ID`. Use the **same Client ID** in both. Google sign-in finds the account with the same
+email (and links it) or creates a new **reader** account with a verified email. It never creates writer or admin accounts.
+
+1. Open <https://console.cloud.google.com>, create (or pick) a project.
+2. **APIs & Services → OAuth consent screen** (Google Auth Platform → Branding/Audience): app name *BlogSphere*, your support
+   email, User type **External**. Add your website domain under authorized domains, and **Publish** the app when you go live
+   (in *Testing* only the test users you list can sign in). The basic `email`/`profile` scopes need no Google review.
+3. **APIs & Services → Credentials → Create credentials → OAuth client ID**, type **Web application**.
+4. Under **Authorized JavaScript origins** add, with no path and no trailing slash:
+   - `http://localhost:3000`
+   - `http://localhost` (Google recommends it as well for local testing)
+   - your Vercel address, e.g. `https://your-project.vercel.app`, and your own domain if you have one (`https://www.yourdomain.com`)
+
+   No redirect URIs are needed (the button uses a popup).
+5. Copy the **Client ID** (`…apps.googleusercontent.com`; the client secret is not used) into
+   `REACT_APP_GOOGLE_CLIENT_ID` (client `.env` / Vercel environment variables, then rebuild/redeploy) and
+   `GOOGLE_CLIENT_ID` (server `.env` / your API host), then restart the API.
+
+New origins can take a few minutes to start working. If the button shows "origin not allowed", the address in the browser
+bar does not exactly match one of the authorized origins.
+
+---
+
 ## 💰 Google AdSense & SEO
 
 The site is prepared for AdSense, but **ads stay off until you configure them**. Until then no Google script loads and the layout is unchanged.
@@ -166,11 +227,12 @@ Run the backend integration tests (they use a temporary in-memory MongoDB, never
 cd blogsphere-server
 npm test
 ```
-- Covers registration, login, JWT, profile, RBAC, article CRUD, categories, writers, trending/featured, search, the seed script, sitemap/robots, slugs and the contact form.
+- Covers registration, login, JWT, remember me, forgot/reset password (expiry, single use, rate limit), Google sign-in (mocked Google verifier), profile, RBAC, article CRUD, categories, writers, trending/featured, search, the seed script, sitemap/robots, slugs and the contact form.
+- On ARM Linux machines where the default MongoDB download is missing, run `MONGOMS_VERSION=7.0.14 MONGOMS_DISTRO=ubuntu-22.04 npm test`.
 
 Frontend tests and build:
 ```bash
 cd blogsphere-client
-npx react-scripts test --watchAll=false   # AdSlot and SEO tag tests
+npx react-scripts test --watchAll=false   # AdSlot, SEO tags, token storage, password strength, Google button
 npm run build                              # must say "Compiled successfully."
 ```

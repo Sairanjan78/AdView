@@ -23,6 +23,8 @@ const AboutPage           = lazy(() => import('./pages/public/AboutPage'));
 const WritePage           = lazy(() => import('./pages/writer/WritePage'));
 const RegisterPage        = lazy(() => import('./pages/auth/RegisterPage'));
 const LoginPage           = lazy(() => import('./pages/auth/LoginPage'));
+const ForgotPasswordPage  = lazy(() => import('./pages/auth/ForgotPasswordPage'));
+const ResetPasswordPage   = lazy(() => import('./pages/auth/ResetPasswordPage'));
 const PrivacyPolicyPage   = lazy(() => import('./pages/legal/PrivacyPolicyPage'));
 const TermsPage           = lazy(() => import('./pages/legal/TermsPage'));
 const CookiePolicyPage    = lazy(() => import('./pages/legal/CookiePolicyPage'));
@@ -85,6 +87,9 @@ function App() {
                   {/* Auth routes */}
                   <Route path="/register"            element={<RegisterPage />} />
                   <Route path="/login"               element={<LoginPage />} />
+                  <Route path="/forgot-password"     element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                  <Route path="/reset-password"      element={<ResetPasswordPage />} />
 
                   {/* 404 */}
                   <Route path="*"                    element={<NotFoundPage />} />
