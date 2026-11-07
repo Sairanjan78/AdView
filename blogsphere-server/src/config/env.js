@@ -13,6 +13,8 @@ const env = {
   port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv,
   clientUrl,
+  // Browser origins allowed by CORS: CLIENT_URL plus any in CORS_ORIGINS (comma-separated)
+  corsOrigins: [clientUrl, ...(process.env.CORS_ORIGINS || '').split(',').map(o => o.trim().replace(/\/+$/, '')).filter(Boolean)],
   // Public address of the website (used for sitemap links). Defaults to CLIENT_URL.
   siteUrl: (process.env.SITE_URL || clientUrl).replace(/\/+$/, ''),
   // Where contact-form notifications go (optional)
