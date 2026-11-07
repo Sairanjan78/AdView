@@ -65,6 +65,22 @@ const extractFaq = (html) => {
   };
 };
 
+/** Give every <h2> an id (for the table of contents) and return the headings found. */
+const addHeadingIds = (html) => {
+  const seen = {};
+  const toc = [];
+  const out = html.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/gi, (m, attrs, inner) => {
+    const text = inner.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim();
+    if (!text) return m;
+    const existing = attrs.match(/\sid="([^"]+)"/i);
+    let id = existing ? existing[1] : text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'section';
+    if (!existing) { seen[id] = (seen[id] || 0) + 1; if (seen[id] > 1) id = `${id}-${seen[id]}`; }
+    toc.push({ id, text });
+    return existing ? m : `<h2${attrs} id="${id}">${inner}</h2>`;
+  });
+  return [out, toc];
+};
+
 const ShareBar = ({ title }) => {
   const [copied, setCopied] = useState(false);
   const url = typeof window !== 'undefined' ? window.location.href : brand.url;
@@ -110,6 +126,14 @@ const ArticleDetailPage = () => {
     () => articleApi.getArticleBySlug(slug).then(res => normalizeArticle(res?.data?.article)),
     [slug]
   );
+  // Same-category articles: internal links that build topical clusters
+  const { data: related } = useApi(
+    article && article.category && article.category.slug
+      ? () => articleApi.getArticles({ category: article.category.slug, limit: 6 })
+          .then(res => (res?.data?.articles || []).filter(a => a.slug !== article.slug).slice(0, 4))
+      : null,
+    [article && article.slug]
+  );
 
   if (loading) {
     return (
@@ -138,7 +162,7 @@ const ArticleDetailPage = () => {
   }
 
   const { title, excerpt, content, cover, category, author, publishedAt, readTime, views, tags } = article;
-  const articleBody = toHtml(content, excerpt);
+  const [articleBody, toc] = addHeadingIds(toHtml(content, excerpt));
   const [introHtml, restHtml] = splitAfterIntro(articleBody);
   const faqSchema = extractFaq(articleBody);
 
@@ -197,6 +221,12 @@ const ArticleDetailPage = () => {
                 <span className="article-detail__author-name">{author.name}</span>
                 <span className="article-detail__meta">
                   <time dateTime={toIsoDate(publishedAt)}>{format(new Date(publishedAt), 'MMMM d, yyyy')}</time>
+                  {article.updatedAt && new Date(article.updatedAt) - new Date(publishedAt) > 86400000 && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span>Updated <time dateTime={toIsoDate(article.updatedAt)}>{format(new Date(article.updatedAt), 'MMMM d, yyyy')}</time></span>
+                    </>
+                  )}
                   <span aria-hidden="true">·</span>
                   <span><LuClock size={13} aria-hidden="true" /> {readTime} min read</span>
                   {views > 0 && (
@@ -219,6 +249,14 @@ const ArticleDetailPage = () => {
         )}
 
         <div className="article-detail__content container" id="article-content">
+          {toc.length >= 3 && (
+            <nav className="article-toc" aria-label="In this article">
+              <strong className="article-toc__title">In this article</strong>
+              <ol>
+                {toc.map(h => <li key={h.id}><a href={`#${h.id}`}>{h.text}</a></li>)}
+              </ol>
+            </nav>
+          )}
           {isAdsEnabled() && AD_SLOTS.articleTop ? (
             <>
               <div className="article-body" dangerouslySetInnerHTML={{ __html: introHtml }} />
@@ -256,6 +294,17 @@ const ArticleDetailPage = () => {
               <Button to={`/writer/${author.username}`} variant="outline" size="sm">More from {author.name.split(' ')[0]}</Button>
             </div>
           </aside>
+
+          {related && related.length > 0 && (
+            <nav className="article-related" aria-label={`More in ${category.name}`}>
+              <h2 className="article-related__title">More in {category.name}</h2>
+              <ul>
+                {related.map(a => (
+                  <li key={a.slug}><Link to={`/article/${a.slug}`}>{a.title}</Link></li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </div>
       </article>
     </>
