@@ -103,5 +103,18 @@ exports.getSitemap = async (req, res, next) => {
 exports.getRobots = (req, res) => {
   const sitemapUrl = `${req.protocol}://${req.get('host')}/sitemap.xml`;
   res.set('Content-Type', 'text/plain; charset=utf-8');
-  return res.status(200).send(`User-agent: *\nAllow: /sitemap.xml\nDisallow: /api/\n\nSitemap: ${sitemapUrl}\n`);
+  return res.status(200).send([
+    'User-agent: *',
+    'Allow: /sitemap.xml',
+    // Google renders the React pages and must be able to fetch the public read endpoints,
+    // otherwise article pages render the error state (with noindex) and never get indexed.
+    'Allow: /api/v1/articles',
+    'Allow: /api/v1/categories',
+    'Allow: /api/v1/writers',
+    'Disallow: /api/v1/articles/me/',
+    'Disallow: /api/',
+    '',
+    `Sitemap: ${sitemapUrl}`,
+    '',
+  ].join('\n'));
 };
