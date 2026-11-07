@@ -30,8 +30,8 @@ if (env.nodeEnv === 'development') {
 }
 
 // Body parsers
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: '200kb' }));
+app.use(express.urlencoded({ extended: true, limit: '200kb' }));
 app.use(cookieParser());
 
 // Behind a proxy/load balancer (Render, Railway, Heroku, Nginx) so req.protocol and rate limits use the real client

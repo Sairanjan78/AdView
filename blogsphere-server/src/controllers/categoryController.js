@@ -4,14 +4,19 @@ const { ARTICLE_STATUS, CATEGORIES_LIST } = require('../constants/articles');
 const { sendSuccess, sendError } = require('../utils/response');
 
 // Fallback display data for a category slug that has not been seeded yet
-const defaultCategory = (slug, index) => ({
-  slug,
-  name: slug.charAt(0).toUpperCase() + slug.slice(1),
-  icon: 'file-text',
-  color: '#B69B75',
-  description: '',
-  order: 100 + index
-});
+// Uses the seed list's name, icon and colour when the slug is known there.
+const { CATEGORIES: SEED_CATEGORIES } = require('../seed/sampleData');
+const defaultCategory = (slug, index) => {
+  const seed = SEED_CATEGORIES.find(c => c.slug === slug);
+  return {
+    slug,
+    name: seed ? seed.name : slug.charAt(0).toUpperCase() + slug.slice(1),
+    icon: seed ? seed.icon : 'file-text',
+    color: seed ? seed.color : '#B69B75',
+    description: '',
+    order: seed ? seed.order : 100 + index
+  };
+};
 
 const toPublic = (cat, count) => ({
   id: cat._id || cat.slug,
