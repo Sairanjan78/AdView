@@ -1,6 +1,6 @@
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
   gap: var(--space-4);
 }
 
@@ -29,4 +29,10 @@
 .category-card__count { font-size: var(--text-sm); color: var(--text-muted); }
 
 .category-card__arrow { color: var(--text-muted); flex-shrink: 0; transition: transform var(--transition-fast), color var(--transition-fast); }
-.category-card:hover .category-card__arrow { transform: translateX(3px); color: var(--cat-color, var(--accent)); }
+@media (hover: hover) {
+  .category-card:hover .category-card__arrow { transform: translateX(3px); color: var(--cat-color, var(--accent)); }
+}
+@media (max-width: 640px) {
+  .categories-grid { gap: var(--space-3); }
+  .category-card { padding: var(--space-4); min-height: 72px; }
+}

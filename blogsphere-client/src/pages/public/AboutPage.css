@@ -4,7 +4,7 @@
 .about-hero { padding: var(--space-16) 0 var(--space-10); border-bottom: 1px solid var(--border); margin-bottom: var(--space-12); }
 .about-hero__glow { display: none; }
 .about-hero__inner > * { max-width: 820px; }
-.about-hero__title { font-size: var(--text-5xl); margin-bottom: var(--space-4); }
+.about-hero__title { font-size: var(--text-5xl); margin-bottom: var(--space-4); overflow-wrap: anywhere; }
 .about-hero__sub { font-size: var(--text-xl); color: var(--text-secondary); line-height: var(--leading-relaxed); max-width: 46rem; }
 
 .about-section { margin-bottom: var(--space-12); }
@@ -13,10 +13,10 @@
 .about-body-text strong { color: var(--text-primary); }
 .about-body-text a { color: var(--accent); }
 
-.about-mission-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-8); }
+.about-mission-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
 .about-mission-grid .about-body-text { font-family: var(--font-reading); font-size: var(--text-lg); }
 
-.about-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+.about-pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
 .about-pillar { padding: var(--space-8) var(--space-6); }
 .about-pillar__icon {
   display: inline-flex;
@@ -57,9 +57,16 @@
 .about-cta__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
 
 @media (max-width: 900px) {
-  .about-pillars { grid-template-columns: 1fr; }
-  .about-mission-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  .about-pillars { grid-template-columns: minmax(0, 1fr); }
+  .about-mission-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
 }
 @media (max-width: 640px) {
-  .about-hero { padding: var(--space-10) 0 var(--space-8); margin-bottom: var(--space-8); }
+  .about-hero { padding: var(--space-8) 0 var(--space-6); margin-bottom: var(--space-8); }
+  .about-hero__sub { font-size: var(--text-lg); }
+  .about-section { margin-bottom: var(--space-10); }
+  .about-pillar { padding: var(--space-6) var(--space-5); }
+  .about-policy-note { padding: var(--space-6) var(--space-5); }
+  .about-cta { padding: var(--space-10) 0; }
+  .about-cta__title { font-size: var(--text-3xl); }
+  .about-cta__btns { flex-direction: column; align-items: stretch; width: 100%; max-width: 360px; }
 }

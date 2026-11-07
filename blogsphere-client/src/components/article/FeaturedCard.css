@@ -1,5 +1,6 @@
 .featured-card {
   position: relative;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -11,7 +12,10 @@
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
-.featured-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+@media (hover: hover) {
+  .featured-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+  .featured-card:hover .featured-card__bg img { transform: scale(1.04); }
+  }
 .featured-card:focus-within { box-shadow: var(--focus-ring); }
 
 .featured-card--lg { min-height: 480px; }
@@ -25,7 +29,6 @@
   object-fit: cover;
   transition: transform 800ms var(--ease-out);
 }
-.featured-card:hover .featured-card__bg img { transform: scale(1.04); }
 /* Strong scrim so white text stays AA-readable over any photo */
 .featured-card__overlay {
   position: absolute;
@@ -68,6 +71,7 @@
   font-size: var(--text-4xl);
   line-height: 1.12;
   max-width: 22ch;
+  overflow-wrap: anywhere;
 }
 .featured-card--md .featured-card__title { font-size: var(--text-3xl); }
 .featured-card--sm .featured-card__title { font-size: var(--text-2xl); line-height: var(--leading-snug); }
@@ -126,8 +130,17 @@
 .featured-card:hover .featured-card__cta { gap: var(--space-3); }
 
 @media (max-width: 640px) {
-  .featured-card--lg { min-height: 420px; }
-  .featured-card__content { padding: var(--space-6); }
-  .featured-card__title { font-size: var(--text-3xl); }
+  .featured-card { border-radius: var(--radius-lg); }
+  .featured-card--lg { min-height: clamp(340px, 110vw, 420px); }
+  .featured-card--md { min-height: 320px; }
+  .featured-card--sm { min-height: 260px; }
+  .featured-card__content,
+  .featured-card--sm .featured-card__content { padding: var(--space-5); }
+  .featured-card__title { font-size: var(--text-3xl); max-width: none; }
+  .featured-card__excerpt { font-size: var(--text-sm); }
   .featured-card__cta { display: none; }
+}
+/* Short landscape phones: don't let one card fill the whole screen */
+@media (max-height: 480px) and (orientation: landscape) {
+  .featured-card--lg { min-height: 320px; }
 }

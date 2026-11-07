@@ -1,6 +1,7 @@
 /* Sign in / Register */
 .auth-page {
-  min-height: calc(100vh - var(--navbar-height));
+  min-height: calc(100vh - var(--navbar-offset));
+  min-height: calc(100dvh - var(--navbar-offset));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,7 +28,7 @@
 
 .auth-form { display: flex; flex-direction: column; gap: var(--space-5); }
 .auth-field { display: flex; flex-direction: column; gap: var(--space-2); }
-.auth-label-row { display: flex; align-items: center; justify-content: space-between; }
+.auth-label-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--space-3); }
 .auth-label { font-size: var(--text-sm); font-weight: var(--font-semibold); }
 
 .auth-input-wrap {
@@ -65,6 +66,13 @@
   color: var(--text-muted);
 }
 .auth-input-toggle:hover { color: var(--text-primary); background: var(--surface-sunken); }
+@media (pointer: coarse) {
+  .auth-input-toggle { width: var(--tap-target); height: var(--tap-target); margin-right: -0.5rem; }
+  .auth-input { min-height: 46px; }
+  .auth-checkbox { min-height: var(--tap-target); align-items: center; }
+  .auth-checkbox input[type="checkbox"] { width: 20px; height: 20px; margin-top: 0; }
+  .auth-link--sm { display: inline-flex; align-items: center; min-height: var(--tap-target); font-size: var(--text-sm); }
+}
 
 .auth-checkbox { display: flex; align-items: flex-start; gap: var(--space-3); cursor: pointer; }
 .auth-checkbox input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
@@ -144,9 +152,10 @@
 .auth-card__note { text-align: center; font-size: var(--text-sm); color: var(--text-secondary); }
 
 /* Continue with Google */
-.auth-google-wrap { display: flex; justify-content: center; min-height: 44px; transition: opacity var(--transition-fast); }
+.auth-google-wrap { display: flex; justify-content: center; min-height: 44px; max-width: 100%; overflow: hidden; transition: opacity var(--transition-fast); }
 .auth-google-wrap--busy { opacity: 0.55; pointer-events: none; }
-.auth-google { width: 100%; display: flex; justify-content: center; }
+.auth-google { width: 100%; min-width: 0; display: flex; justify-content: center; }
+.auth-google iframe { max-width: 100%; }
 .auth-google__failed { font-size: var(--text-xs); color: var(--text-muted); text-align: center; }
 
 .auth-divider {
@@ -181,6 +190,19 @@
 .auth-empty { margin: 0; padding: var(--space-6) var(--space-2); border: none; }
 
 @media (max-width: 480px) {
-  .auth-page { padding: var(--space-6) var(--space-3); align-items: flex-start; }
+  .auth-page {
+    padding: var(--space-5) max(var(--space-3), var(--safe-right)) calc(var(--space-8) + var(--safe-bottom)) max(var(--space-3), var(--safe-left));
+    align-items: flex-start;
+  }
   .auth-card { padding: var(--space-6) var(--space-5); box-shadow: var(--shadow-sm); }
+  .auth-card__header { margin-bottom: var(--space-6); }
+  .auth-logo { margin-bottom: var(--space-2); }
+  .auth-card__title { font-size: clamp(1.5rem, 5vw + 0.6rem, 1.9rem); }
+}
+@media (max-width: 340px) {
+  .auth-card { padding: var(--space-5) var(--space-4); }
+}
+/* Short landscape phones: card starts at the top instead of being centred off-screen */
+@media (max-height: 480px) and (orientation: landscape) {
+  .auth-page { align-items: flex-start; padding-top: var(--space-6); }
 }
