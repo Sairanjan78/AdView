@@ -131,6 +131,7 @@ const ArticleDetailPage = () => {
         }}
         jsonLd={{
           '@context': 'https://schema.org',
+          '@graph': [{
           '@type': 'BlogPosting',
           headline: title,
           description: excerpt,
@@ -142,6 +143,14 @@ const ArticleDetailPage = () => {
           mainEntityOfPage: `${brand.url}/article/${article.slug}`,
           articleSection: category.name,
           keywords: tags.join(', '),
+          }, {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: `${brand.url}/` },
+              { '@type': 'ListItem', position: 2, name: category.name, item: `${brand.url}/categories/${category.slug}` },
+              { '@type': 'ListItem', position: 3, name: title, item: `${brand.url}/article/${article.slug}` },
+            ],
+          }],
         }}
       />
 

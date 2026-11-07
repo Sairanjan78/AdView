@@ -39,7 +39,13 @@ const sitemapFromApi = () => {
     return '';
   }
 };
-const sitemapUrl = (process.env.REACT_APP_SITEMAP_URL || '').trim() || sitemapFromApi();
+// Prefer the site's own domain: /sitemap.xml is proxied to the API by public/_redirects.
+// Netlify sets URL to the project's main address (the custom domain once it is added).
+const sitemapFromSite = () => {
+  const site = (process.env.REACT_APP_SITE_URL || process.env.URL || '').trim().replace(/\/+$/, '');
+  return /^https:\/\//i.test(site) ? `${site}/sitemap.xml` : '';
+};
+const sitemapUrl = (process.env.REACT_APP_SITEMAP_URL || '').trim() || sitemapFromSite() || sitemapFromApi();
 const robotsPath = path.join(buildDir, 'robots.txt');
 if (sitemapUrl && fs.existsSync(robotsPath)) {
   const robots = fs.readFileSync(robotsPath, 'utf8')
