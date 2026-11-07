@@ -41,3 +41,7 @@
 .empty-state__action {
   margin-top: var(--space-3);
 }
+
+@media (max-width: 640px) {
+  .empty-state { margin: var(--space-8) auto; padding: var(--space-10) var(--space-5); }
+}

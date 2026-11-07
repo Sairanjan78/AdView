@@ -33,3 +33,15 @@
   color: var(--text-inverse);
 }
 .explore-filter-tab--active .category-icon { color: inherit; }
+
+.explore-filters { overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+@media (max-width: 640px) {
+  .explore-filters {
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .explore-filters::-webkit-scrollbar { display: none; }
+  .explore-filter-tab { min-height: 40px; }
+}

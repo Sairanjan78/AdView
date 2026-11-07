@@ -4,6 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import ScrollManager from './components/layout/ScrollManager';
 import Seo from './components/seo/Seo';
 import AdSenseHead from './components/ads/AdSenseHead';
 import Button from './components/ui/Button';
@@ -56,6 +57,7 @@ function App() {
     <HelmetProvider>
       <BrowserRouter>
         <AuthProvider>
+          <ScrollManager />
           <AdSenseHead />
           <div className="page-wrapper">
             <Navbar />

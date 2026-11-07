@@ -10,7 +10,7 @@
 }
 
 .writer-profile__info { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); min-width: 0; }
-.writer-profile__name { display: inline-flex; align-items: center; gap: var(--space-3); font-size: var(--text-5xl); }
+.writer-profile__name { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: inherit; gap: var(--space-2) var(--space-3); font-size: var(--text-5xl); overflow-wrap: anywhere; max-width: 100%; }
 .writer-profile__verified { display: inline-flex; color: var(--accent); font-size: 0.55em; }
 .writer-profile__username { color: var(--text-muted); font-size: var(--text-sm); }
 .writer-profile__bio {
@@ -46,6 +46,9 @@
   transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 .writer-profile__social:hover { color: var(--accent); border-color: var(--accent); }
+@media (pointer: coarse) {
+  .writer-profile__social { width: var(--tap-target); height: var(--tap-target); }
+}
 
 .writer-profile__articles-title { font-size: var(--text-3xl); margin-bottom: var(--space-8); }
 
@@ -53,6 +56,17 @@
   .writer-profile { padding-top: var(--space-10); }
   .writer-profile__header { flex-direction: column; align-items: center; text-align: center; gap: var(--space-6); }
   .writer-profile__info { align-items: center; }
-  .writer-profile__name { font-size: var(--text-4xl); }
+  .writer-profile__name { font-size: var(--text-4xl); justify-content: center; }
   .writer-profile__stats, .writer-profile__actions { justify-content: center; }
 }
+@media (max-width: 480px) {
+  .writer-profile { padding-top: var(--space-8); }
+  .writer-profile__header { padding-bottom: var(--space-8); margin-bottom: var(--space-8); }
+  .writer-profile__header .avatar--2xl { width: 88px; height: 88px; font-size: 28px; }
+  .writer-profile__name { font-size: clamp(1.75rem, 7vw + 0.4rem, 2.25rem); }
+  .writer-profile__bio { font-size: var(--text-base); }
+  .writer-profile__stats { gap: var(--space-4) var(--space-8); }
+  .writer-profile__stats dd { font-size: var(--text-xl); }
+  .writer-profile__articles-title { font-size: var(--text-2xl); margin-bottom: var(--space-6); }
+}
+

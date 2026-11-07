@@ -12,7 +12,12 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: calc(var(--navbar-height) + var(--space-4));
+  /* Kept as a safety net only; layouts must not rely on it (see scripts/mobile-check.py) */
+  overflow-x: hidden;
+}
+@supports (overflow: clip) {
+  /* clip (unlike hidden) does not turn the root into a scroll container */
+  html { overflow-x: clip; }
 }
 
 body {
@@ -24,13 +29,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-wrap: break-word;   /* long words / URLs never push the page sideways */
+  -webkit-tap-highlight-color: rgba(166, 61, 26, 0.12);
 }
+/* Mobile menu open: freeze the page behind the drawer */
+html.is-scroll-locked,
+html.is-scroll-locked body { overflow: hidden; overscroll-behavior: none; }
 
 a { color: inherit; text-decoration: none; }
-img, svg { display: block; max-width: 100%; }
+img, svg, video, canvas, iframe { display: block; max-width: 100%; }
+img, video { height: auto; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 input, textarea, select { font-family: inherit; font-size: inherit; color: inherit; }
+/* iOS Safari zooms into any field under 16px on focus; keep every text field at 16px+ on phones */
+@media (max-width: 1024px), (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea { font-size: max(16px, 1em); }
+}
 ul, ol { list-style: none; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -47,6 +63,11 @@ h2 { font-size: var(--text-h2); }
 h3 { font-size: var(--text-h3); }
 h4 { font-size: var(--text-h4); }
 p { text-wrap: pretty; }
+
+/* ---------- In-page targets ----------
+   Anything linked by #id (home sections, article headings) stops below the fixed navbar. */
+[id] { scroll-margin-top: calc(var(--navbar-offset) + var(--space-4)); }
+#main-content { scroll-margin-top: 0; }
 
 /* ---------- Accessibility ---------- */
 :focus { outline: none; }
@@ -99,13 +120,14 @@ p { text-wrap: pretty; }
   width: 100%;
   max-width: var(--container-xl);
   margin-inline: auto;
-  padding-inline: var(--space-6);
+  /* max() keeps content clear of the notch in landscape */
+  padding-inline: max(var(--gutter), var(--safe-left)) max(var(--gutter), var(--safe-right));
 }
 .container--wide   { max-width: var(--container-2xl); }
 .container--narrow { max-width: var(--container-md); }
 
-.page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
-.page-content { flex: 1; padding-top: var(--navbar-height); }
+.page-wrapper { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+.page-content { flex: 1; min-width: 0; padding-top: var(--navbar-offset); }
 
 .section     { padding: var(--space-16) 0; }
 .section--sm { padding: var(--space-8) 0; }
@@ -138,6 +160,7 @@ p { text-wrap: pretty; }
 
 .section-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-4);
@@ -162,7 +185,8 @@ p { text-wrap: pretty; }
   white-space: nowrap;
   transition: gap var(--transition-fast), color var(--transition-fast);
 }
-.section-link:hover { color: var(--accent-strong); gap: var(--space-2); }
+.section-link:hover { color: var(--accent-strong); }
+@media (hover: hover) { .section-link:hover { gap: var(--space-2); } }
 
 /* ---------- Cards ---------- */
 .glass-card,
@@ -173,11 +197,13 @@ p { text-wrap: pretty; }
   box-shadow: var(--shadow-xs);
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
 }
-a.glass-card:hover,
-.glass-card.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-strong);
+@media (hover: hover) {
+  a.glass-card:hover,
+  .glass-card.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
 }
 
 /* ---------- Kicker: small category label ---------- */
@@ -239,19 +265,20 @@ a.kicker:hover { color: var(--text-primary); }
 .divider { height: 1px; background: var(--border); margin: var(--space-8) 0; }
 
 /* ---------- Grids ---------- */
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-8) var(--space-6); }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-10) var(--space-6); }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-10) var(--space-6); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); }
 
 @media (max-width: 1024px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
-  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-  .container { padding-inline: var(--space-4); }
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .grid-3 { row-gap: var(--space-8); }
   .section { padding: var(--space-10) 0; }
-  .page-header { padding: var(--space-10) 0 var(--space-6); margin-bottom: var(--space-8); }
+  .page-header { padding: var(--space-8) 0 var(--space-6); margin-bottom: var(--space-8); }
+  .section-header { margin-bottom: var(--space-6); }
 }
 
 /* ---------- Text utilities ---------- */
@@ -292,7 +319,7 @@ a.tag:hover     { border-color: var(--accent); color: var(--accent-strong); }
 .page-loader svg { color: var(--accent); animation: spin 0.9s linear infinite; }
 
 /* ---------- 404 ---------- */
-.not-found { text-align: center; padding: var(--space-24) var(--space-6); min-height: 60vh; }
+.not-found { text-align: center; padding: clamp(var(--space-12), 12vw, var(--space-24)) var(--gutter); min-height: 60vh; }
 .not-found__code {
   font-family: var(--font-heading);
   font-size: clamp(4rem, 10vw, 7rem);
@@ -323,4 +350,12 @@ a.tag:hover     { border-color: var(--accent); color: var(--accent-strong); }
   font-weight: var(--font-semibold);
   letter-spacing: var(--tracking-tight);
   color: var(--text-primary);
+}
+
+/* ---------- Touch devices ----------
+   Hover effects are decoration only and live inside @media (hover: hover) so a tap
+   never leaves a card lifted. Here: larger targets for coarse pointers. */
+@media (pointer: coarse) {
+  .tag { min-height: 36px; padding-inline: 0.9rem; }
+  .section-link { min-height: var(--tap-target); }
 }

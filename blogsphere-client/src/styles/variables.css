@@ -155,4 +155,28 @@
   --container-xl:  1200px;
   --container-2xl: 1320px;
   --navbar-height: 68px;
+
+  /* Notched phones (needs viewport-fit=cover). 0 everywhere else. */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  /* Height the fixed navbar actually covers, including the status-bar inset */
+  --navbar-offset: calc(var(--navbar-height) + var(--safe-top));
+
+  /* Side padding of .container; grows to clear a notch in landscape */
+  --gutter: var(--space-6);
+  --tap-target: 44px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: var(--space-4);
+    --navbar-height: 60px;
+  }
+}
+
+/* Short landscape phones (e.g. 740x360): give the content more of the screen */
+@media (max-height: 480px) and (orientation: landscape) {
+  :root { --navbar-height: 56px; }
 }

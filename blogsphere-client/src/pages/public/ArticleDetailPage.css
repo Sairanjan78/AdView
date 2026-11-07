@@ -4,7 +4,8 @@
 .article-detail { padding-top: var(--space-12); }
 
 .article-detail__header,
-.article-detail__content { max-width: calc(var(--measure) + 2 * var(--space-6)); }
+.article-detail__content { max-width: calc(var(--measure) + 2 * var(--gutter)); }
+.article-detail__content { min-width: 0; }
 
 /* ---------- Header ---------- */
 .article-detail__header { display: flex; flex-direction: column; align-items: flex-start; }
@@ -14,6 +15,7 @@
   line-height: 1.08;
   letter-spacing: -0.025em;
   margin-bottom: var(--space-5);
+  overflow-wrap: anywhere;
 }
 .article-detail__dek {
   font-family: var(--font-reading);
@@ -34,7 +36,7 @@
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
-.article-detail__author-link { display: flex; align-items: center; gap: var(--space-3); }
+.article-detail__author-link { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
 .article-detail__author-name { display: block; font-weight: var(--font-semibold); }
 .article-detail__author-link:hover .article-detail__author-name { color: var(--accent); }
 .article-detail__meta {
@@ -71,6 +73,10 @@
   transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
 }
 .article-share__btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+@media (pointer: coarse) {
+  .article-share { gap: var(--space-2); }
+  .article-share__btn { width: var(--tap-target); height: var(--tap-target); }
+}
 
 /* ---------- Cover ---------- */
 .article-detail__cover { margin: var(--space-10) auto; }
@@ -88,12 +94,15 @@
 /* ---------- Body typography ---------- */
 .article-body {
   font-family: var(--font-reading);
-  font-size: 1.1875rem; /* 19px */
+  font-size: clamp(1.0625rem, 0.35vw + 1rem, 1.1875rem); /* 17px on phones -> 19px on desktop */
   line-height: var(--leading-article);
   color: #2A2823;
   max-width: var(--measure);
+  min-width: 0;
   overflow-wrap: break-word;
 }
+/* Long URLs and unbroken strings wrap instead of widening the column */
+.article-body a { overflow-wrap: anywhere; }
 .article-body > * + * { margin-top: 1.4em; }
 .article-body p { text-wrap: pretty; }
 .article-body > p:first-child::first-letter {
@@ -135,7 +144,47 @@
 .article-body ol { list-style: decimal; }
 .article-body li + li { margin-top: 0.5em; }
 .article-body li::marker { color: var(--accent); }
-.article-body img { border-radius: var(--radius-lg); margin: 2em 0; height: auto; }
+.article-body img { border-radius: var(--radius-lg); margin: 2em 0; max-width: 100%; height: auto; }
+.article-body figure { margin: 2em 0; max-width: 100%; }
+.article-body figure img { margin: 0; }
+
+/* Embeds (video, iframes) scale to the column; iframes keep a 16:9 box */
+.article-body video,
+.article-body embed,
+.article-body object { max-width: 100%; height: auto; border-radius: var(--radius-lg); }
+.article-body iframe {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+
+/* Tables scroll sideways inside the column rather than pushing the page */
+.article-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.8em;
+  line-height: var(--leading-normal);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.article-body th,
+.article-body td {
+  padding: 0.6em 0.9em;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+.article-body th { background: var(--surface-sunken); font-weight: var(--font-semibold); white-space: nowrap; }
+.article-body tr:last-child td { border-bottom: none; }
 .article-body figure figcaption { margin-top: var(--space-2); font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-muted); text-align: center; }
 .article-body code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -145,6 +194,8 @@
   background: var(--surface-sunken);
 }
 .article-body pre {
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
   padding: var(--space-5);
   border-radius: var(--radius-lg);
   background: var(--ink);
@@ -184,7 +235,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
 }
-.article-detail__author-card-body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.article-detail__author-card-body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); min-width: 0; }
 .article-detail__author-card-label {
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
@@ -197,11 +248,17 @@
 .article-detail__author-card-bio { color: var(--text-secondary); line-height: var(--leading-relaxed); margin-bottom: var(--space-2); }
 
 @media (max-width: 640px) {
-  .article-detail { padding-top: var(--space-8); }
-  .article-detail__title { font-size: var(--text-4xl); }
-  .article-detail__dek { font-size: var(--text-lg); }
-  .article-body { font-size: 1.0625rem; }
+  .article-detail { padding-top: var(--space-6); }
+  .article-detail__title { font-size: clamp(1.75rem, 6vw + 0.6rem, 2.4rem); }
+  .article-detail__dek { font-size: var(--text-lg); margin-bottom: var(--space-6); }
+  .article-detail__byline { gap: var(--space-3); }
+  .article-detail__meta { font-size: var(--text-xs); column-gap: var(--space-2); row-gap: 0; }
   .article-detail__cover { margin: var(--space-6) auto; padding-inline: 0; }
   .article-detail__cover img { border-radius: 0; }
-  .article-detail__author-card { flex-direction: column; padding: var(--space-6); }
+  .article-body { line-height: 1.7; }
+  .article-body pre { max-width: none; padding: var(--space-4) var(--gutter); margin-inline: calc(-1 * var(--gutter)); border-radius: 0; }
+  .article-body blockquote { padding-left: var(--space-4); font-size: var(--text-xl); }
+  .article-body iframe, .article-body video { border-radius: var(--radius-md); }
+  .article-detail__end-share { font-size: var(--text-base); }
+  .article-detail__author-card { flex-direction: column; gap: var(--space-4); padding: var(--space-6) var(--space-5); }
 }

@@ -95,3 +95,15 @@
 @media (max-width: 768px) {
   .search-bar__shortcut { display: none; }
 }
+/* Touch: bigger clear/submit targets; the keyboard hint means nothing without a keyboard */
+@media (pointer: coarse) {
+  .search-bar__shortcut { display: none; }
+  .search-bar__icon-btn { min-width: 36px; min-height: 36px; }
+  .search-bar__clear { width: 36px; height: 36px; }
+  .search-bar__submit-btn { min-height: var(--tap-target); }
+  .search-bar--page { padding-block: 0.3rem; }
+}
+@media (max-width: 380px) {
+  .search-bar--hero { padding-left: 0.75rem; }
+  .search-bar__submit-btn { padding-inline: 0.95rem; }
+}
