@@ -365,6 +365,15 @@ const updateProfile = async (req, res, next) => {
     const { name, bio, avatar, socialLinks, nicheSpecialties } = req.body;
 
     if (name) fieldsToUpdate.name = name;
+    if (typeof req.body.username === 'string' && req.body.username.trim()) {
+      const uname = req.body.username.toLowerCase().trim();
+      if (!/^[a-z0-9_]{3,30}$/.test(uname)) {
+        return sendError(res, 400, 'Username must be 3-30 letters, numbers or underscores.');
+      }
+      const taken = await User.findOne({ username: uname, _id: { $ne: req.user.id } });
+      if (taken) return sendError(res, 400, 'That username is already taken. Please choose another.');
+      fieldsToUpdate.username = uname;
+    }
     if (typeof bio === 'string') fieldsToUpdate.bio = bio;
     if (typeof avatar === 'string') fieldsToUpdate.avatar = avatar;
     if (socialLinks) fieldsToUpdate.socialLinks = socialLinks;

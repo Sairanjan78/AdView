@@ -22,6 +22,7 @@ const ArticleDetailPage   = lazy(() => import('./pages/public/ArticleDetailPage'
 const WriterProfilePage   = lazy(() => import('./pages/public/WriterProfilePage'));
 const AboutPage           = lazy(() => import('./pages/public/AboutPage'));
 const WritePage           = lazy(() => import('./pages/writer/WritePage'));
+const ProfileSettingsPage = lazy(() => import('./pages/writer/ProfileSettingsPage'));
 const RegisterPage        = lazy(() => import('./pages/auth/RegisterPage'));
 const LoginPage           = lazy(() => import('./pages/auth/LoginPage'));
 const ForgotPasswordPage  = lazy(() => import('./pages/auth/ForgotPasswordPage'));
@@ -76,6 +77,7 @@ function App() {
                   <Route path="/writer/:username"    element={<WriterProfilePage />} />
                   <Route path="/about"               element={<AboutPage />} />
                   <Route path="/write"               element={<WritePage />} />
+                  <Route path="/settings/profile"    element={<ProfileSettingsPage />} />
 
                   {/* Policy & contact pages (required for Google AdSense review) */}
                   <Route path="/contact"             element={<ContactPage />} />

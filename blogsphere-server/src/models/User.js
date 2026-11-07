@@ -77,7 +77,8 @@ const UserSchema = new mongoose.Schema(
     socialLinks: {
       twitter: { type: String, default: '' },
       linkedin: { type: String, default: '' },
-      website: { type: String, default: '' }
+      website: { type: String, default: '' },
+      github: { type: String, default: '' }
     },
     // Public writer profile stats (shown on writer cards / profile page)
     followers: {
