@@ -158,7 +158,8 @@ exports.getArticleBySlug = async (req, res) => {
 
     const doc = await Article.findOneAndUpdate(
       { slug, status: ARTICLE_STATUS.PUBLISHED },
-      { $inc: { views: 1 } },
+      // Crawler fetches from the site's bot renderer don't count as reads
+      req.get('x-prerender') ? {} : { $inc: { views: 1 } },
       { new: true }
     ).populate('author', AUTHOR_FIELDS);
 
