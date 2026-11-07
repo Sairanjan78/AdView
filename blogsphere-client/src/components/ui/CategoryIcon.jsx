@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   LuCpu, LuFlaskConical, LuBriefcase, LuTrendingUp, LuHeartPulse, LuPalette, LuPlane,
-  LuChefHat, LuWallet, LuGraduationCap, LuLeaf, LuTrophy, LuClapperboard, LuFileText,
+  LuChefHat, LuWallet, LuGraduationCap, LuLeaf, LuTrophy, LuClapperboard, LuFileText, LuUserSearch, LuLightbulb, LuGlobe,
 } from 'react-icons/lu';
 
 /**
@@ -24,6 +24,9 @@ export const categoryIcons = {
   trophy: LuTrophy,
   clapperboard: LuClapperboard,
   'file-text': LuFileText,
+  'user-search': LuUserSearch,
+  lightbulb: LuLightbulb,
+  globe: LuGlobe,
 };
 
 // Emoji used by earlier versions of the seed, so un-migrated databases still get the right icon

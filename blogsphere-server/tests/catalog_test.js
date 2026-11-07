@@ -39,7 +39,7 @@ async function main() {
     let res = await request(app).get('/api/v1/categories');
     assert.strictEqual(res.status, 200);
     const cats = res.body.data.categories;
-    assert.strictEqual(cats.length, 12, 'all 12 categories listed');
+    assert.strictEqual(cats.length, 15, 'all 15 categories listed');
     assert.strictEqual(cats[0].slug, 'technology', 'ordered by seed order');
     assert.strictEqual(cats.find(c => c.slug === 'science').count, 1, 'draft not counted');
     assert.strictEqual(cats.find(c => c.slug === 'sports').count, 0);

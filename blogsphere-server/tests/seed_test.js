@@ -44,7 +44,7 @@ async function main() {
     assert.strictEqual(kyrgyz.views, 104300, 'keeps mock stats');
     assert.strictEqual(kyrgyz.readTime, 14);
     assert.strictEqual(kyrgyz.status, 'published');
-    console.log('✓ Seed creates admin, 12 categories, 5 writers and 8 articles');
+    console.log('✓ Seed creates admin, 15 categories, 5 writers and 8 articles');
 
     // Idempotent: second run creates nothing and keeps the admin password
     const second = await seedDatabase({ admin: { ...admin, password: 'Different-Pass-999' }, log: silent });
