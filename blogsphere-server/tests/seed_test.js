@@ -38,7 +38,7 @@ async function main() {
     assert.strictEqual(adminUser.role, ROLES.ADMIN);
     assert.ok(await adminUser.matchPassword('Strong-Pass-123'), 'admin password from options');
     assert.notStrictEqual(adminUser.password, 'Strong-Pass-123', 'password is hashed');
-    assert.strictEqual(await Category.countDocuments(), 12);
+    assert.strictEqual(await Category.countDocuments(), 15);
     const kyrgyz = await Article.findOne({ slug: 'hidden-valleys-kyrgyzstan' });
     assert.ok(kyrgyz, 'seeded article keeps its slug');
     assert.strictEqual(kyrgyz.views, 104300, 'keeps mock stats');
@@ -69,7 +69,7 @@ async function main() {
     const adminOnly = await seedDatabase({ admin, sampleContent: false, log: silent });
     assert.strictEqual(adminOnly.admin, 'created');
     assert.strictEqual(await Article.countDocuments(), 0);
-    assert.strictEqual(await Category.countDocuments(), 12);
+    assert.strictEqual(await Category.countDocuments(), 15);
     console.log('✓ Admin-only seed skips sample writers and articles');
 
     // Categories use icon keys, and re-seeding migrates legacy emoji icons
