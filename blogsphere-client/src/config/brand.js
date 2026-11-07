@@ -3,7 +3,7 @@
  * Change these values to rebrand the platform without touching components.
  */
 const brand = {
-  name: 'BlogSphere',
+  name: 'BlogSphere Mag',
   tagline: 'Where Ideas Find Their World',
   description:
     'A global multi-niche publishing platform connecting writers and readers across every topic under the sun.',

@@ -37,7 +37,7 @@ const env = {
     pass: process.env.SMTP_PASS || ''
   },
   fromEmail: process.env.FROM_EMAIL || 'noreply@blogsphere.local',
-  fromName: process.env.FROM_NAME || 'BlogSphere',
+  fromName: process.env.FROM_NAME || 'BlogSphere Mag',
   // Google sign-in (optional). Leave empty to disable the "Continue with Google" route.
   googleClientId: (process.env.GOOGLE_CLIENT_ID || '').trim()
 };

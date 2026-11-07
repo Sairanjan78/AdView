@@ -78,11 +78,11 @@ const register = async (req, res, next) => {
 
     // Send verification email
     const verificationUrl = `${env.clientUrl}/verify-email?token=${verificationToken}`;
-    const emailMessage = `Welcome to BlogSphere, ${user.name}!\n\nPlease verify your email by clicking:\n${verificationUrl}\n\nThis link will expire in 24 hours.`;
+    const emailMessage = `Welcome to BlogSphere Mag, ${user.name}!\n\nPlease verify your email by clicking:\n${verificationUrl}\n\nThis link will expire in 24 hours.`;
 
     await sendEmail({
       to: user.email,
-      subject: 'Verify your BlogSphere account',
+      subject: 'Verify your BlogSphere Mag account',
       text: emailMessage
     });
 
@@ -200,11 +200,11 @@ const forgotPassword = async (req, res, next) => {
       const resetUrl = `${env.clientUrl}/reset-password/${resetToken}`;
       const text =
         `Hi ${user.name},\n\n` +
-        `We received a request to reset the password for your BlogSphere account.\n\n` +
+        `We received a request to reset the password for your BlogSphere Mag account.\n\n` +
         `Choose a new password here (the link works once and expires in 30 minutes):\n${resetUrl}\n\n` +
         `If you did not ask for this, you can ignore this email - your password will not change.`;
 
-      sendEmail({ to: user.email, subject: 'Reset your BlogSphere password', text }).catch(async (err) => {
+      sendEmail({ to: user.email, subject: 'Reset your BlogSphere Mag password', text }).catch(async (err) => {
         console.error('[Email] Password reset email failed:', err.message);
         // The link never arrived, so do not leave a usable token behind
         await User.updateOne(

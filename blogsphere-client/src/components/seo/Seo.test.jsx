@@ -18,7 +18,7 @@ const meta = (selector) => document.head.querySelector(selector)?.getAttribute('
 
 test('sets title, description, canonical and Open Graph tags', async () => {
   renderAt(<Seo title="Hello World" description="A <b>short</b> description" image="/cover.jpg" type="article" />);
-  await waitFor(() => expect(document.title).toBe('Hello World — BlogSphere'));
+  await waitFor(() => expect(document.title).toBe('Hello World — BlogSphere Mag'));
   expect(meta('meta[name="description"]')).toBe('A short description');
   const canonical = document.head.querySelector('link[rel="canonical"]').getAttribute('href');
   expect(canonical).toBe(`${window.location.origin}/article/hello-world`);
