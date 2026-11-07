@@ -91,6 +91,26 @@ const AboutPage = () => (
           </div>
         </section>
 
+        {/* Founder */}
+        <section className="about-section" id="founder">
+          <h2 className="about-section__title">Who Runs {brand.name}</h2>
+          <p className="about-body-text">
+            {brand.name} was started in 2026 by <strong>Sairanjan Biswal</strong>, a software engineer from
+            Odisha, India. He completed his Master of Computer Applications at NIIS Institute of Business
+            Administration, Bhubaneswar, in 2026 and works as a Software Engineer Intern at Infosys.
+          </p>
+          <p className="about-body-text">
+            He designed and built this platform himself, from the React front end to the Node.js and MongoDB
+            back end, and edits what gets published here. His own writing focuses on software tools, careers in
+            tech and practical guides for students and early-career developers.
+          </p>
+          <p className="about-body-text">
+            You can reach him at <a href={`mailto:${brand.email}`} className="auth-link">{brand.email}</a>, on{' '}
+            <a href="https://www.linkedin.com/in/sairanjan-biswal/" target="_blank" rel="noopener noreferrer" className="auth-link">LinkedIn</a>{' '}
+            or on <a href="https://github.com/Sairanjan78" target="_blank" rel="noopener noreferrer" className="auth-link">GitHub</a>.
+          </p>
+        </section>
+
         {/* CTA */}
         <section className="about-cta">
           <h2 className="about-cta__title">Ready to join?</h2>
