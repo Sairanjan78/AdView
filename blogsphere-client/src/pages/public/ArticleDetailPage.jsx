@@ -38,6 +38,33 @@ const toHtml = (content, excerpt) => {
   return `<p>${content.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br/>')}</p>`;
 };
 
+/**
+ * Build FAQPage schema from an article's "FAQ" / "Frequently asked questions" section:
+ * each <h3> after that <h2> is a question, the elements up to the next heading are its answer.
+ * Helps Google and AI answer engines quote the article directly.
+ */
+const extractFaq = (html) => {
+  if (typeof DOMParser === 'undefined' || !html) return null;
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const h2 = [...doc.querySelectorAll('h2')].find(h => /^(faqs?|frequently asked questions)\b/i.test(h.textContent.trim()));
+  if (!h2) return null;
+  const items = [];
+  let q = null; let a = [];
+  const flush = () => { if (q && a.join(' ').trim()) items.push({ q, a: a.join(' ').replace(/\s+/g, ' ').trim() }); };
+  for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
+    if (el.tagName === 'H3') { flush(); q = el.textContent.trim(); a = []; }
+    else if (q) a.push(el.textContent);
+  }
+  flush();
+  if (!items.length) return null;
+  return {
+    '@type': 'FAQPage',
+    mainEntity: items.map(({ q: name, a: text }) => ({
+      '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text },
+    })),
+  };
+};
+
 const ShareBar = ({ title }) => {
   const [copied, setCopied] = useState(false);
   const url = typeof window !== 'undefined' ? window.location.href : brand.url;
@@ -113,6 +140,7 @@ const ArticleDetailPage = () => {
   const { title, excerpt, content, cover, category, author, publishedAt, readTime, views, tags } = article;
   const articleBody = toHtml(content, excerpt);
   const [introHtml, restHtml] = splitAfterIntro(articleBody);
+  const faqSchema = extractFaq(articleBody);
 
   return (
     <>
@@ -150,7 +178,7 @@ const ArticleDetailPage = () => {
               { '@type': 'ListItem', position: 2, name: category.name, item: `${brand.url}/categories/${category.slug}` },
               { '@type': 'ListItem', position: 3, name: title, item: `${brand.url}/article/${article.slug}` },
             ],
-          }],
+          }, ...(faqSchema ? [faqSchema] : [])],
         }}
       />
 

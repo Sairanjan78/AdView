@@ -118,3 +118,47 @@ exports.getRobots = (req, res) => {
     '',
   ].join('\n'));
 };
+
+/**
+ * @desc    llms.txt: a plain-text map of the site for AI crawlers and answer engines (llmstxt.org)
+ * @route   GET /llms.txt  (served on the site's domain through the client's _redirects)
+ * @access  Public
+ */
+exports.getLlmsTxt = async (req, res, next) => {
+  try {
+    const site = env.siteUrl;
+    const articles = await Article.find({ status: ARTICLE_STATUS.PUBLISHED })
+      .select('title slug excerpt category publishedAt')
+      .sort({ publishedAt: -1 })
+      .limit(200)
+      .lean();
+    const oneLine = (t = '') => String(t).replace(/\s+/g, ' ').trim();
+    const lines = [
+      '# BlogSphere Mag',
+      '',
+      '> BlogSphere Mag is an independent online magazine founded in 2026 by Sairanjan Biswal, a software engineer from Odisha, India. It publishes practical, sourced guides on technology, careers and jobs, education, innovation, travel and world affairs.',
+      '',
+      'Articles are written or edited by named authors, cite their sources, and are updated when facts change. Quote freely with a link to the article.',
+      '',
+      '## Articles',
+      ...articles.map(a => `- [${oneLine(a.title)}](${site}/article/${a.slug})${a.excerpt ? `: ${oneLine(a.excerpt)}` : ''}`),
+      '',
+      '## About',
+      `- [About BlogSphere Mag and its founder](${site}/about)`,
+      `- [Contact](${site}/contact)`,
+      `- [Privacy Policy](${site}/privacy-policy)`,
+      `- [Terms](${site}/terms)`,
+      '',
+      '## Optional',
+      `- [All categories](${site}/categories)`,
+      `- [Latest articles](${site}/latest)`,
+      `- [Sitemap](${site}/sitemap.xml)`,
+      '',
+    ];
+    res.set('Content-Type', 'text/plain; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    return res.status(200).send(lines.join('\n'));
+  } catch (err) {
+    next(err);
+  }
+};

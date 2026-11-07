@@ -7,7 +7,7 @@ const env = require('./config/env');
 const routes = require('./routes');
 const errorHandler = require('./middleware/error');
 const { sendError } = require('./utils/response');
-const { getSitemap, getRobots } = require('./controllers/seoController');
+const { getSitemap, getRobots, getLlmsTxt } = require('./controllers/seoController');
 
 const app = express();
 
@@ -42,6 +42,7 @@ if (env.nodeEnv === 'production') {
 // SEO: sitemap generated from published articles + robots.txt for this host
 app.get('/sitemap.xml', getSitemap);
 app.get('/robots.txt', getRobots);
+app.get('/llms.txt', getLlmsTxt);
 
 // Mount API routes
 app.use('/api/v1', routes);

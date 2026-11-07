@@ -1,4 +1,5 @@
 # Sitemap lives on the API; serve it from the site's own domain
 /sitemap.xml  https://blogsphere-api-odr7.onrender.com/sitemap.xml  200
+/llms.txt     https://blogsphere-api-odr7.onrender.com/llms.txt     200
 
 /*    /index.html   200
