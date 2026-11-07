@@ -78,7 +78,7 @@ const HomePage = () => {
       </section>
 
       {/* ── Category chips ───────────────────────────────── */}
-      <section className="category-strip" aria-label="Browse categories">
+      <section className="category-strip" id="categories" aria-label="Browse categories">
         <div className="container">
           <ul className="category-strip__scroll">
             {categories.map(cat => (
@@ -117,7 +117,7 @@ const HomePage = () => {
         <>
           {/* ── Editor's picks ──────────────────────────── */}
           {picks.length > 0 && (
-            <section className="section section--tight" aria-labelledby="picks-title">
+            <section className="section section--tight" id="editors-picks" aria-labelledby="picks-title">
               <div className="container">
                 <div className="section-header">
                   <h2 className="section-title" id="picks-title">Editor’s picks</h2>
@@ -133,9 +133,9 @@ const HomePage = () => {
           )}
 
           {/* ── Trending + Latest ─────────────────────────── */}
-          <section className="section trending-latest" aria-label="Trending and latest articles">
+          <section className="section trending-latest" id="most-read" aria-label="Trending and latest articles">
             <div className="container trending-latest__grid">
-              <div className="trending-latest__col">
+              <div className="trending-latest__col" id="trending">
                 <div className="section-header">
                   <h2 className="section-title">
                     <LuTrendingUp className="section-title-icon" size={22} aria-hidden="true" />
@@ -150,7 +150,7 @@ const HomePage = () => {
                 </ol>
               </div>
 
-              <div className="trending-latest__col">
+              <div className="trending-latest__col" id="latest">
                 <div className="section-header">
                   <h2 className="section-title">
                     <LuClock className="section-title-icon" size={22} aria-hidden="true" />
@@ -174,7 +174,7 @@ const HomePage = () => {
 
           {/* ── More stories ──────────────────────────────── */}
           {moreStories.length > 0 && (
-            <section className="section" aria-labelledby="more-title">
+            <section className="section" id="more-stories" aria-labelledby="more-title">
               <div className="container">
                 <div className="section-header">
                   <h2 className="section-title" id="more-title">More stories</h2>
@@ -191,7 +191,7 @@ const HomePage = () => {
 
           {/* ── Writers ───────────────────────────────────── */}
           {writerList.length > 0 && (
-            <section className="section" aria-labelledby="writers-title">
+            <section className="section" id="writers" aria-labelledby="writers-title">
               <div className="container">
                 <div className="section-header">
                   <h2 className="section-title" id="writers-title">The writers</h2>
@@ -208,7 +208,7 @@ const HomePage = () => {
       )}
 
       {/* ── Write CTA ─────────────────────────────────────── */}
-      <section className="section write-cta" aria-labelledby="write-cta-title">
+      <section className="section write-cta" id="start-writing" aria-labelledby="write-cta-title">
         <div className="container">
           <div className="write-cta__card">
             <span className="write-cta__icon" aria-hidden="true"><LuPenLine size={22} /></span>

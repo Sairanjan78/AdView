@@ -9,9 +9,10 @@ const FOOTER_LINKS = {
   Read: [
     { label: 'Home',         to: '/' },
     { label: 'Explore',      to: '/explore' },
-    { label: 'Trending',     to: '/trending' },
-    { label: 'Latest',       to: '/latest' },
-    { label: 'Categories',   to: '/categories' },
+    // Sections of the home page; their "See all" links lead on to the full pages
+    { label: 'Trending',     to: '/#trending' },
+    { label: 'Latest',       to: '/#latest' },
+    { label: 'Categories',   to: '/#categories' },
   ],
   Write: [
     { label: 'Start writing',          to: '/register' },

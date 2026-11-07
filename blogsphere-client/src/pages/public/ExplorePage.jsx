@@ -58,7 +58,7 @@ const ExplorePage = () => {
           </header>
 
           {/* Category filter */}
-          <div className="explore-filters" role="tablist" aria-label="Filter by category">
+          <div className="explore-filters" id="categories" role="tablist" aria-label="Filter by category">
             <button
               role="tab"
               aria-selected={activeCategory === 'all'}
