@@ -19,7 +19,10 @@ const CATEGORIES = [
   { slug: 'education',     name: 'Education',         icon: 'graduation-cap', color: '#1D4ED8' },
   { slug: 'environment',   name: 'Environment',       icon: 'leaf', color: '#4D7C0F' },
   { slug: 'sports',        name: 'Sports',            icon: 'trophy', color: '#B45309' },
-  { slug: 'entertainment', name: 'Entertainment',     icon: 'clapperboard', color: '#B91C1C' }
+  { slug: 'entertainment', name: 'Entertainment',     icon: 'clapperboard', color: '#B91C1C' },
+  { slug: 'jobs-careers',  name: 'Jobs & Careers',    icon: 'user-search', color: '#0E7490' },
+  { slug: 'innovation',    name: 'Innovation',        icon: 'lightbulb', color: '#CA8A04' },
+  { slug: 'world-affairs', name: 'World Affairs',     icon: 'globe', color: '#334155' }
 ].map((c, i) => ({ ...c, order: i + 1 }));
 
 const WRITERS = [
