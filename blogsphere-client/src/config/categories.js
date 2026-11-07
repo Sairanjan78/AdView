@@ -17,6 +17,9 @@ const DEFAULT_CATEGORIES = [
   { slug: 'environment',   name: 'Environment',       icon: 'leaf', color: '#4D7C0F' },
   { slug: 'sports',        name: 'Sports',            icon: 'trophy', color: '#B45309' },
   { slug: 'entertainment', name: 'Entertainment',     icon: 'clapperboard', color: '#B91C1C' },
+  { slug: 'jobs-careers',  name: 'Jobs & Careers',    icon: 'user-search', color: '#0E7490' },
+  { slug: 'innovation',    name: 'Innovation',        icon: 'lightbulb', color: '#CA8A04' },
+  { slug: 'world-affairs', name: 'World Affairs',     icon: 'globe', color: '#334155' },
 ].map(c => ({ ...c, id: c.slug, count: 0 }));
 
 const registry = new Map(DEFAULT_CATEGORIES.map(c => [c.slug, c]));

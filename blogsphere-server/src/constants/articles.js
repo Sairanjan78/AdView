@@ -18,7 +18,10 @@ const CATEGORIES_LIST = Object.freeze([
   'education',
   'environment',
   'sports',
-  'entertainment'
+  'entertainment',
+  'jobs-careers',
+  'innovation',
+  'world-affairs'
 ]);
 
 module.exports = {
