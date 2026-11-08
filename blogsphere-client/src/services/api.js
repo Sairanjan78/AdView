@@ -15,12 +15,27 @@ export async function apiRequest(endpoint, options = {}) {
     ...options.headers,
   };
 
+  // A sleeping API (Render free plan) can take up to a minute to wake, and
+  // phones on slow networks may drop the first request. Retry reads a few times
+  // before giving up so readers see the articles instead of an empty page.
+  const method = (options.method || 'GET').toUpperCase();
+  const attempts = method === 'GET' ? 4 : 1;
+
   try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      credentials: 'include', // sends cookies
-    });
+    let response;
+    for (let attempt = 1; ; attempt += 1) {
+      try {
+        response = await fetch(url, {
+          ...options,
+          headers,
+          credentials: 'include', // sends cookies
+        });
+        if (![502, 503, 504].includes(response.status) || attempt >= attempts) break;
+      } catch (fetchErr) {
+        if (attempt >= attempts) throw fetchErr;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 3000 * attempt));
+    }
 
     const data = await response.json();
 
