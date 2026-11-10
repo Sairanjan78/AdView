@@ -5,6 +5,29 @@ const { ROLES } = require('../constants/roles');
 const { sendSuccess, sendError } = require('../utils/response');
 const { escapeRegex, parseLimit } = require('../utils/query');
 
+const jwt = require('jsonwebtoken');
+const env = require('../config/env');
+
+const BOT_UA = /bot|crawl|spider|slurp|preview|headless|lighthouse|pagespeed|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|linkedin|skype|applebot|yandex|baidu|duckduck|semrush|ahrefs|gptbot|chatgpt|perplexity|claude|anthropic|bytespider|amazonbot|ccbot|petalbot/i;
+const isBotUA = (ua) => !ua || BOT_UA.test(ua);
+
+// Reads the JWT if present (header or cookie) without requiring sign-in.
+const getOptionalViewerId = async (req) => {
+  try {
+    let token = null;
+    const h = req.headers.authorization;
+    if (h && h.startsWith('Bearer ')) token = h.split(' ')[1];
+    else if (req.cookies && req.cookies.token) token = req.cookies.token;
+    if (!token) return null;
+    const decoded = jwt.verify(token, env.jwtSecret);
+    const user = await User.findById(decoded.id).select('role').lean();
+    return user ? { id: String(user._id), role: user.role } : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+
 // Public author fields included with every article
 const AUTHOR_FIELDS = 'name username avatar bio verified followers';
 
@@ -156,15 +179,21 @@ exports.getArticleBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
 
-    const doc = await Article.findOneAndUpdate(
-      { slug, status: ARTICLE_STATUS.PUBLISHED },
-      // Crawler fetches from the site's bot renderer don't count as reads
-      req.get('x-prerender') ? {} : { $inc: { views: 1 } },
-      { new: true }
-    ).populate('author', AUTHOR_FIELDS);
+    let doc = await Article.findOne({ slug, status: ARTICLE_STATUS.PUBLISHED })
+      .populate('author', AUTHOR_FIELDS);
 
     if (!doc) {
       return sendError(res, 404, 'Article not found or not yet published');
+    }
+
+    // Count a view only for real readers: not the site's bot renderer,
+    // not crawlers, and not the signed-in author or an admin.
+    const viewer = await getOptionalViewerId(req);
+    const authorId = doc.author && doc.author._id ? String(doc.author._id) : null;
+    const isOwnOrStaff = viewer && (viewer.id === authorId || viewer.role === 'admin');
+    if (!req.get('x-prerender') && !isBotUA(req.get('user-agent')) && !isOwnOrStaff) {
+      await Article.updateOne({ _id: doc._id }, { $inc: { views: 1 } });
+      doc.views = (doc.views || 0) + 1;
     }
 
     const article = doc.toObject();
