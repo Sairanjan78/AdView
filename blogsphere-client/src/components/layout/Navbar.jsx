@@ -5,6 +5,7 @@ import SearchBar from '../search/SearchBar';
 import Button from '../ui/Button';
 import Avatar from '../ui/Avatar';
 import BrandMark from './BrandMark';
+import LanguageSwitcher from './LanguageSwitcher';
 import brand from '../../config/brand';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
@@ -113,6 +114,7 @@ const Navbar = () => {
 
           {/* Desktop actions */}
           <div className="navbar__actions">
+            <LanguageSwitcher className="navbar__lang" />
             {isAuthenticated ? (
               <>
                 <Button to="/write" variant="primary" size="sm" icon={<LuPenLine />} className="navbar__write-btn">Write</Button>
@@ -159,6 +161,7 @@ const Navbar = () => {
         {/* Any link tap closes the drawer, including one to the page already open */}
         <div className="navbar-drawer__inner" onClick={e => { if (e.target.closest('a')) closeMenu(); }}>
           <SearchBar variant="page" />
+          <LanguageSwitcher className="navbar-drawer__lang" />
 
           <nav className="navbar-drawer__links" aria-label="Mobile navigation">
             {NAV_LINKS.map(({ to, label, exact }) => (

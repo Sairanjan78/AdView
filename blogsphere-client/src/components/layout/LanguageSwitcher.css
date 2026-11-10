@@ -1,0 +1,8 @@
+.lang-switcher { display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; color: inherit; }
+.lang-switcher select { background: transparent; color: inherit; border: 1px solid currentColor; border-radius: 6px; padding: 4px 6px; font: inherit; max-width: 9.5rem; cursor: pointer; opacity: 0.85; }
+.lang-switcher select option { color: #111; }
+.lang-switcher .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* Hide Google's banner and tooltips; keep our own header in place */
+.goog-te-banner-frame, .skiptranslate > iframe, #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+body { top: 0 !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
