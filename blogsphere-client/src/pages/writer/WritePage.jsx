@@ -17,6 +17,7 @@ const WritePage = () => {
 
   const [formData, setFormData] = useState({
     title: '',
+    seoTitle: '',
     category: 'technology',
     excerpt: '',
     coverImage: '',
@@ -72,6 +73,7 @@ const WritePage = () => {
     try {
       const payload = {
         title: formData.title,
+        seoTitle: formData.seoTitle.trim() || undefined,
         category: formData.category,
         excerpt: formData.excerpt,
         coverImage: formData.coverImage || undefined,
@@ -157,6 +159,22 @@ const WritePage = () => {
                   onChange={handleChange}
                   required
                 />
+              </div>
+
+              <div className="write-field">
+                <label className="write-label" htmlFor="seoTitle">SEO Title (optional)</label>
+                <input
+                  id="seoTitle"
+                  name="seoTitle"
+                  className="write-input"
+                  placeholder="Shorter title for search results, 50 to 60 characters"
+                  value={formData.seoTitle}
+                  onChange={handleChange}
+                  maxLength={70}
+                />
+                <p className="write-hint">
+                  {formData.seoTitle.length}/60 characters. Put the main keyword first; leave empty to use the title.
+                </p>
               </div>
 
               <div className="write-row">

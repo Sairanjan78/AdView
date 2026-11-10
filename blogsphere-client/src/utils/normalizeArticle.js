@@ -40,7 +40,8 @@ export function normalizeArticle(raw) {
       bio: raw.author.bio || '',
       verified: Boolean(raw.author.verified),
       followers: raw.author.followers || 0,
-      articles: raw.author.articles || 0
+      articles: raw.author.articles || 0,
+      socialLinks: raw.author.socialLinks || {}
     };
   } else {
     authorObj = {
@@ -59,6 +60,7 @@ export function normalizeArticle(raw) {
     id: raw._id || raw.id,
     slug: raw.slug || 'article',
     title: raw.title || 'Untitled',
+    seoTitle: raw.seoTitle || '', // optional shorter <title> for search results
     excerpt: raw.excerpt || '',
     content: raw.content || '',
     cover: raw.coverImage || raw.cover || '', // cards show a neutral placeholder when empty

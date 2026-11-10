@@ -37,7 +37,7 @@ const SearchPage = () => {
 
   return (
     <>
-      <Seo title={query ? `"${query}" — Search` : 'Search'} description={`Search articles on ${brand.name}`} path="/search" noindex />
+      <Seo title={query ? `"${query}" | Search` : 'Search'} description={`Search articles on ${brand.name}`} path="/search" noindex />
 
       <div className="container search-page">
         <header className="page-header">

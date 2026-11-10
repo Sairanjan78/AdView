@@ -59,7 +59,7 @@ const ContactPage = () => {
           <div className="container about-hero__inner">
             <h1 className="about-hero__title">Contact us</h1>
             <p className="about-hero__sub">
-              Questions, feedback, writing enquiries, copyright or privacy requests — we read every message.
+              Questions, feedback, writing enquiries, copyright or privacy requests: we read every message.
             </p>
             <p className="legal-page__updated">
               <LuMail aria-hidden="true" />

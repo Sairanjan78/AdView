@@ -26,7 +26,23 @@ const PILLARS = [
 
 const AboutPage = () => (
   <>
-    <Seo title="About" description={`Learn about ${brand.name} — ${brand.description}`} />
+    <Seo
+      title="About"
+      description={`Who writes ${brand.name}, how articles are researched, sourced and edited, and how the site is funded.`}
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        url: `${brand.url}/about`,
+        mainEntity: {
+          '@type': 'Organization',
+          name: brand.name,
+          url: `${brand.url}/`,
+          logo: `${brand.url}/logo512.png`,
+          email: brand.email,
+          sameAs: Object.values(brand.social).filter(Boolean),
+        },
+      }}
+    />
 
     <div className="about-page">
       {/* Hero */}
@@ -47,7 +63,7 @@ const AboutPage = () => (
           <div className="about-mission-grid">
             <p className="about-body-text">
               {brand.name} exists to give every idea a platform and every reader the stories they're looking for.
-              We believe great writing should be accessible — across languages, cultures, niches, and disciplines.
+              We believe great writing should be accessible across languages, cultures, niches, and disciplines.
             </p>
             <p className="about-body-text">
               We're building the infrastructure that makes it easy for talented writers to reach global audiences,
@@ -77,7 +93,7 @@ const AboutPage = () => (
             <p className="about-body-text">
               {brand.name} monetises through Google AdSense and may integrate other eligible advertising providers in the future.
               The platform owner operates the approved publisher account. Advertising revenue is received by the platform and
-              distributed to eligible writers according to our revenue-sharing policy — currently a{' '}
+              distributed to eligible writers according to our revenue-sharing policy, currently a{' '}
               <strong>{brand.revenueShare.writerPool}% writer pool</strong> and{' '}
               <strong>{brand.revenueShare.platformShare}% platform share</strong>. These percentages are
               configurable by the platform administrator.

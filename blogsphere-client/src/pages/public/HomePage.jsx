@@ -50,7 +50,24 @@ const HomePage = () => {
 
   return (
     <>
-      <Seo description={brand.description} />
+      <Seo
+        description={brand.homeDescription}
+        path="/"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@graph': [
+            { '@type': 'WebSite', '@id': `${brand.url}/#website`, name: brand.name, url: `${brand.url}/`, inLanguage: 'en-US', publisher: { '@id': `${brand.url}/#organization` } },
+            {
+              '@type': 'Organization',
+              '@id': `${brand.url}/#organization`,
+              name: brand.name,
+              url: `${brand.url}/`,
+              logo: `${brand.url}/logo512.png`,
+              sameAs: Object.values(brand.social).filter(Boolean),
+            },
+          ],
+        }}
+      />
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="hero" aria-labelledby="hero-title">
@@ -61,7 +78,7 @@ const HomePage = () => {
               Stories worth your <em className="text-accent">time</em>.
             </h1>
             <p className="hero__sub">
-              Thoughtful writing on technology, science, travel, culture and more — written to be read,
+              Thoughtful writing on technology, science, travel, culture and more, written to be read,
               not skimmed.
             </p>
             <div className="hero__search">

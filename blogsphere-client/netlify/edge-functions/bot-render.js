@@ -8,7 +8,7 @@
  */
 const API = (Netlify.env.get('PRERENDER_API_URL') || 'https://blogsphere-api-odr7.onrender.com/api/v1').replace(/\/+$/, '');
 const SITE_NAME = 'BlogSphere Mag';
-const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|facebot|embedly|quora link preview|outbrain|pinterest|vkshare|whatsapp|telegram|discord|slack|linkedin|skype|nuzzel|redditbot|applebot|yandex|baiduspider|duckduck|bingpreview|semrush|ahrefs|chatgpt|gptbot|oai-searchbot|perplexity|claude|anthropic|cohere|google-extended|googleother|bytespider|meta-externalagent|amazonbot|ccbot|petalbot|mojeek/i;
+const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|facebot|embedly|quora link preview|outbrain|pinterest|vkshare|whatsapp|telegram|discord|slack|linkedin|skype|nuzzel|redditbot|applebot|yandex|baiduspider|duckduck|bingpreview|semrush|ahrefs|chatgpt|gptbot|oai-searchbot|perplexity|claude|anthropic|cohere|google-extended|googleother|bytespider|meta-externalagent|amazonbot|ccbot|petalbot|mojeek|mediapartners|inspectiontool|storebot|google-safety/i;
 
 const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const clip = (s = '', n = 160) => {

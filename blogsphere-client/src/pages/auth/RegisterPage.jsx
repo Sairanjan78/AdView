@@ -158,7 +158,7 @@ const RegisterPage = () => {
 
           {role === 'writer' && (
             <div className="auth-writer-note">
-              <strong>Note:</strong> Writer accounts are subject to review. Articles require administrator approval before publication. Advertising earnings are based on eligible content and platform policy — earnings are not guaranteed.
+              <strong>Note:</strong> Writer accounts are subject to review. Articles require administrator approval before publication. Advertising earnings are based on eligible content and platform policy; earnings are not guaranteed.
             </div>
           )}
         </div>

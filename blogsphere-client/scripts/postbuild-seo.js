@@ -73,3 +73,10 @@ if (/^ca-pub-\d{10,20}$/.test(client) && fs.existsSync(adsPath)) {
 } else {
   console.log('[postbuild-seo] ads.txt left as template (REACT_APP_ADSENSE_CLIENT not set).');
 }
+
+// Static pages (About, Contact, policies) -> build/<route>.html with real text for crawlers
+try {
+  require('./prerender-static')();
+} catch (e) {
+  console.warn(`[postbuild-seo] Static prerender failed, pages will be served as the empty app shell: ${e.message}`);
+}

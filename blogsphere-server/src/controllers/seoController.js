@@ -13,7 +13,10 @@ const STATIC_PAGES = [
   { path: '/about', changefreq: 'monthly', priority: '0.5' },
   { path: '/contact', changefreq: 'yearly', priority: '0.3' },
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
-  { path: '/terms', changefreq: 'yearly', priority: '0.3' }
+  { path: '/terms', changefreq: 'yearly', priority: '0.3' },
+  { path: '/cookie-policy', changefreq: 'yearly', priority: '0.3' },
+  { path: '/advertising-disclosure', changefreq: 'yearly', priority: '0.3' },
+  { path: '/writer-monetization-policy', changefreq: 'yearly', priority: '0.3' }
 ];
 
 const escapeXml = (value) =>
@@ -148,6 +151,8 @@ exports.getLlmsTxt = async (req, res, next) => {
       `- [Contact](${site}/contact)`,
       `- [Privacy Policy](${site}/privacy-policy)`,
       `- [Terms](${site}/terms)`,
+      `- [Cookie Policy](${site}/cookie-policy)`,
+      `- [Advertising Disclosure](${site}/advertising-disclosure)`,
       '',
       '## Optional',
       `- [All categories](${site}/categories)`,

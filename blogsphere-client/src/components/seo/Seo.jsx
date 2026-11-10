@@ -11,6 +11,16 @@ const absoluteUrl = (url) => {
   return `${brand.url}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 
+// Title separator: a pipe (no dashes). The brand is appended only while the result stays under 60 chars,
+// so long headlines are not cut off in search results.
+const TITLE_SEP = ' | ';
+const MAX_TITLE = 60;
+const buildTitle = (title) => {
+  if (!title) return brand.homeTitle || brand.name;
+  const withBrand = `${title}${TITLE_SEP}${brand.name}`;
+  return withBrand.length < MAX_TITLE ? withBrand : title;
+};
+
 const clip = (text = '', max = 160) => {
   const clean = String(text).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
@@ -20,7 +30,9 @@ const clip = (text = '', max = 160) => {
  * Per-page SEO tags: <title>, meta description, canonical link, Open Graph and Twitter cards,
  * optional robots noindex and JSON-LD structured data.
  *
- * @param {string}  title        page title (site name is appended); omit on the home page
+ * @param {string}  title        page title (pass an article's `seoTitle || title`); the site name is
+ *                               appended with " | " only when the result stays under 60 characters;
+ *                               omit on the home page
  * @param {string}  description  meta description (clipped to 160 chars)
  * @param {string}  path         canonical path; defaults to the current path without query string
  * @param {string}  image        share image (absolute or site-relative)
@@ -40,7 +52,7 @@ const Seo = ({
   jsonLd,
 }) => {
   const location = useLocation();
-  const fullTitle = title ? `${title} — ${brand.name}` : `${brand.name} — ${brand.tagline}`;
+  const fullTitle = buildTitle(title);
   const desc = clip(description);
   const canonical = `${brand.url}${path ?? location.pathname}`;
   const shareImage = absoluteUrl(image || DEFAULT_IMAGE);
@@ -75,5 +87,5 @@ const Seo = ({
   );
 };
 
-export { absoluteUrl };
+export { absoluteUrl, buildTitle };
 export default Seo;

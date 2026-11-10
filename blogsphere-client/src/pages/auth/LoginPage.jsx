@@ -134,7 +134,7 @@ const LoginPage = () => {
                 checked={form.remember} onChange={handleChange}
               />
               <span className="auth-checkbox__label">
-                Remember me <span className="auth-checkbox__hint">— stay signed in on this device for 30 days</span>
+                Remember me <span className="auth-checkbox__hint">(stay signed in on this device for 30 days)</span>
               </span>
             </label>
 
