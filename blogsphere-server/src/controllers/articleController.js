@@ -5,7 +5,24 @@ const { ROLES } = require('../constants/roles');
 const { sendSuccess, sendError } = require('../utils/response');
 const { escapeRegex, parseLimit } = require('../utils/query');
 
+const sanitizeHtml = require('sanitize-html');
 const jwt = require('jsonwebtoken');
+
+// Allow normal article formatting; strip scripts, event handlers and javascript: links (stored-XSS guard)
+const cleanContent = (html = '') => sanitizeHtml(String(html), {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'figure', 'figcaption', 'picture', 'source', 'iframe']),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    '*': ['id', 'class'],
+    img: ['src', 'srcset', 'sizes', 'alt', 'title', 'width', 'height', 'loading'],
+    source: ['srcset', 'type', 'media'],
+    a: ['href', 'name', 'target', 'rel', 'title'],
+    th: ['colspan', 'rowspan', 'scope'], td: ['colspan', 'rowspan'],
+    iframe: ['src', 'width', 'height', 'title', 'allow', 'allowfullscreen', 'frameborder'],
+  },
+  allowedIframeHostnames: ['www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com'],
+  allowedSchemes: ['http', 'https', 'mailto'],
+});
 const env = require('../config/env');
 
 const BOT_UA = /bot|crawl|spider|slurp|preview|headless|lighthouse|pagespeed|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|linkedin|skype|applebot|yandex|baidu|duckduck|semrush|ahrefs|gptbot|chatgpt|perplexity|claude|anthropic|bytespider|amazonbot|ccbot|petalbot/i;
@@ -229,7 +246,7 @@ exports.createArticle = async (req, res) => {
     const article = await Article.create({
       title,
       excerpt: autoExcerpt,
-      content,
+      content: cleanContent(content),
       coverImage,
       category,
       tags: Array.isArray(tags) ? tags.map(t => t.trim().toLowerCase()) : [],
@@ -266,7 +283,7 @@ exports.updateArticle = async (req, res) => {
 
     if (title) article.title = title;
     if (excerpt) article.excerpt = excerpt;
-    if (content) article.content = content;
+    if (content) article.content = cleanContent(content);
     if (coverImage) article.coverImage = coverImage;
     if (category) article.category = category;
     if (tags) article.tags = Array.isArray(tags) ? tags.map(t => t.trim().toLowerCase()) : article.tags;

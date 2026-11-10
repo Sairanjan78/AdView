@@ -25,6 +25,7 @@ const safeHtml = (html = '') => String(html)
 
 const getJson = async (path) => {
   const res = await fetch(`${API}${path}`, { signal: AbortSignal.timeout(9000), headers: { 'x-prerender': '1' } });
+  if (res.status === 404) return { notFound: true };
   if (!res.ok) return null;
   return res.json();
 };
@@ -92,7 +93,16 @@ export async function onRequest({ request, next, env }) {
     if (match) {
       const data = await getJson(`/articles/${encodeURIComponent(match[1])}`);
       const a = data && data.data && data.data.article;
-      if (!a) return plain();
+      if (!a && !(data && data.notFound)) return plain(); // API down: serve the SPA as-is
+      if (!a) {
+        // Real 404 for crawlers instead of a soft-404 SPA shell
+        const h = new Headers(response.headers);
+        h.delete('content-length');
+        h.set('x-robots-tag', 'noindex');
+        html = setHead(html, { title: `Article not found — ${SITE_NAME}`, description: 'This article does not exist or is no longer published.', url: `${origin}/` });
+        html = setBody(html, `<main><h1>Article not found</h1><p><a href="/">Back to ${SITE_NAME}</a></p></main>`);
+        return new Response(html, { status: 404, headers: h });
+      }
       const pageUrl = `${origin}/article/${a.slug}`;
       const author = (a.author && a.author.name) || '';
       const published = a.publishedAt || a.createdAt;
@@ -126,6 +136,12 @@ export async function onRequest({ request, next, env }) {
       const data = await getJson('/articles?limit=30');
       const list = (data && data.data && data.data.articles) || [];
       const links = list.map(a => `<li><a href="/article/${esc(a.slug)}">${esc(a.title)}</a>${a.excerpt ? ` — ${esc(clip(a.excerpt, 140))}` : ''}</li>`).join('');
+      html = setHead(html, {
+        title: `${SITE_NAME}: Tech, Careers, Money and World Explainers`,
+        description: 'Clear, practical guides on technology, jobs and careers, money, health, travel and world affairs, written for readers in the US and UK.',
+        url: `${origin}/`,
+        jsonLd: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${origin}/` },
+      });
       html = setBody(html, `<main><h1>${SITE_NAME}</h1><h2>Latest articles</h2><ul>${links}</ul></main>`);
     }
 
