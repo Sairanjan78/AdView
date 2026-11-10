@@ -6,3 +6,7 @@
 .lang-hint__close { flex: none; display: grid; place-items: center; border: 0; background: transparent; color: #fff; opacity: .8; padding: 4px; cursor: pointer; }
 @keyframes lang-hint-in { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (max-width: 420px) { .lang-hint { font-size: 0.8rem; } }
+.lang-hint__rotate { animation: lang-hint-swap .35s ease-out; min-width: 5.5rem; }
+.lang-hint__select { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.5); font-weight: 500; max-width: 5rem; }
+.lang-hint__select option { color: #111; }
+@keyframes lang-hint-swap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
