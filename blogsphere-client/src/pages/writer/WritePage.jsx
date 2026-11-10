@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LuSend, LuFileText, LuCircleCheck, LuCircleAlert, LuLock, LuPenLine } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
 import EmptyState from '../../components/ui/EmptyState';
@@ -26,6 +26,28 @@ const WritePage = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [searchParams] = useSearchParams();
+
+  // Prefill from a prepared post file: /write?import=<name> loads /imports/<name>.json
+  useEffect(() => {
+    const name = searchParams.get('import');
+    if (!name || !/^[a-z0-9-]{1,80}$/.test(name)) return;
+    fetch(`/imports/${name}.json`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('Import file not found'))))
+      .then((d) => {
+        setFormData((prev) => ({
+          ...prev,
+          title: typeof d.title === 'string' ? d.title : prev.title,
+          category: typeof d.category === 'string' ? d.category : prev.category,
+          excerpt: typeof d.excerpt === 'string' ? d.excerpt : prev.excerpt,
+          coverImage: typeof d.coverImage === 'string' ? d.coverImage : prev.coverImage,
+          tags: Array.isArray(d.tags) ? d.tags.join(', ') : prev.tags,
+          content: typeof d.content === 'string' ? d.content : prev.content
+        }));
+        setSuccessMsg('Post loaded. Review it, then publish.');
+      })
+      .catch((err) => setErrorMsg(err.message));
+  }, [searchParams]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
