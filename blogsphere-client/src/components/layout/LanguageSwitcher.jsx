@@ -28,12 +28,12 @@ export const LANGUAGES = [
   ['sd', 'سنڌي (Sindhi)'],
 ];
 
-const readLang = () => {
+export const readLang = () => {
   const m = document.cookie.match(/(?:^|;\s*)googtrans=\/[^/]+\/([^;]+)/);
   return m ? decodeURIComponent(m[1]) : 'en';
 };
 
-const setCookie = (value) => {
+export const setCookie = (value) => {
   const host = window.location.hostname;
   const domains = ['', host, `.${host.replace(/^www\./, '')}`];
   domains.forEach(d => {

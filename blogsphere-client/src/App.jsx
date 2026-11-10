@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
+import LanguageHint from './components/layout/LanguageHint';
 import Footer from './components/layout/Footer';
 import ScrollManager from './components/layout/ScrollManager';
 import Seo from './components/seo/Seo';
@@ -62,6 +63,7 @@ function App() {
           <AdSenseHead />
           <div className="page-wrapper">
             <Navbar />
+            <LanguageHint />
             <main className="page-content" id="main-content">
               <Suspense fallback={<PageLoader />}>
                 <Routes>
