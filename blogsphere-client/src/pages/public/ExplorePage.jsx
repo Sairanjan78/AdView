@@ -43,6 +43,7 @@ const ExplorePage = () => {
           ? `Read the latest ${activeCategoryMeta.name.toLowerCase()} articles on ${brand.name}.`
           : `Explore all articles across every niche on ${brand.name}.`}
         path={slug ? `/categories/${slug}` : '/explore'}
+        noindex={!slug}
       />
 
       <div className="explore-page">
@@ -88,7 +89,7 @@ const ExplorePage = () => {
           {filtered.length > 0 ? (
             <div className="grid-3 stagger-children">
               {filtered.map(article => (
-                <ArticleCard key={article.id} article={article} />
+                <ArticleCard key={article.id} article={article} headingLevel={2} />
               ))}
             </div>
           ) : !loading && (

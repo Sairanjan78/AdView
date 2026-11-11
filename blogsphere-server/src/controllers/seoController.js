@@ -6,9 +6,6 @@ const env = require('../config/env');
 
 const STATIC_PAGES = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
-  { path: '/explore', changefreq: 'daily', priority: '0.8' },
-  { path: '/latest', changefreq: 'daily', priority: '0.8' },
-  { path: '/trending', changefreq: 'daily', priority: '0.7' },
   { path: '/categories', changefreq: 'weekly', priority: '0.6' },
   { path: '/about', changefreq: 'monthly', priority: '0.5' },
   { path: '/contact', changefreq: 'yearly', priority: '0.3' },

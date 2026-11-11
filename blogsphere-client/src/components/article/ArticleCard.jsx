@@ -11,7 +11,8 @@ import './ArticleCard.css';
  * Standard article card — used in feeds and grids.
  * The whole card is clickable through the title link; category and author stay separate links.
  */
-const ArticleCard = ({ article, className = '' }) => {
+const ArticleCard = ({ article, className = '', headingLevel = 3 }) => {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const { slug, title, excerpt, cover, category, author, publishedAt, readTime } = article;
 
   return (
@@ -25,9 +26,9 @@ const ArticleCard = ({ article, className = '' }) => {
           <CategoryIcon icon={category.icon} size={14} /> {category.name}
         </Link>
 
-        <h3 className="article-card__title">
+        <Heading className="article-card__title">
           <Link to={`/article/${slug}`} className="article-card__title-link">{title}</Link>
-        </h3>
+        </Heading>
 
         {excerpt && <p className="article-card__excerpt line-clamp-2">{excerpt}</p>}
 

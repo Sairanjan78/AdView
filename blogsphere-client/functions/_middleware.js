@@ -404,6 +404,15 @@ export async function onRequest(context) {
     return notFound(await response.text(), response, isBot);
   }
 
+  // Listing pages that only repeat other pages: keep them out of the index for every crawler,
+  // including ones that don't run JavaScript (the React page also sets a robots meta tag)
+  if (/^\/(latest|trending|explore)\/?$/.test(path)) {
+    const response = await next();
+    const h = new Headers(response.headers);
+    h.set('X-Robots-Tag', 'noindex, follow');
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers: h });
+  }
+
   const dynamic = path === '/' || /^\/(article|categories|writer)\/[^/]+$/.test(path);
   if (!dynamic || !isBot || !wantsHtml) return next();
 
