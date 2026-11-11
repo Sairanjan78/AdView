@@ -27,6 +27,20 @@ const WritePage = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [searchParams] = useSearchParams();
+  const [editId, setEditId] = useState(null);
+
+  // Edit mode: /write?import=<name>&edit=<slug> updates that existing article instead of creating a new one
+  useEffect(() => {
+    const slug = searchParams.get('edit');
+    if (!slug || !/^[a-z0-9-]{1,200}$/.test(slug)) return;
+    articleApi.getArticleBySlug(slug)
+      .then((res) => {
+        const id = res?.data?.article?._id || res?.data?.article?.id;
+        if (id) setEditId(id);
+        else setErrorMsg('Article to edit not found');
+      })
+      .catch((err) => setErrorMsg(err.message || 'Article to edit not found'));
+  }, [searchParams]);
 
   // Prefill from a prepared post file: /write?import=<name> loads /imports/<name>.json
   useEffect(() => {
@@ -80,9 +94,13 @@ const WritePage = () => {
         status
       };
 
-      const res = await articleApi.createArticle(payload);
+      const res = editId
+        ? await articleApi.updateArticle(editId, payload)
+        : await articleApi.createArticle(payload);
       setSuccessMsg(
-        status === 'published'
+        editId
+          ? 'Article updated successfully!'
+          : status === 'published'
           ? 'Article published successfully!'
           : 'Draft saved successfully!'
       );
@@ -245,7 +263,7 @@ const WritePage = () => {
                   icon={<LuSend />}
                   onClick={() => handleSubmit('published')}
                 >
-                  Publish Now
+                  {editId ? 'Update Article' : 'Publish Now'}
                 </Button>
               </div>
             </form>
