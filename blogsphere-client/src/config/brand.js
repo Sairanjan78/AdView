@@ -17,9 +17,9 @@ const brand = {
   url: (process.env.REACT_APP_SITE_URL ||
     (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')).replace(/\/+$/, ''),
   // Public contact address shown on Contact / Privacy / Terms pages
-  email: process.env.REACT_APP_CONTACT_EMAIL || 'sairanjanbiswal123@gmail.com',
+  email: process.env.REACT_APP_CONTACT_EMAIL || 'contact@blogspheremag.com',
   // Date the legal pages (Privacy, Terms, Cookies) were last reviewed - update when you edit them
-  legalLastUpdated: 'November 6, 2026',
+  legalLastUpdated: 'November 11, 2026',
   // Your own social profiles. Icons only appear in the footer for the ones you set.
   social: {
     twitter: process.env.REACT_APP_SOCIAL_TWITTER || '',
