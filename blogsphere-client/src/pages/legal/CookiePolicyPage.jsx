@@ -13,7 +13,7 @@ const CookiePolicyPage = () => (
         title: 'Strictly Necessary',
         body: (
           <ul>
-            <li><strong>token</strong> (cookie) and <strong>token</strong> (browser local or session storage) – keep you signed in. Set only when you sign in; removed when you sign out or after it expires. With "Remember me" ticked it lasts 30 days; otherwise it is kept only until you close your browser (at most 1 day).</li>
+            <li><strong>token</strong> (cookie) and <strong>token</strong> (browser local or session storage): keep you signed in. Set only when you sign in; removed when you sign out or after it expires. With "Remember me" ticked it lasts 30 days; otherwise it is kept only until you close your browser (at most 1 day).</li>
             <li>If you choose <strong>Continue with Google</strong>, Google's sign-in service (accounts.google.com) may set its own cookies to run the sign-in, as described in Google's privacy policy.</li>
           </ul>
         ),

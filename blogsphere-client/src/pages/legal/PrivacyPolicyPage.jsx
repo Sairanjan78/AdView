@@ -30,11 +30,11 @@ const PrivacyPolicyPage = () => (
           <>
             <p>We collect only what we need to run the platform:</p>
             <ul>
-              <li><strong>Account information</strong> – if you register: your name, email address, username, and a securely hashed password. Writers may add a bio, avatar and social links.</li>
-              <li><strong>Content you publish</strong> – articles, drafts, tags and images you submit as a writer.</li>
-              <li><strong>Messages</strong> – the name, email address and message you send through our <Link to="/contact">Contact</Link> form.</li>
-              <li><strong>Usage data</strong> – standard server logs (IP address, browser type, pages requested, time of request) and anonymous article view counts, used for security and to understand what readers enjoy.</li>
-              <li><strong>Cookies and local storage</strong> – described below.</li>
+              <li><strong>Account information</strong>: if you register: your name, email address, username, and a securely hashed password. Writers may add a bio, avatar and social links.</li>
+              <li><strong>Content you publish</strong>: articles, drafts, tags and images you submit as a writer.</li>
+              <li><strong>Messages</strong>: the name, email address and message you send through our <Link to="/contact">Contact</Link> form.</li>
+              <li><strong>Usage data</strong>: standard server logs (IP address, browser type, pages requested, time of request) and anonymous article view counts, used for security and to understand what readers enjoy.</li>
+              <li><strong>Cookies and local storage</strong>: described below.</li>
             </ul>
             <p>Reading articles does not require an account.</p>
           </>

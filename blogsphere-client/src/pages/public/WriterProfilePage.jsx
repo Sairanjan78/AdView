@@ -67,7 +67,7 @@ const WriterProfilePage = () => {
   return (
     <>
       <Seo
-        title={`${author.name} — Writer`}
+        title={`${author.name}, Writer`}
         description={author.bio || `Read articles by ${author.name} on ${brand.name}.`}
         path={`/writer/${author.username}`}
         image={author.avatar || undefined}

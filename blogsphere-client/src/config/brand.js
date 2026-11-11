@@ -7,6 +7,11 @@ const brand = {
   tagline: 'Where Ideas Find Their World',
   description:
     'A global multi-niche publishing platform connecting writers and readers across every topic under the sun.',
+  // Home page <title> and meta description (also used by functions/_middleware.js and public/index.html).
+  // No em or en dashes in user-facing text.
+  homeTitle: 'BlogSphere Mag: Practical Guides on Tech, Careers and Travel',
+  homeDescription:
+    'Practical, sourced guides on technology, careers and jobs, education, travel and world affairs, written by named authors and updated when facts change.',
   // Public address of the site on your own domain (set REACT_APP_SITE_URL before building).
   // Used for canonical links and Open Graph URLs; falls back to the current origin.
   url: (process.env.REACT_APP_SITE_URL ||
@@ -21,7 +26,12 @@ const brand = {
     instagram: process.env.REACT_APP_SOCIAL_INSTAGRAM || '',
     linkedin: process.env.REACT_APP_SOCIAL_LINKEDIN || 'https://www.linkedin.com/in/sairanjan-biswal/',
   },
-  // Revenue sharing — configurable by admin in Phase 7
+  // Founder: used for schema.org author sameAs when the profile has no social links yet
+  founder: {
+    username: 'sairanjan',
+    sameAs: ['https://www.linkedin.com/in/sairanjan-biswal/'],
+  },
+  // Revenue sharing, configurable by admin in Phase 7
   revenueShare: {
     writerPool: 70,   // % of eligible ad revenue distributed to writers
     platformShare: 30, // % retained by platform

@@ -46,7 +46,7 @@ const getOptionalViewerId = async (req) => {
 
 
 // Public author fields included with every article
-const AUTHOR_FIELDS = 'name username avatar bio verified followers';
+const AUTHOR_FIELDS = 'name username avatar bio verified followers socialLinks';
 
 /**
  * @desc    Get published articles (public, filterable, pagination)
@@ -235,7 +235,7 @@ exports.getArticleBySlug = async (req, res) => {
  */
 exports.createArticle = async (req, res) => {
   try {
-    const { title, excerpt, content, coverImage, category, tags, status } = req.body;
+    const { title, seoTitle, excerpt, content, coverImage, category, tags, status } = req.body;
 
     if (!title || !content || !category) {
       return sendError(res, 400, 'Please provide title, category, and content');
@@ -245,6 +245,7 @@ exports.createArticle = async (req, res) => {
 
     const article = await Article.create({
       title,
+      seoTitle: typeof seoTitle === 'string' ? seoTitle : undefined,
       excerpt: autoExcerpt,
       content: cleanContent(content),
       coverImage,
@@ -279,9 +280,10 @@ exports.updateArticle = async (req, res) => {
       return sendError(res, 403, 'You are not authorized to update this article');
     }
 
-    const { title, excerpt, content, coverImage, category, tags, status } = req.body;
+    const { title, seoTitle, excerpt, content, coverImage, category, tags, status } = req.body;
 
     if (title) article.title = title;
+    if (typeof seoTitle === 'string') article.seoTitle = seoTitle; // '' clears it
     if (excerpt) article.excerpt = excerpt;
     if (content) article.content = cleanContent(content);
     if (coverImage) article.coverImage = coverImage;

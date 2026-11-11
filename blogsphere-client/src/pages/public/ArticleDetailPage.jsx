@@ -81,6 +81,16 @@ const addHeadingIds = (html) => {
   return [out, toc];
 };
 
+// Author profile links for schema.org sameAs: the writer's own social links, plus the founder's
+// LinkedIn from the brand config when the founder has not added it to the profile yet.
+const authorProfiles = (author) => {
+  const links = Object.values(author.socialLinks || {}).filter(u => /^https?:\/\//i.test(u || ''));
+  if (brand.founder && author.username === brand.founder.username) {
+    brand.founder.sameAs.forEach(u => { if (!links.includes(u)) links.push(u); });
+  }
+  return links;
+};
+
 const ShareBar = ({ title }) => {
   const [copied, setCopied] = useState(false);
   const url = typeof window !== 'undefined' ? window.location.href : brand.url;
@@ -165,11 +175,13 @@ const ArticleDetailPage = () => {
   const [articleBody, toc] = addHeadingIds(toHtml(content, excerpt));
   const [introHtml, restHtml] = splitAfterIntro(articleBody);
   const faqSchema = extractFaq(articleBody);
+  const wordCount = String(content || '').replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+  const authorSameAs = authorProfiles(author);
 
   return (
     <>
       <Seo
-        title={title}
+        title={article.seoTitle || title}
         description={excerpt}
         path={`/article/${article.slug}`}
         image={cover || undefined}
@@ -190,10 +202,18 @@ const ArticleDetailPage = () => {
           image: cover ? [cover] : undefined,
           datePublished: new Date(publishedAt).toISOString(),
           dateModified: new Date(article.updatedAt || publishedAt).toISOString(),
-          author: { '@type': 'Person', name: author.name, url: `${brand.url}/writer/${author.username}` },
-          publisher: { '@type': 'Organization', name: brand.name, logo: { '@type': 'ImageObject', url: `${brand.url}/logo512.png` } },
+          author: {
+            '@type': 'Person',
+            name: author.name,
+            url: `${brand.url}/writer/${author.username}`,
+            ...(authorSameAs.length ? { sameAs: authorSameAs } : {}),
+          },
+          publisher: { '@type': 'Organization', name: brand.name, url: `${brand.url}/`, logo: { '@type': 'ImageObject', url: `${brand.url}/logo512.png` } },
           mainEntityOfPage: `${brand.url}/article/${article.slug}`,
+          isPartOf: { '@type': 'WebSite', name: brand.name, url: `${brand.url}/` },
+          inLanguage: 'en-US',
           articleSection: category.name,
+          wordCount,
           keywords: tags.join(', '),
           }, {
             '@type': 'BreadcrumbList',

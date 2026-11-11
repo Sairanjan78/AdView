@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { ARTICLE_STATUS, CATEGORIES_LIST } = require('../constants/articles');
 const slugify = require('../utils/slugify');
+const sanitizeArticleHtml = require('../utils/sanitizeArticle');
 
 const ArticleSchema = new mongoose.Schema(
   {
@@ -9,6 +10,13 @@ const ArticleSchema = new mongoose.Schema(
       required: [true, 'Please provide an article title'],
       trim: true,
       maxlength: [150, 'Title cannot exceed 150 characters']
+    },
+    // Optional shorter <title> for search results (aim for 50 to 60 characters); falls back to title
+    seoTitle: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [70, 'SEO title cannot exceed 70 characters']
     },
     slug: {
       type: String,
@@ -92,6 +100,11 @@ ArticleSchema.index({ status: 1, views: -1, likes: -1 });
 
 // Pre-save hook: auto-generate unique slug & calculate read time
 ArticleSchema.pre('save', async function (next) {
+  // Strip scripts, inline handlers and unsafe URLs from the stored HTML
+  if (this.isModified('content') && this.content) {
+    this.content = sanitizeArticleHtml(this.content);
+  }
+
   // A new article may bring its own slug (e.g. seeded content); otherwise derive it from the title
   // Once an article has been published its URL stays stable (good for SEO and shared links),
   // even if the title is edited later.
