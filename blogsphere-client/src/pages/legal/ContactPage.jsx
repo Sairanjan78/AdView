@@ -69,6 +69,57 @@ const ContactPage = () => {
         </section>
 
         <div className="container legal-page__content">
+          <section className="about-section" id="who-we-are">
+            <h2 className="about-section__title">Who runs {brand.name}</h2>
+            <p>
+              {brand.name} is an independent online magazine founded in 2026 by Sairanjan Biswal, a software
+              engineer from Odisha, India. He edits the site and reviews every article before it is published,
+              so your message reaches the person who can act on it, not a call centre. You can read more about
+              the site and its standards on our <Link to="/about">About page</Link>.
+            </p>
+          </section>
+
+          <section className="about-section" id="what-to-contact-us-about">
+            <h2 className="about-section__title">What you can contact us about</h2>
+            <ul>
+              <li>
+                <strong>Corrections.</strong> If an article has a factual error, an outdated price or date, or a
+                broken source link, send us the article link and what needs fixing, ideally with a source. We check
+                every report and update the article when it is wrong.
+              </li>
+              <li>
+                <strong>Writing for us.</strong> We welcome writers with first-hand knowledge of technology, careers,
+                education, health, travel and culture. Tell us your topic idea and share a sample or a link to
+                your past work. You can also <Link to="/register">create a writer account</Link> and read how
+                earnings work in our <Link to="/writer-monetization-policy">Writer Monetization Policy</Link>.
+              </li>
+              <li>
+                <strong>Advertising and partnerships.</strong> Ads on the site are served by Google AdSense. For
+                other partnership questions, write to us; any sponsored content is clearly labelled, as explained
+                in our <Link to="/advertising-disclosure">Advertising Disclosure</Link>.
+              </li>
+              <li>
+                <strong>Privacy and data requests.</strong> To access, correct or delete your personal data, email
+                us from the address linked to your account and say what you need. Our{' '}
+                <Link to="/privacy-policy">Privacy Policy</Link> explains what we collect and why.
+              </li>
+              <li>
+                <strong>Copyright concerns.</strong> If you believe content on the site uses your work without
+                permission, send the page link and proof of ownership and we will review it promptly.
+              </li>
+            </ul>
+          </section>
+
+          <section className="about-section" id="response-time">
+            <h2 className="about-section__title">How to reach us and when we reply</h2>
+            <p>
+              Use the form below or email <a href={`mailto:${brand.email}`}>{brand.email}</a>. We usually reply
+              within two to three working days (India time). Corrections and privacy requests get priority. We
+              are an online publication and do not have a public office address or phone line, so email is the
+              best way to reach us.
+            </p>
+          </section>
+
           <div className="write-card">
             {errorMsg && (
               <div className="write-alert write-alert--error" role="alert">

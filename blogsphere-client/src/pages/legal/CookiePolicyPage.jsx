@@ -7,6 +7,7 @@ const CookiePolicyPage = () => (
   <LegalPage
     title="Cookie Policy"
     intro={`Which cookies ${brand.name} uses and how to control them.`}
+    description="Which cookies and browser storage BlogSphere Mag uses to keep you signed in and to serve Google AdSense ads, and how to control or clear them."
     sections={[
       {
         id: 'necessary',

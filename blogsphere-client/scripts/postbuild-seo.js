@@ -80,3 +80,13 @@ try {
 } catch (e) {
   console.warn(`[postbuild-seo] Static prerender failed, pages will be served as the empty app shell: ${e.message}`);
 }
+
+// Published articles -> build/article/<slug>.html with the full text for crawlers.
+// Best effort: an unreachable API only skips this step, it never fails the build.
+(async () => {
+  try {
+    await require('./prerender-articles')();
+  } catch (e) {
+    console.warn(`[postbuild-seo] Article prerender skipped: ${e.message}`);
+  }
+})();

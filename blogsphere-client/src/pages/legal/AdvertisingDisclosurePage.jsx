@@ -7,6 +7,7 @@ const AdvertisingDisclosurePage = () => (
   <LegalPage
     title="Advertising Disclosure"
     intro={`How advertising supports ${brand.name}.`}
+    description="How BlogSphere Mag is funded: Google AdSense ads, clearly labelled and kept separate from articles, and how we disclose sponsored or affiliate content."
     sections={[
       {
         id: 'ads',

@@ -53,6 +53,7 @@ const WritePage = () => {
         setFormData((prev) => ({
           ...prev,
           title: typeof d.title === 'string' ? d.title : prev.title,
+          seoTitle: typeof d.seoTitle === 'string' ? d.seoTitle : prev.seoTitle,
           category: typeof d.category === 'string' ? d.category : prev.category,
           excerpt: typeof d.excerpt === 'string' ? d.excerpt : prev.excerpt,
           coverImage: typeof d.coverImage === 'string' ? d.coverImage : prev.coverImage,

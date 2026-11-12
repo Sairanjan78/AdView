@@ -134,11 +134,13 @@ const setHead = (html, { title, description, url, image, type = 'website', jsonL
   ].join('');
   return html
     .replace(/<title>[\s\S]*?<\/title>/i, '')
-    .replace(/<meta[^>]+(name="description"|name="robots"|property="og:[^"]*"|name="twitter:[^"]*")[^>]*>/gi, '')
+    .replace(/<meta[^>]+(name="description"|name="robots"|property="og:[^"]*"|property="article:[^"]*"|name="twitter:[^"]*")[^>]*>/gi, '')
     .replace(/<link[^>]+rel="canonical"[^>]*>/gi, '')
+    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, '') // from a build-time prerendered copy
     .replace('</head>', () => `${tags}</head>`);
 };
-const setBody = (html, inner) => html.replace(/<div id="root"><\/div>/, () => `<div id="root">${inner}</div>`);
+// The shell's root is empty, or holds a build-time prerendered copy (build/article/<slug>.html): replace either
+const setBody = (html, inner) => html.replace(/<div id="root">(?:<\/div>|[\s\S]*?<\/div>(?=\s*<\/body>))/, () => `<div id="root">${inner}</div>`);
 
 // Shared header and footer so every prerendered page links to the main sections
 const chrome = inner => [

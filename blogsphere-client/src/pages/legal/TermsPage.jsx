@@ -7,6 +7,7 @@ const TermsPage = () => (
   <LegalPage
     title="Terms of Service"
     intro={`The rules for reading, writing and publishing on ${brand.name}.`}
+    description="The terms for using BlogSphere Mag: accounts, writer content and ownership, acceptable use, ad revenue sharing, intellectual property and liability."
     sections={[
       {
         id: 'acceptance',
