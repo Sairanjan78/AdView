@@ -28,8 +28,10 @@ const toArticles = res => (res?.data?.articles || []).map(normalizeArticle);
 const HomePage = () => {
   const { isWriter } = useAuth();
   const { categories } = useCategories();
-  const { data: featured } = useApi(() => articleApi.getFeatured({ limit: 3 }).then(toArticles));
-  const { data: trending } = useApi(() => articleApi.getTrending({ limit: 5 }).then(toArticles));
+  const { data: featured, loading: featuredLoading } =
+    useApi(() => articleApi.getFeatured({ limit: 3 }).then(toArticles));
+  const { data: trending, loading: trendingLoading } =
+    useApi(() => articleApi.getTrending({ limit: 5 }).then(toArticles));
   const { data: latest, loading: latestLoading, error: latestError } =
     useApi(() => articleApi.getArticles({ limit: 9 }).then(toArticles));
   const { data: writers } = useApi(() =>
@@ -42,7 +44,9 @@ const HomePage = () => {
   const writerList = (writers || []).filter(w => w.articles > 0);
 
   // Lead story: the first featured article, otherwise the newest one
-  const lead = featuredList[0] || latestList[0];
+  // While featured stories load, hold a placeholder rather than swapping the lead card later
+  const lead = featuredLoading ? null : (featuredList[0] || latestList[0]);
+  const leadLoading = !lead && (featuredLoading || latestLoading);
   const picks = featuredList.filter(a => a.id !== lead?.id).slice(0, 2);
   const shownIds = new Set([lead?.id, ...picks.map(a => a.id)]);
   const moreStories = latestList.filter(a => !shownIds.has(a.id)).slice(0, 6);
@@ -71,7 +75,7 @@ const HomePage = () => {
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="hero" aria-labelledby="hero-title">
-        <div className={`container hero__inner ${lead ? '' : 'hero__inner--solo'}`}>
+        <div className={`container hero__inner ${lead || leadLoading ? '' : 'hero__inner--solo'}`}>
           <div className="hero__copy animate-fadeInUp">
             <p className="page-eyebrow"><LuSparkles size={14} aria-hidden="true" /> {brand.tagline}</p>
             <h1 className="hero__headline" id="hero-title">
@@ -89,6 +93,11 @@ const HomePage = () => {
           {lead && (
             <div className="hero__featured animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
               <FeaturedCard article={lead} size="lg" />
+            </div>
+          )}
+          {leadLoading && (
+            <div className="hero__featured" aria-hidden="true">
+              <div className="home-skel-card home-skel-card--lg skeleton" />
             </div>
           )}
         </div>
@@ -133,18 +142,24 @@ const HomePage = () => {
       ) : (
         <>
           {/* ── Editor's picks ──────────────────────────── */}
-          {picks.length > 0 && (
+          {(picks.length > 0 || featuredLoading) && (
             <section className="section section--tight" id="editors-picks" aria-labelledby="picks-title">
               <div className="container">
                 <div className="section-header">
                   <h2 className="section-title" id="picks-title">Editor’s picks</h2>
                   <Link to="/explore" className="section-link">Explore all <LuArrowRight size={14} aria-hidden="true" /></Link>
                 </div>
-                <div className="picks-grid stagger-children">
-                  {picks.map(article => (
-                    <FeaturedCard key={article.id} article={article} size="sm" headingLevel="h3" />
-                  ))}
-                </div>
+                {featuredLoading && picks.length === 0 ? (
+                  <div className="picks-grid" aria-hidden="true">
+                    {[0, 1].map(i => <div key={i} className="home-skel-card home-skel-card--sm skeleton" />)}
+                  </div>
+                ) : (
+                  <div className="picks-grid stagger-children">
+                    {picks.map(article => (
+                      <FeaturedCard key={article.id} article={article} size="sm" headingLevel="h3" />
+                    ))}
+                  </div>
+                )}
               </div>
             </section>
           )}
@@ -160,11 +175,17 @@ const HomePage = () => {
                   </h2>
                   <Link to="/trending" className="section-link">See all <LuArrowRight size={13} aria-hidden="true" /></Link>
                 </div>
-                <ol className="trending-list" aria-label="Most read articles">
-                  {trendingList.map((article, index) => (
-                    <TrendingItem key={article.id} article={article} rank={index + 1} />
-                  ))}
-                </ol>
+                {trendingLoading && trendingList.length === 0 ? (
+                  <ol className="trending-list" aria-hidden="true">
+                    {[1, 2, 3, 4, 5].map(rank => <TrendingSkeleton key={rank} />)}
+                  </ol>
+                ) : (
+                  <ol className="trending-list" aria-label="Most read articles">
+                    {trendingList.map((article, index) => (
+                      <TrendingItem key={article.id} article={article} rank={index + 1} />
+                    ))}
+                  </ol>
+                )}
               </div>
 
               <div className="trending-latest__col" id="latest">
@@ -175,10 +196,12 @@ const HomePage = () => {
                   </h2>
                   <Link to="/latest" className="section-link">See all <LuArrowRight size={13} aria-hidden="true" /></Link>
                 </div>
-                <div className="latest-list">
-                  {latestList.slice(0, 4).map(article => (
-                    <LatestItem key={article.id} article={article} />
-                  ))}
+                <div className="latest-list" aria-hidden={latestLoading && latestList.length === 0 ? 'true' : undefined}>
+                  {latestLoading && latestList.length === 0
+                    ? [0, 1, 2, 3].map(i => <LatestSkeleton key={i} />)
+                    : latestList.slice(0, 4).map(article => (
+                      <LatestItem key={article.id} article={article} />
+                    ))}
                 </div>
               </div>
             </div>
@@ -190,18 +213,24 @@ const HomePage = () => {
           </div>
 
           {/* ── More stories ──────────────────────────────── */}
-          {moreStories.length > 0 && (
+          {(moreStories.length > 0 || latestLoading) && (
             <section className="section" id="more-stories" aria-labelledby="more-title">
               <div className="container">
                 <div className="section-header">
                   <h2 className="section-title" id="more-title">More stories</h2>
                   <Link to="/explore" className="section-link">Explore all <LuArrowRight size={14} aria-hidden="true" /></Link>
                 </div>
-                <div className="grid-3 stagger-children">
-                  {moreStories.map(article => (
-                    <ArticleCard key={article.id} article={article} />
-                  ))}
-                </div>
+                {latestLoading && moreStories.length === 0 ? (
+                  <div className="grid-3" aria-hidden="true">
+                    {[0, 1, 2, 3, 4, 5].map(i => <ArticleCardSkeleton key={i} />)}
+                  </div>
+                ) : (
+                  <div className="grid-3 stagger-children">
+                    {moreStories.map(article => (
+                      <ArticleCard key={article.id} article={article} />
+                    ))}
+                  </div>
+                )}
               </div>
             </section>
           )}
@@ -265,6 +294,43 @@ const HomePage = () => {
 
 /* ── Sub-components ─────────────────────────────────────── */
 
+/* Loading placeholders: same boxes as the real items so nothing shifts when data arrives */
+const TrendingSkeleton = () => (
+  <li className="trending-item home-skel">
+    <span className="trending-item__rank home-skel__rank skeleton" />
+    <div className="trending-item__body home-skel__body">
+      <span className="home-skel__line home-skel__line--kicker skeleton" />
+      <span className="home-skel__line home-skel__line--title skeleton" />
+      <span className="home-skel__line home-skel__line--title-short skeleton" />
+      <span className="home-skel__line home-skel__line--meta skeleton" />
+    </div>
+  </li>
+);
+
+const LatestSkeleton = () => (
+  <div className="latest-item home-skel">
+    <span className="latest-item__thumb skeleton" />
+    <div className="latest-item__body home-skel__body">
+      <span className="home-skel__line home-skel__line--kicker skeleton" />
+      <span className="home-skel__line home-skel__line--title skeleton" />
+      <span className="home-skel__line home-skel__line--meta skeleton" />
+    </div>
+  </div>
+);
+
+const ArticleCardSkeleton = () => (
+  <div className="article-card home-skel">
+    <span className="article-card__cover home-skel__cover skeleton" />
+    <div className="article-card__body home-skel__body">
+      <span className="home-skel__line home-skel__line--kicker skeleton" />
+      <span className="home-skel__line home-skel__line--title skeleton" />
+      <span className="home-skel__line home-skel__line--title-short skeleton" />
+      <span className="home-skel__line skeleton" />
+      <span className="home-skel__line home-skel__line--meta skeleton" />
+    </div>
+  </div>
+);
+
 const TrendingItem = ({ article, rank }) => (
   <li className="trending-item">
     <span className="trending-item__rank" aria-hidden="true">{rank}</span>
@@ -287,7 +353,7 @@ const TrendingItem = ({ article, rank }) => (
 const LatestItem = ({ article }) => (
   <div className="latest-item">
     <Link to={`/article/${article.slug}`} className="latest-item__thumb" tabIndex={-1} aria-hidden="true">
-      <CoverImage src={article.cover} loading="lazy" />
+      <CoverImage src={article.cover} width={400} height={300} loading="lazy" decoding="async" />
     </Link>
     <div className="latest-item__body">
       <Link to={`/categories/${article.category.slug}`} className="kicker" style={{ '--cat-color': article.category.color }}>

@@ -36,6 +36,7 @@
 /* ---------- Category chips ---------- */
 .category-strip { padding: var(--space-4) 0 var(--space-6); }
 .category-strip__scroll {
+  min-height: 3rem; /* reserve the chip row's height so nothing below shifts */
   display: flex;
   gap: var(--space-2);
   overflow-x: auto;
@@ -190,6 +191,20 @@
 .write-cta__ghost { color: rgba(255, 255, 255, 0.86); }
 .write-cta__ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
 
+/* ---------- Loading skeletons (same footprint as the real cards) ---------- */
+.home-skel-card { display: block; width: 100%; border-radius: var(--radius-xl); }
+.home-skel-card--lg { min-height: 480px; }
+.home-skel-card--sm { min-height: 280px; }
+.home-skel { pointer-events: none; }
+.home-skel__body { flex: 1; }
+.home-skel__rank { display: block; height: 2rem; border-radius: var(--radius-sm); }
+.home-skel__line { display: block; width: 100%; height: 0.85rem; }
+.home-skel__line--kicker { width: 32%; height: 0.8rem; }
+.home-skel__line--title { width: 92%; height: 1.15rem; }
+.home-skel__line--title-short { width: 64%; height: 1.15rem; }
+.home-skel__line--meta { width: 45%; height: 0.7rem; }
+.home-skel__cover { border: none; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
   .hero__inner { grid-template-columns: minmax(0, 1fr); gap: var(--space-10); }
@@ -229,6 +244,7 @@
   }
   .category-strip__scroll::-webkit-scrollbar { display: none; }
   .category-pill { min-height: 40px; }
+  .category-strip__scroll { min-height: 3.25rem; }
 }
 @media (max-width: 360px) {
   .latest-item__thumb { width: 72px; }

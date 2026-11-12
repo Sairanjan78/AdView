@@ -264,7 +264,7 @@ const ArticleDetailPage = () => {
 
         {cover && (
           <figure className="article-detail__cover container container--wide">
-            <CoverImage src={cover} alt={title} />
+            <CoverImage src={cover} alt={title} width={1600} height={900} loading="eager" fetchPriority="high" decoding="async" />
           </figure>
         )}
 

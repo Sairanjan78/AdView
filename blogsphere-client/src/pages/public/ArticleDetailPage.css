@@ -82,6 +82,7 @@
 .article-detail__cover { margin: var(--space-10) auto; }
 .article-detail__cover img {
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
   max-height: 640px;
   object-fit: cover;

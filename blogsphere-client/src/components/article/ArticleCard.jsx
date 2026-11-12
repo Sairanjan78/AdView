@@ -18,7 +18,7 @@ const ArticleCard = ({ article, className = '', headingLevel = 3 }) => {
   return (
     <article className={`article-card animate-fadeInUp ${className}`.trim()}>
       <Link to={`/article/${slug}`} className="article-card__cover" tabIndex={-1} aria-hidden="true">
-        <CoverImage src={cover} loading="lazy" />
+        <CoverImage src={cover} width={1600} height={1000} loading="lazy" decoding="async" />
       </Link>
 
       <div className="article-card__body">

@@ -60,7 +60,7 @@ const TrendingPage = () => {
                 </div>
               </div>
               <Link to={`/article/${article.slug}`} className="trending-page__cover" tabIndex={-1} aria-hidden="true">
-                <CoverImage src={article.cover} loading="lazy" />
+                <CoverImage src={article.cover} width={400} height={300} loading="lazy" decoding="async" />
               </Link>
             </li>
           ))}

@@ -18,7 +18,16 @@ const FeaturedCard = ({ article, size = 'md', headingLevel = 'h2' }) => {
   return (
     <article className={`featured-card featured-card--${size}`}>
       <div className="featured-card__bg" aria-hidden="true">
-        <CoverImage src={cover} loading={size === 'lg' ? 'eager' : 'lazy'} />
+        {/* The lead card is the homepage LCP element: load it first */}
+        <CoverImage
+          src={cover}
+          width={1600}
+          height={900}
+          decoding="async"
+          {...(size === 'lg'
+            ? { loading: 'eager', fetchPriority: 'high' }
+            : { loading: 'lazy' })}
+        />
         <div className="featured-card__overlay" />
       </div>
 
