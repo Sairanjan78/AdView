@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { LuSend, LuFileText, LuCircleCheck, LuCircleAlert, LuLock, LuPenLine } from 'react-icons/lu';
+import { LuSend, LuFileText, LuCircleCheck, LuCircleAlert, LuLock, LuPenLine, LuLayoutTemplate } from 'react-icons/lu';
 import Button from '../../components/ui/Button';
 import EmptyState from '../../components/ui/EmptyState';
 import brand from '../../config/brand';
@@ -8,6 +8,8 @@ import Seo from '../../components/seo/Seo';
 import { useAuth } from '../../context/AuthContext';
 import { articleApi } from '../../services/api';
 import useCategories from '../../hooks/useCategories';
+import BlockEditor from './BlockEditor';
+import { TEMPLATES, blocksToHtml, blocksFromHtml } from './articleBlocks';
 import './WritePage.css';
 
 const WritePage = () => {
@@ -29,6 +31,10 @@ const WritePage = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [searchParams] = useSearchParams();
   const [editId, setEditId] = useState(null);
+  const [mode, setMode] = useState('easy');
+  const [blocks, setBlocks] = useState([]);
+  const [preview, setPreview] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
 
   // Edit mode: /write?import=<name>&edit=<slug> updates that existing article instead of creating a new one
   useEffect(() => {
@@ -60,6 +66,9 @@ const WritePage = () => {
           tags: Array.isArray(d.tags) ? d.tags.join(', ') : prev.tags,
           content: typeof d.content === 'string' ? d.content : prev.content
         }));
+        if (typeof d.content === 'string' && d.content.trim()) {
+          setBlocks(blocksFromHtml(d.content));
+        }
         setSuccessMsg('Post loaded. Review it, then publish.');
       })
       .catch((err) => setErrorMsg(err.message));
@@ -72,11 +81,12 @@ const WritePage = () => {
   };
 
   const handleSubmit = async (status = 'published') => {
+    const html = mode === 'easy' ? blocksToHtml(blocks) : formData.content;
     if (!formData.title.trim()) {
       setErrorMsg('Please enter an article title');
       return;
     }
-    if (!formData.content.trim()) {
+    if (!html.trim()) {
       setErrorMsg('Please write your article content');
       return;
     }
@@ -93,7 +103,7 @@ const WritePage = () => {
         excerpt: formData.excerpt,
         coverImage: formData.coverImage || undefined,
         tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
-        content: formData.content,
+        content: html,
         status
       };
 
@@ -253,16 +263,64 @@ const WritePage = () => {
               </div>
 
               <div className="write-field">
-                <label className="write-label" htmlFor="content">Story Content *</label>
-                <textarea
-                  id="content"
-                  name="content"
-                  className="write-textarea write-textarea--content"
-                  placeholder="Tell your story. Format with paragraphs, quotes, and thoughts..."
-                  value={formData.content}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="write-modebar">
+                  <div className="write-modebar__modes">
+                    <label>
+                      <input type="radio" name="mode" checked={mode === 'easy'} onChange={() => setMode('easy')} />
+                      Simple editor
+                    </label>
+                    <label>
+                      <input type="radio" name="mode" checked={mode === 'html'} onChange={() => {
+                        if (blocks.length) setFormData((prev) => ({ ...prev, content: blocksToHtml(blocks) }));
+                        setMode('html');
+                      }} />
+                      HTML
+                    </label>
+                  </div>
+                  {mode === 'easy' && (
+                    <button type="button" className="write-mini write-mini--icon" onClick={() => setTemplatesOpen((v) => !v)}>
+                      <LuLayoutTemplate size={15} aria-hidden="true" /> Start from a template
+                    </button>
+                  )}
+                </div>
+
+                {mode === 'easy' ? (
+                  <>
+                    {templatesOpen && (
+                      <div className="template-grid">
+                        {Object.entries(TEMPLATES).map(([key, t]) => (
+                          <button
+                            type="button"
+                            key={key}
+                            className="template-card"
+                            onClick={() => {
+                              setBlocks(t.blocks.map((b) => JSON.parse(JSON.stringify(b))));
+                              setTemplatesOpen(false);
+                              setPreview(false);
+                            }}
+                          >
+                            <strong>{t.label}</strong>
+                            <span>{t.description}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <BlockEditor blocks={blocks} setBlocks={setBlocks} preview={preview} onTogglePreview={() => setPreview((v) => !v)} />
+                    {!blocks.length && !templatesOpen && (
+                      <p className="write-hint">Pick a template above, or add your first block below.</p>
+                    )}
+                  </>
+                ) : (
+                  <textarea
+                    id="content"
+                    name="content"
+                    className="write-textarea write-textarea--content"
+                    placeholder="Paste or write your HTML here."
+                    value={formData.content}
+                    onChange={handleChange}
+                    required
+                  />
+                )}
               </div>
 
               <div className="write-actions">
