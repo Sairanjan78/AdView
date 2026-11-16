@@ -43,7 +43,6 @@ const ExplorePage = () => {
           ? `Read the latest ${activeCategoryMeta.name.toLowerCase()} articles on ${brand.name}.`
           : `Explore all articles across every niche on ${brand.name}.`}
         path={slug ? `/categories/${slug}` : '/explore'}
-        noindex={!slug}
       />
 
       <div className="explore-page">

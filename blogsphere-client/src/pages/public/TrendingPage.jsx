@@ -21,7 +21,7 @@ const TrendingPage = () => {
 
   return (
     <>
-      <Seo title="Trending" description={`The most-read articles on ${brand.name} right now.`} path="/trending" noindex />
+      <Seo title="Trending" description={`The most-read articles on ${brand.name} right now.`} path="/trending" />
 
       <div className="container trending-page">
         <header className="page-header">

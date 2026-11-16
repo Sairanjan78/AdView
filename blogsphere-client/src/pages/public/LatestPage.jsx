@@ -19,7 +19,7 @@ const LatestPage = () => {
 
   return (
     <>
-      <Seo title="Latest" description={`The newest articles published on ${brand.name}.`} path="/latest" noindex />
+      <Seo title="Latest" description={`The newest articles published on ${brand.name}.`} path="/latest" />
       <div className="container">
         <header className="page-header">
           <p className="page-eyebrow"><LuClock size={14} aria-hidden="true" /> Latest</p>
