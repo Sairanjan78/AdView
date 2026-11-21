@@ -36,6 +36,18 @@ Plain /write?edit=<slug> without an import opens blank; saving it would overwrit
 Links and formatting: the Easy-mode editor keeps <a href>, <strong> and <em> (fixed 21 November 2026; before that, saves stripped them). In Easy-mode text, **bold**, *italic* and [text](https://url) are the inline marks. After saving, confirm the live content still has <a href> tags if the source had them.
 The sitemap at blogspheremag.com is edge-cached for about an hour. A new slug shows up at https://blogsphere-api-odr7.onrender.com/sitemap.xml at once and on the site within the hour.
 Bing: no meta tag on the site. Bing Webmaster Tools is set up by importing the Search Console property.
+How to work (the method Hark uses)
+1. Read the live state first (API JSON, live page, git pull). Never trust a status report, including your own earlier one.
+2. Prefer the API over clicking. tools/blogsphere_publish.py does what the editor buttons do:
+   python tools/blogsphere_publish.py check <import.json>   (validates fields, images return 200, ₹, absolute dates, duplicate titles)
+   python tools/blogsphere_publish.py publish <import.json> --yes   (new post; refuses if the title is already live)
+   python tools/blogsphere_publish.py update <import.json> <live-slug> --yes   (edit in place)
+   Credentials come from env vars BLOGSPHERE_EMAIL / BLOGSPHERE_PASSWORD. Use --yes only after Sairanjan approves that exact action.
+3. If you must use a browser (e.g. Playwright): open the URL, wait for the page's own confirmation text ("Post loaded. Review it, then publish."), read the button label before clicking ("Update Article" = edit, "Publish Now" = new post), click exactly once, then wait for "Article updated/published successfully!". Never click twice, never retry a submit blindly; re-check state instead.
+4. After any change, verify through the API and the live page, and report only what you verified, with numbers (word count, link count, status).
+5. Facts: every number, date and price must come from a source you opened. If a claim can't be sourced, cut or soften it and say so.
+6. If something fails twice, stop and report what you saw instead of looping.
+
 Verify before claiming anything is live
 Article JSON: /api/v1/articles/<slug>
 Page: https://blogspheremag.com/article/<slug> (status 200)
