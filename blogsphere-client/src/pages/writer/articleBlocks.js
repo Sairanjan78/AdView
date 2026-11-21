@@ -96,7 +96,24 @@ const safeUrl = (u) => {
   return /^https?:\/\//i.test(s) || /^\/(images|uploads)\//i.test(s) ? s : '';
 };
 
-const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+// Inline marks: **bold**, *italic*, [text](https://url). Links are kept so imported/edited posts keep clickable sources.
+const LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+const inline = (s) => {
+  const links = [];
+  const withTokens = String(s == null ? '' : s).replace(LINK_RE, (m, text, url) => {
+    links.push({ text, url });
+    return `\u0000L${links.length - 1}\u0000`;
+  });
+  return esc(withTokens)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\u0000L(\d+)\u0000/g, (m, i) => {
+      const { text, url } = links[Number(i)];
+      const safe = safeUrl(url);
+      const label = esc(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+      return safe ? `<a href="${esc(safe).replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">${label}</a>` : label;
+    });
+};
 
 export const blockToHtml = (b) => {
   if (!b) return '';
@@ -194,12 +211,11 @@ export const blocksFromHtml = (html) => {
     if (tag === 'h2' || tag === 'h3') {
       if (text) push({ type: tag, text });
     } else if (tag === 'blockquote') {
-      if (text) push({ type: 'quote', text });
+      if (text) push({ type: 'quote', text: inlineToText(nodeToMd(el)) });
     } else if (tag === 'p') {
       if (!text) continue;
       const onlyBold = el.children.length === 1 && /^(strong|b)$/i.test(el.children[0].tagName) && el.children[0].textContent.trim() === text;
-      const plain = el.textContent;
-      push({ type: onlyBold ? 'callout' : 'paragraph', text: inlineToText(plain) });
+      push({ type: onlyBold ? 'callout' : 'paragraph', text: onlyBold ? inlineToText(nodeToMd(el.children[0])) : inlineToText(nodeToMd(el)) });
     } else if (tag === 'ul' || tag === 'ol') {
       const lis = Array.from(el.querySelectorAll(':scope > li'));
       if (pendingSources) {
@@ -209,23 +225,47 @@ export const blocksFromHtml = (html) => {
         }
         pendingSources = false;
       } else if (lis.length) {
-        push({ type: tag === 'ol' ? 'steps' : 'list', items: lis.map((li) => inlineToText(li.textContent)) });
+        push({ type: tag === 'ol' ? 'steps' : 'list', items: lis.map((li) => inlineToText(nodeToMd(li))) });
       }
     } else if (tag === 'figure' || tag === 'img') {
       const img = tag === 'img' ? el : el.querySelector('img');
       if (!img) continue;
       const cap = tag === 'figure' ? el.querySelector('figcaption') : null;
-      push({ type: 'image', src: img.getAttribute('src') || '', alt: img.getAttribute('alt') || '', caption: cap ? cap.textContent.trim() : '' });
+      push({ type: 'image', src: img.getAttribute('src') || '', alt: img.getAttribute('alt') || '', caption: cap ? inlineToText(nodeToMd(cap)) : '' });
     } else if (tag === 'table') {
       const rows = Array.from(el.querySelectorAll('tr')).map((tr) =>
-        Array.from(tr.querySelectorAll('th, td')).map((c) => c.textContent.trim())
+        Array.from(tr.querySelectorAll('th, td')).map((c) => inlineToText(nodeToMd(c)))
       );
       if (rows.length) push({ type: 'table', rows });
     } else if (text) {
-      push({ type: 'paragraph', text });
+      push({ type: 'paragraph', text: inlineToText(nodeToMd(el)) });
     }
   }
   return blocks.length ? blocks : [{ type: 'paragraph', text: stripTags(src) }];
 };
 
-const inlineToText = (s) => String(s || '').replace(/\u00a0/g, ' ').trim();
+const inlineToText = (s) => String(s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+
+// Turn an element's inline HTML into the editor's inline marks, so links and bold/italic survive a load and save.
+function nodeToMd(node) {
+  let out = '';
+  for (const n of Array.from(node.childNodes || [])) {
+    if (n.nodeType === 3) { out += n.textContent; continue; }
+    if (n.nodeType !== 1) continue;
+    const t = n.tagName.toLowerCase();
+    const inner = nodeToMd(n);
+    if (t === 'a') {
+      const href = safeUrl(n.getAttribute('href'));
+      out += href && inner.trim() ? `[${inner.trim()}](${href.replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/\s/g, '%20')})` : inner;
+    } else if ((t === 'strong' || t === 'b') && inner.trim()) {
+      out += `**${inner.trim()}**`;
+    } else if ((t === 'em' || t === 'i') && inner.trim()) {
+      out += `*${inner.trim()}*`;
+    } else if (t === 'br') {
+      out += ' ';
+    } else {
+      out += inner;
+    }
+  }
+  return out;
+}
