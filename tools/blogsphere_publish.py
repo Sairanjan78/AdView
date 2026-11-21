@@ -74,7 +74,11 @@ def check(d):
             probs.append(f"image not absolute https: {u}")
         elif u:
             s = url_ok(u)
-            if s != 200:
+            if s == 429:  # Wikimedia rate limit: wait and retry once
+                import time; time.sleep(4); s = url_ok(u)
+            if s == 429:
+                print(f"note: rate-limited (429), check by eye: {u}")
+            elif s != 200:
                 probs.append(f"image returns {s}: {u}")
     print(f"words: {words(c)}, links: {c.count('<a ')}, images: {len(imgs)}")
     return probs
