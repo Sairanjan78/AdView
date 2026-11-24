@@ -24,6 +24,7 @@ const cleanContent = (html = '') => sanitizeHtml(String(html), {
   allowedSchemes: ['http', 'https', 'mailto'],
 });
 const env = require('../config/env');
+const { evaluateArticleDraft } = require('../services/contentQualityService');
 
 const BOT_UA = /bot|crawl|spider|slurp|preview|headless|lighthouse|pagespeed|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|linkedin|skype|applebot|yandex|baidu|duckduck|semrush|ahrefs|gptbot|chatgpt|perplexity|claude|anthropic|bytespider|amazonbot|ccbot|petalbot/i;
 const isBotUA = (ua) => !ua || BOT_UA.test(ua);
@@ -229,7 +230,7 @@ exports.getArticleBySlug = async (req, res) => {
 };
 
 /**
- * @desc    Create a new article (draft or published)
+ * @desc    Create a new article (draft or submitted; admins may publish)
  * @route   POST /api/v1/articles
  * @access  Private (Writer / Admin)
  */
@@ -239,6 +240,16 @@ exports.createArticle = async (req, res) => {
 
     if (!title || !content || !category) {
       return sendError(res, 400, 'Please provide title, category, and content');
+    }
+
+    // Writers may save drafts or submit for review. Only administrators can publish,
+    // reject, or archive, so a client request cannot bypass editorial approval.
+    const allowedWriterStatuses = [ARTICLE_STATUS.DRAFT, ARTICLE_STATUS.SUBMITTED];
+    if (status && !Object.values(ARTICLE_STATUS).includes(status)) {
+      return sendError(res, 400, 'Invalid article status');
+    }
+    if (req.user.role !== ROLES.ADMIN && status && !allowedWriterStatuses.includes(status)) {
+      return sendError(res, 403, 'Only an administrator can publish, reject, or archive an article');
     }
 
     const autoExcerpt = excerpt || (content.replace(/<[^>]*>?/gm, '').slice(0, 250) + '...');
@@ -256,15 +267,26 @@ exports.createArticle = async (req, res) => {
     });
 
     const populatedArticle = await article.populate('author', AUTHOR_FIELDS);
+    const qualityReview = evaluateArticleDraft({
+      title: article.title,
+      seoTitle: article.seoTitle,
+      excerpt: article.excerpt,
+      content: article.content,
+      coverImage: article.coverImage,
+      author: populatedArticle.author,
+    });
 
-    return sendSuccess(res, 201, 'Article created successfully', { article: populatedArticle });
+    return sendSuccess(res, 201, 'Article created successfully', {
+      article: populatedArticle,
+      qualityReview
+    });
   } catch (err) {
     return sendError(res, 400, err.message);
   }
 };
 
 /**
- * @desc    Update article
+ * @desc    Update article (writer edits to published content return it to review)
  * @route   PUT /api/v1/articles/:id
  * @access  Private (Author or Admin)
  */
@@ -281,6 +303,17 @@ exports.updateArticle = async (req, res) => {
     }
 
     const { title, seoTitle, excerpt, content, coverImage, category, tags, status } = req.body;
+    const writerChangedPublishedContent = req.user.role !== ROLES.ADMIN
+      && article.status === ARTICLE_STATUS.PUBLISHED
+      && ['title', 'seoTitle', 'excerpt', 'content', 'coverImage', 'category', 'tags']
+        .some(field => Object.prototype.hasOwnProperty.call(req.body, field));
+
+    if (status && !Object.values(ARTICLE_STATUS).includes(status)) {
+      return sendError(res, 400, 'Invalid article status');
+    }
+    if (req.user.role !== ROLES.ADMIN && status && status !== ARTICLE_STATUS.DRAFT && status !== ARTICLE_STATUS.SUBMITTED) {
+      return sendError(res, 403, 'Only an administrator can publish, reject, or archive an article');
+    }
 
     if (title) article.title = title;
     if (typeof seoTitle === 'string') article.seoTitle = seoTitle; // '' clears it
@@ -290,11 +323,25 @@ exports.updateArticle = async (req, res) => {
     if (category) article.category = category;
     if (tags) article.tags = Array.isArray(tags) ? tags.map(t => t.trim().toLowerCase()) : article.tags;
     if (status) article.status = status;
+    // A writer's edits to a live article must return it to the review queue;
+    // the previously published version is no longer silently overwritten.
+    if (writerChangedPublishedContent) article.status = ARTICLE_STATUS.SUBMITTED;
 
     await article.save();
     const updated = await article.populate('author', AUTHOR_FIELDS);
+    const qualityReview = evaluateArticleDraft({
+      title: article.title,
+      seoTitle: article.seoTitle,
+      excerpt: article.excerpt,
+      content: article.content,
+      coverImage: article.coverImage,
+      author: updated.author,
+    });
 
-    return sendSuccess(res, 200, 'Article updated successfully', { article: updated });
+    return sendSuccess(res, 200, 'Article updated successfully', {
+      article: updated,
+      qualityReview
+    });
   } catch (err) {
     return sendError(res, 400, err.message);
   }
