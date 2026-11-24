@@ -2,7 +2,8 @@
  * Runs automatically after `npm run build` (npm "postbuild" hook).
  * - build/robots.txt: adds the "Sitemap:" line from REACT_APP_SITEMAP_URL, or from the origin of
  *   REACT_APP_API_URL (skipped for localhost).
- * - build/ads.txt: adds the Google line when REACT_APP_ADSENSE_CLIENT is set and ads.txt has no entries.
+ * - build/index.html: adds the AdSense verification meta tag when a valid publisher ID is configured.
+ * - build/ads.txt: adds or validates the matching Google seller record while preserving other sellers.
  * Reads the same .env files Create React App uses for production builds.
  */
 const fs = require('fs');
@@ -64,7 +65,7 @@ if (sitemapUrl && fs.existsSync(robotsPath)) {
 // add the verification meta tag to the actual static HTML so crawlers can see it
 // before React or Helmet runs.
 const client = (process.env.REACT_APP_ADSENSE_CLIENT || '').trim();
-const publisherPattern = /^ca-pub-\\d{10,20}$/;
+const publisherPattern = /^ca-pub-\d{10,20}$/;
 const htmlPath = path.join(buildDir, 'index.html');
 if (client && !publisherPattern.test(client)) {
   throw new Error('[postbuild-seo] REACT_APP_ADSENSE_CLIENT must look like ca-pub- followed by 10–20 digits.');
@@ -72,10 +73,10 @@ if (client && !publisherPattern.test(client)) {
 if (client && fs.existsSync(htmlPath)) {
   let html = fs.readFileSync(htmlPath, 'utf8');
   const verificationTag = `<meta name="google-adsense-account" content="${client}">`;
-  if (/<meta\\s+name=["']google-adsense-account["'][^>]*>/i.test(html)) {
-    html = html.replace(/<meta\\s+name=["']google-adsense-account["'][^>]*>/i, verificationTag);
-  } else if (/<\\/head>/i.test(html)) {
-    html = html.replace(/<\\/head>/i, `  ${verificationTag}\\n</head>`);
+  if (/<meta\s+name=["']google-adsense-account["'][^>]*>/i.test(html)) {
+    html = html.replace(/<meta\s+name=["']google-adsense-account["'][^>]*>/i, verificationTag);
+  } else if (/<\/head>/i.test(html)) {
+    html = html.replace(/<\/head>/i, `  ${verificationTag}\n</head>`);
   } else {
     throw new Error('[postbuild-seo] Could not find </head> in build/index.html.');
   }
@@ -91,19 +92,19 @@ if (client) {
   const publisher = client.replace(/^ca-/, '');
   const googleRecord = `google.com, ${publisher}, DIRECT, f08c47fec0942fa0`;
   const existing = fs.existsSync(adsPath) ? fs.readFileSync(adsPath, 'utf8') : '';
-  const records = existing.split(/\\r?\\n/).map(line => line.trim());
+  const records = existing.split(/\r?\n/).map(line => line.trim());
   const hasGoogleRecord = records.some(line => line.toLowerCase() === googleRecord.toLowerCase());
   const conflictingGoogleRecord = records.some(line =>
-    /^google\\.com\\s*,/i.test(line) && line.toLowerCase() !== googleRecord.toLowerCase()
+    /^google\.com\s*,/i.test(line) && line.toLowerCase() !== googleRecord.toLowerCase()
   );
   if (conflictingGoogleRecord) {
     throw new Error('[postbuild-seo] ads.txt contains a different Google publisher record. Reconcile it manually before building.');
   }
   if (!hasGoogleRecord) {
-    fs.writeFileSync(adsPath, `${existing.trimEnd()}\\n${googleRecord}\\n`);
+    fs.writeFileSync(adsPath, `${existing.trimEnd()}\n${googleRecord}\n`);
   }
   const finalAds = fs.readFileSync(adsPath, 'utf8');
-  if (!finalAds.split(/\\r?\\n/).some(line => line.trim() === googleRecord)) {
+  if (!finalAds.split(/\r?\n/).some(line => line.trim() === googleRecord)) {
     throw new Error('[postbuild-seo] Failed to write the expected Google ads.txt record.');
   }
   console.log(`[postbuild-seo] Verified ads.txt record: ${googleRecord}`);
