@@ -6,14 +6,14 @@
  * verify accuracy, originality, source quality, image rights, and usefulness.
  */
 const stripHtml = value => String(value || '')
-  .replace(/<script[\\s\\S]*?<\\/script>/gi, ' ')
-  .replace(/<style[\\s\\S]*?<\\/style>/gi, ' ')
+  .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+  .replace(/<style[\s\S]*?<\/style>/gi, ' ')
   .replace(/<[^>]+>/g, ' ')
   .replace(/&nbsp;/gi, ' ')
   .replace(/&amp;/gi, '&')
   .replace(/&#39;|&apos;/gi, "'")
   .replace(/&quot;/gi, '"')
-  .replace(/\\s+/g, ' ')
+  .replace(/\s+/g, ' ')
   .trim();
 
 const countMatches = (value, regex) => (String(value || '').match(regex) || []).length;
@@ -21,12 +21,12 @@ const countMatches = (value, regex) => (String(value || '').match(regex) || []).
 const evaluateArticleDraft = ({ title, seoTitle, excerpt, content, coverImage, author } = {}) => {
   const html = String(content || '');
   const plainText = stripHtml(html);
-  const words = plainText ? plainText.split(/\\s+/).filter(Boolean).length : 0;
-  const h2Count = countMatches(html, /<h2\\b/gi);
-  const h3Count = countMatches(html, /<h3\\b/gi);
-  const externalLinks = (html.match(/<a\\b[^>]*href=["']https?:\\/\\//gi) || []).length;
-  const images = html.match(/<img\\b[^>]*>/gi) || [];
-  const imagesMissingAlt = images.filter(tag => !/\\balt=["'][^"']+["']/i.test(tag)).length;
+  const words = plainText ? plainText.split(/\s+/).filter(Boolean).length : 0;
+  const h2Count = countMatches(html, /<h2\b/gi);
+  const h3Count = countMatches(html, /<h3\b/gi);
+  const externalLinks = (html.match(/<a\b[^>]*href=["']https?:\/\//gi) || []).length;
+  const images = html.match(/<img\b[^>]*>/gi) || [];
+  const imagesMissingAlt = images.filter(tag => !/\balt=["'][^"']+["']/i.test(tag)).length;
 
   const checks = {
     title: { passed: Boolean(String(title || '').trim()) && String(title).trim().length <= 150 },
