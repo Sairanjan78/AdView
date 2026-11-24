@@ -1,21 +1,15 @@
 import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { getAdsenseClient, loadAdSenseScript } from '../../config/ads';
 
 /**
- * Site-wide AdSense setup: the account meta tag (used by AdSense site verification) and the
- * adsbygoogle.js script (also enables Auto ads if you switch them on in AdSense).
- * Renders nothing when REACT_APP_ADSENSE_CLIENT is not set.
+ * Loads the AdSense delivery script when a valid publisher ID is configured.
+ * The verification meta tag is inserted into build/index.html by postbuild-seo.js,
+ * so it is present in the original HTML response before React runs.
  */
 const AdSenseHead = () => {
   useEffect(() => { loadAdSenseScript(); }, []);
-  const client = getAdsenseClient();
-  if (!client) return null;
-  return (
-    <Helmet>
-      <meta name="google-adsense-account" content={client} />
-    </Helmet>
-  );
+  // Keep this component mounted site-wide; no runtime Helmet tag is needed.
+  return null;
 };
 
 export default AdSenseHead;
