@@ -230,7 +230,7 @@ exports.getArticleBySlug = async (req, res) => {
 };
 
 /**
- * @desc    Create a new article (draft or published)
+ * @desc    Create a new article (draft or submitted; admins may publish)
  * @route   POST /api/v1/articles
  * @access  Private (Writer / Admin)
  */
@@ -286,7 +286,7 @@ exports.createArticle = async (req, res) => {
 };
 
 /**
- * @desc    Update article
+ * @desc    Update article (writer edits to published content return it to review)
  * @route   PUT /api/v1/articles/:id
  * @access  Private (Author or Admin)
  */
@@ -303,6 +303,10 @@ exports.updateArticle = async (req, res) => {
     }
 
     const { title, seoTitle, excerpt, content, coverImage, category, tags, status } = req.body;
+    const writerChangedPublishedContent = req.user.role !== ROLES.ADMIN
+      && article.status === ARTICLE_STATUS.PUBLISHED
+      && ['title', 'seoTitle', 'excerpt', 'content', 'coverImage', 'category', 'tags']
+        .some(field => Object.prototype.hasOwnProperty.call(req.body, field));
 
     if (status && !Object.values(ARTICLE_STATUS).includes(status)) {
       return sendError(res, 400, 'Invalid article status');
@@ -319,6 +323,9 @@ exports.updateArticle = async (req, res) => {
     if (category) article.category = category;
     if (tags) article.tags = Array.isArray(tags) ? tags.map(t => t.trim().toLowerCase()) : article.tags;
     if (status) article.status = status;
+    // A writer's edits to a live article must return it to the review queue;
+    // the previously published version is no longer silently overwritten.
+    if (writerChangedPublishedContent) article.status = ARTICLE_STATUS.SUBMITTED;
 
     await article.save();
     const updated = await article.populate('author', AUTHOR_FIELDS);
