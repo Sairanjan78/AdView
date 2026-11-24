@@ -24,7 +24,7 @@ const SITE_NAME = 'BlogSphere Mag';
 const HOME_TITLE = 'BlogSphere Mag: Practical Guides on Tech, Careers and Travel';
 const HOME_DESCRIPTION = 'Practical, sourced guides on technology, careers and jobs, education, travel and world affairs, written by named authors and updated when facts change.';
 const FOUNDER = { username: 'sairanjan', sameAs: ['https://www.linkedin.com/in/sairanjan-biswal/'] };
-const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|facebot|embedly|quora link preview|outbrain|pinterest|vkshare|whatsapp|telegram|discord|slack|linkedin|skype|nuzzel|redditbot|applebot|yandex|baiduspider|duckduck|bingpreview|semrush|ahrefs|chatgpt|gptbot|oai-searchbot|perplexity|claude|anthropic|cohere|google-extended|googleother|bytespider|meta-externalagent|amazonbot|ccbot|petalbot|mojeek|mediapartners|inspectiontool|storebot|google-safety/i;
+const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|facebot|embedly|quora link preview|outbrain|pinterest|vkshare|whatsapp|telegram|discord|slack|linkedin|skype|nuzzel|redditbot|applebot|yandex|baiduspider|duckduck|bingpreview|semrush|ahrefs|chatgpt|gptbot|oai-searchbot|perplexity|claude|anthropic|cohere|google-extended|googleother|bytespider|meta-externalagent|amazonbot|ccbot|petalbot|mojeek|mediapartners|google-display-ads-bot|inspectiontool|storebot|google-safety/i;
 
 // Routes the React app knows (keep in sync with src/App.jsx). Anything else is a 404.
 const KNOWN_ROUTES = new Set([
