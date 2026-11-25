@@ -41,3 +41,13 @@
 ## Immediate next step
 Approve Finding 1 and I will load `is-compost-bin-worth-it-2026.json` into Writer Studio
 and publish it, then re-check the query in 1-2 weeks for clicks.
+
+
+## Outcome (25 Nov 2026)
+Finding 1 implemented via option (b): folded the "is a bin worth it" angle into the
+published composting guide. New title: "Is a Compost Bin Worth It in 2026? A Home Composting
+Guide"; new SEO title: "Is a Compost Bin Worth It in 2026? Costs and Benefits". Added a quick
+answer, a cost comparison table with ₹ and $ prices, and two new FAQs. Replaced a broken
+inline image with a verified Commons photo (Joe Hoover, CC BY 4.0). Updated in place via
+Writer Studio import+edit; API confirms the slug is unchanged and article count remains 22.
+A fresh frontend build is required so the prerendered <title> matches the new API title.
