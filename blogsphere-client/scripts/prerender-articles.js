@@ -35,7 +35,11 @@ const buildTitle = (title) => {
 const safeHtml = (html = '') => String(html)
   .replace(/<(script|style|iframe|object|embed)[\s\S]*?<\/\1>/gi, '')
   .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-  .replace(/javascript:/gi, '');
+  .replace(/javascript:/gi, '')
+  // Reserve a 16:9 box for any <img> lacking dimensions so the static copy
+  // does not shift layout before the React app takes over.
+  .replace(/<img\b([^>]*)>/gi, (full, attrs) =>
+    (/\bwidth\s*=/.test(attrs) && /\bheight\s*=/.test(attrs)) ? full : `<img width="960" height="540"${attrs}>`);
 const jsonLd = obj => JSON.stringify(obj).replace(/</g, '\\u003c');
 const isoDate = (d) => {
   const t = d ? new Date(d) : null;

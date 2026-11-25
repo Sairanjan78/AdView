@@ -32,9 +32,18 @@ const splitAfterIntro = (html) => {
 };
 
 /** Plain-text content (no tags) becomes paragraphs; HTML is used as-is. */
+const addImageDimensions = (html) => {
+  // Give every <img> without width/height an intrinsic 16:9 aspect ratio. The
+  // browser reserves that box before the image loads, preventing layout shift.
+  return html.replace(/<img\b([^>]*)>/gi, (full, attrs) => {
+    if (/\bwidth\s*=/.test(attrs) && /\bheight\s*=/.test(attrs)) return full;
+    return `<img width="960" height="540"${attrs}>`;
+  });
+};
+
 const toHtml = (content, excerpt) => {
   if (!content) return excerpt ? `<p>${excerpt}</p>` : '';
-  if (content.includes('<')) return content;
+  if (content.includes('<')) return addImageDimensions(content);
   return `<p>${content.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br/>')}</p>`;
 };
 
