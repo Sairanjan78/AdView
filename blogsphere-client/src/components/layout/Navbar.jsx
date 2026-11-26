@@ -59,22 +59,30 @@ const Navbar = () => {
     };
   }, [mobileOpen]);
 
-  // Focus: first link in the drawer on open, back to the menu button on close
+  // Focus: first link in the drawer on open, back to the menu button on close.
+  // Deferred to the next frame so the browser can paint the opened drawer before
+  // focus work runs (keeps the hamburger interaction responsive).
   useEffect(() => {
+    let raf;
     if (mobileOpen) {
       wasOpen.current = true;
-      const first = drawerRef.current?.querySelector('a[href], button:not([disabled]), input');
-      // Don't pop the keyboard open on phones by focusing the search field
-      const target = first?.tagName === 'INPUT'
-        ? drawerRef.current.querySelector('.navbar-drawer__link')
-        : first;
-      target?.focus({ preventScroll: true });
+      raf = requestAnimationFrame(() => {
+        const first = drawerRef.current?.querySelector('a[href], button:not([disabled]), input');
+        // Don't pop the keyboard open on phones by focusing the search field
+        const target = first?.tagName === 'INPUT'
+          ? drawerRef.current.querySelector('.navbar-drawer__link')
+          : first;
+        target?.focus({ preventScroll: true });
+      });
     } else if (wasOpen.current) {
       wasOpen.current = false;
-      if (drawerRef.current?.contains(document.activeElement) || document.activeElement === document.body) {
-        hamburgerRef.current?.focus({ preventScroll: true });
-      }
+      raf = requestAnimationFrame(() => {
+        if (drawerRef.current?.contains(document.activeElement) || document.activeElement === document.body) {
+          hamburgerRef.current?.focus({ preventScroll: true });
+        }
+      });
     }
+    return () => cancelAnimationFrame(raf);
   }, [mobileOpen]);
 
   // Add scrolled class after 20px scroll

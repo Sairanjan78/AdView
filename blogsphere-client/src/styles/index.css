@@ -12,6 +12,10 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  /* Reserve the scrollbar gutter at all times: when the mobile drawer locks
+     scrolling with overflow:hidden, the viewport otherwise grows by ~15px and
+     the fixed, right-anchored drawer shifts sideways (a measured CLS source). */
+  scrollbar-gutter: stable;
   /* Kept as a safety net only; layouts must not rely on it (see scripts/mobile-check.py) */
   overflow-x: hidden;
 }
