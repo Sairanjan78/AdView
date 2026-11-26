@@ -138,6 +138,15 @@ const headTags = (a, site) => {
 const bodyHtml = (a) => {
   const author = a.author || {};
   const published = isoDate(a.publishedAt || a.createdAt);
+  const modified = isoDate(a.updatedAt);
+  // Match the React page: surface a recent date in the crawler-facing copy too.
+  // Show "Updated" only when it is meaningfully later than publication, so the
+  // static HTML does not advertise a fake freshness signal.
+  const showUpdated = published && modified && new Date(modified) - new Date(published) > 86400000;
+  const dates = [
+    published ? `<time datetime="${published}">${new Date(published).toDateString()}</time>` : '',
+    showUpdated ? `Updated <time datetime="${modified}">${new Date(modified).toDateString()}</time>` : '',
+  ].filter(Boolean).join(' · ');
   const byline = author.name
     ? `By ${author.username ? `<a href="/writer/${esc(author.username)}" rel="author">${esc(author.name)}</a>` : esc(author.name)}`
     : '';
@@ -148,7 +157,7 @@ const bodyHtml = (a) => {
     a.category ? `<p><a href="/categories/${esc(a.category)}">${esc(String(a.category).replace(/-/g, ' '))}</a></p>` : '',
     `<h1>${esc(a.title)}</h1>`,
     a.excerpt ? `<p>${esc(a.excerpt)}</p>` : '',
-    `<p>${byline}${published ? ` · <time datetime="${published}">${new Date(published).toDateString()}</time>` : ''}</p>`,
+    `<p>${byline}${dates ? ` · ${dates}` : ''}</p>`,
     a.coverImage ? `<img src="${esc(a.coverImage)}" alt="${esc(a.title)}" width="1600" height="900">` : '',
     '</header>',
     safeHtml(a.content),
