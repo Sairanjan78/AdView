@@ -141,9 +141,21 @@ const ShareBar = ({ title }) => {
 
 const ArticleDetailPage = () => {
   const { slug } = useParams();
+  // On a prerendered article page the HTML already contains this article's data.
+  // Seed React with it so the first paint is the full article, not a spinner.
+  const prerenderedArticle = (() => {
+    if (typeof document === 'undefined') return null;
+    const el = document.getElementById('__PRERENDERED_ARTICLE__');
+    if (!el || !slug) return null;
+    try {
+      const raw = JSON.parse(el.textContent || '');
+      return raw && raw.slug === slug ? normalizeArticle(raw) : null;
+    } catch { return null; }
+  })();
   const { data: article, loading, error } = useApi(
     () => articleApi.getArticleBySlug(slug).then(res => normalizeArticle(res?.data?.article)),
-    [slug]
+    [slug],
+    prerenderedArticle
   );
   // Same-category articles: internal links that build topical clusters
   const { data: related } = useApi(

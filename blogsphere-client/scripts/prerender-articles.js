@@ -75,6 +75,15 @@ const fetchPublished = async (api, log) => {
   return all.filter(a => a && (!a.status || a.status === 'published') && /^[a-z0-9-]{1,200}$/.test(a.slug || ''));
 };
 
+// Serialize data safely inside a <script type="application/json"> tag. Escaping '<'
+// prevents stored article HTML from closing the tag early (script-injection safety).
+const jsonForScript = (obj) => JSON.stringify(obj)
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e')
+  .replace(/&/g, '\\u0026')
+  .replace(/\u2028/g, '\\u2028')
+  .replace(/\u2029/g, '\\u2029');
+
 const headTags = (a, site) => {
   const pageUrl = `${site}/article/${a.slug}`;
   const title = buildTitle(a.seoTitle || a.title);
@@ -117,6 +126,9 @@ const headTags = (a, site) => {
     `<meta name="twitter:description" content="${esc(description)}"/>`,
     a.coverImage ? `<meta name="twitter:image" content="${esc(a.coverImage)}"/>` : '',
     `<script type="application/ld+json">${jsonLd(ld)}</script>`,
+    // Seed React with the article so it renders the full page on first paint
+    // instead of showing a spinner then growing (a measured CLS and LCP cause).
+    `<script id="__PRERENDERED_ARTICLE__" type="application/json">${jsonForScript(a)}</script>`,
     // Hide the static copy for people (JavaScript on); React renders the live article instead
     '<script>document.documentElement.classList.add("js")</script>',
     '<style>.js .prerendered{display:none}</style>',
