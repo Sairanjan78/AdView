@@ -51,3 +51,8 @@ answer, a cost comparison table with ₹ and $ prices, and two new FAQs. Replace
 inline image with a verified Commons photo (Joe Hoover, CC BY 4.0). Updated in place via
 Writer Studio import+edit; API confirms the slug is unchanged and article count remains 22.
 A fresh frontend build is required so the prerendered <title> matches the new API title.
+
+
+## Internal linking fix (27 Nov 2026)
+Added same-category related article links to the prerendered static HTML so crawlers can see
+internal links. 14 of 24 articles have them; 10 are singletons in their category. Pushed in 9924cf8.
