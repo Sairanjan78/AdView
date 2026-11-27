@@ -135,7 +135,7 @@ const headTags = (a, site) => {
   ].filter(Boolean);
 };
 
-const bodyHtml = (a, related = []) => {
+const bodyHtml = (a) => {
   const author = a.author || {};
   const published = isoDate(a.publishedAt || a.createdAt);
   const modified = isoDate(a.updatedAt);
@@ -162,7 +162,6 @@ const bodyHtml = (a, related = []) => {
     '</header>',
     safeHtml(a.content),
     '</article></main>',
-    related.length ? `<nav class="prerendered-related" aria-label="More articles"><h2>More articles</h2><ul>${related.map(r => `<li><a href="/article/${esc(r.slug)}">${esc(r.title)}</a></li>`).join('')}</ul></nav>` : '',
     '<footer><nav><a href="/about">About</a> · <a href="/contact">Contact</a> · <a href="/privacy-policy">Privacy Policy</a> · <a href="/terms">Terms</a> · <a href="/cookie-policy">Cookie Policy</a> · <a href="/advertising-disclosure">Advertising Disclosure</a> · <a href="/writer-monetization-policy">Writer Monetization Policy</a></nav></footer>',
     '</div>',
   ].join('');
@@ -203,11 +202,8 @@ async function prerenderArticles({ log = console.log } = {}) {
   const written = [];
   articles.forEach((a) => {
     try {
-      const cat = (a.category && typeof a.category === 'object') ? a.category.slug : a.category;
-      const related = articles.filter(r => r.slug !== a.slug &&
-        ((r.category && typeof r.category === 'object') ? r.category.slug : r.category) === cat).slice(0, 4);
       const html = injectHead(shell, headTags(a, site))
-        .replace(/<div id="root"><\/div>/, () => `<div id="root">${bodyHtml(a, related)}</div>`);
+        .replace(/<div id="root"><\/div>/, () => `<div id="root">${bodyHtml(a)}</div>`);
       const out = path.join(outDir, `${a.slug}.html`);
       fs.writeFileSync(out, html);
       written.push(out);

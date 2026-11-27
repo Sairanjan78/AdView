@@ -16,7 +16,7 @@ import json, os, re, sys, urllib.request, urllib.error, urllib.parse
 
 API = os.environ.get("BLOGSPHERE_API", "https://blogsphere-api-odr7.onrender.com/api/v1")
 FIELDS = ["title", "seoTitle", "category", "excerpt", "coverImage", "tags", "content"]
-CATEGORIES = {"health", "technology", "science", "business", "travel", "food", "finance", "environment", "jobs-careers"}
+CATEGORIES = {"technology", "science", "business", "health", "arts", "travel", "food", "finance", "education", "environment", "sports", "entertainment", "jobs-careers", "innovation", "world-affairs"}
 
 
 def call(method, path, body=None, token=None, timeout=90):
