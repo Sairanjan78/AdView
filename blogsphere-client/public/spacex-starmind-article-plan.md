@@ -134,3 +134,9 @@ Category: world-affairs (owner decision, overriding the earlier technology sugge
 ChatGPT review completed with verdict GO after all blockers were fixed.
 A fresh frontend build is required so the article is prerendered; the first deploy happened
 before publication, so the URL briefly served the generic SPA shell.
+
+
+## Trigger note (27 Nov 2026)
+Published the US tariffs on India article (slug: us-tariffs-on-india-what-the-section-301-decision-actually-means)
+under world-affairs. A fresh frontend build is needed so the article is prerendered; the deploy
+before publication left the URL serving the generic SPA shell.
